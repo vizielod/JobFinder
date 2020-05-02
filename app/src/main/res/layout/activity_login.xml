@@ -22,4 +22,11 @@
         android:text="login"
         android:id="@+id/login"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="login screen"
+        android:textSize="30sp"
+        android:gravity="center"/>
+
 </LinearLayout>
