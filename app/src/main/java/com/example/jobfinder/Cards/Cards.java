@@ -1,11 +1,11 @@
-package com.example.jobfinder;
+package com.example.jobfinder.Cards;
 
-public class cards {
+public class Cards {
     private String userId;
     private String name;
     private String profileImageUrl;
 
-    public cards (String userId, String name, String profileImageUrl){
+    public Cards(String userId, String name, String profileImageUrl){
         this.userId = userId;
         this.name = name;
         this.profileImageUrl = profileImageUrl;

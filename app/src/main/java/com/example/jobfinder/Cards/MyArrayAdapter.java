@@ -1,4 +1,4 @@
-package com.example.jobfinder;
+package com.example.jobfinder.Cards;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,18 +9,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.R;
 
 import java.util.List;
 
-public class myArrayAdapter extends ArrayAdapter<cards> {
+public class MyArrayAdapter extends ArrayAdapter<Cards> {
 
     Context context;
 
-    public myArrayAdapter(Context context, int resourceId, List<cards> items){
+    public MyArrayAdapter(Context context, int resourceId, List<Cards> items){
         super(context, resourceId, items);
     }
     public View getView(int position, View convertView, ViewGroup parent){
-        cards card_item = getItem(position);
+        Cards card_item = getItem(position);
 
         if (convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item, parent, false);
