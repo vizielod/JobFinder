@@ -22,7 +22,7 @@ public class MatchesActivity extends AppCompatActivity {
     private RecyclerView.Adapter mMatchesAdapter;
     private RecyclerView.LayoutManager mMatchesLayoutManager;
 
-    private String cusrrentUserID;
+    private String cusrrentUserID, userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +30,8 @@ public class MatchesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_matches);
 
         cusrrentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        userRole = getIntent().getExtras().getString("userRole");
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setNestedScrollingEnabled(false);
@@ -44,7 +46,7 @@ public class MatchesActivity extends AppCompatActivity {
 
     private void getUserMatchId() {
 
-        DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(cusrrentUserID).child("connections").child("matches");
+        DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(cusrrentUserID).child("connections").child("matches");
         matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

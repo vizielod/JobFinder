@@ -54,6 +54,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        String userRole = getIntent().getExtras().getString("userRole");
+
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phone);
 
@@ -65,7 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
 
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(userId);
 
         getUserInfo();
 

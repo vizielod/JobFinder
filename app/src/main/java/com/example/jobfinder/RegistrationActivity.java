@@ -12,6 +12,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.example.jobfinder.Employer.EmployerActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -28,10 +29,12 @@ public class RegistrationActivity extends AppCompatActivity {
     private Button mRegister;
     private EditText mEmail, mPassword, mName;
 
-    private RadioGroup mRadioGroup;
+    private RadioGroup mRole_RadioGroup, mGender_RadioGroup;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
+
+    private String userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +47,11 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null){
-                    Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+                    startActivityAfterRegistration();
+                    /*Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
-                    return;
+                    return;*/
                 }
             }
         };
@@ -58,16 +62,20 @@ public class RegistrationActivity extends AppCompatActivity {
         mPassword = (EditText) findViewById(R.id.password);
         mName = (EditText) findViewById(R.id.name);
 
-        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        mGender_RadioGroup = (RadioGroup) findViewById(R.id.gender_radioGroup);
+        mRole_RadioGroup = (RadioGroup) findViewById(R.id.role_radioGroup);
 
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int selectID = mRadioGroup.getCheckedRadioButtonId();
+                int selectRoleID = mRole_RadioGroup.getCheckedRadioButtonId();
+                int selectGenderID = mGender_RadioGroup.getCheckedRadioButtonId();
 
-                final RadioButton radioButton = (RadioButton) findViewById(selectID);
+                final RadioButton role_radioButton = (RadioButton) findViewById(selectRoleID);
+                final RadioButton gender_radioButton = (RadioButton) findViewById(selectGenderID);
 
-                if(radioButton.getText() == null){
+                //innen a gendert majd ki lehet venni kb teljesen, vagy csak ha employer mezőt válassza akkor jelenjen meg az az opció. Másképp itt nem létszükséglet
+                if(role_radioButton.getText() == null || gender_radioButton.getText() == null){
                     return;
                 }
 
@@ -82,10 +90,12 @@ public class RegistrationActivity extends AppCompatActivity {
                         }
                         else{
                             String userId = mAuth.getCurrentUser().getUid();
-                            DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+                            DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(role_radioButton.getText().toString()).child(userId);
+                            userRole = role_radioButton.getText().toString();
                             Map userInfo = new HashMap<>();
                             userInfo.put("name", name);
-                            userInfo.put("sex", radioButton.getText().toString());
+                            userInfo.put("role", role_radioButton.getText().toString());
+                            userInfo.put("sex", gender_radioButton.getText().toString());
                             userInfo.put("profileImageUrl", "default");
                             currentUserDb.updateChildren(userInfo);
                         }
@@ -95,6 +105,22 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
+    private void startActivityAfterRegistration(){
+        int selectRoleID = mRole_RadioGroup.getCheckedRadioButtonId();
+        RadioButton role_radioButton = (RadioButton) findViewById(selectRoleID);
+        if(role_radioButton.getText().toString().equals("Employee")){
+            Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+        else if(role_radioButton.getText().toString().equals("Employer")){
+            Intent intent = new Intent(RegistrationActivity.this, EmployerActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+    }
     @Override
     protected void onStart() {
         super.onStart();
