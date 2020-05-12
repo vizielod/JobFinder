@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.jobfinder.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,18 +42,20 @@ public class MatchesActivity extends AppCompatActivity {
         mMatchesAdapter = new MatchesAdapter(getDataSetMatches(), MatchesActivity.this);
         mRecyclerView.setAdapter(mMatchesAdapter);
 
-        getUserMatchId();
+        //getUserMatchId();
     }
 
-    private void getUserMatchId() {
+    private void getEmployeeUserMatchId() {
 
         DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(cusrrentUserID).child("connections").child("matches");
         matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
+                    //Itt a match.getKey() egy employerId
                     for(DataSnapshot match : dataSnapshot.getChildren()){
-                        FetchMatchInformation(match.getKey());
+                        getJobsId(match.getKey());
+                        //FetchEmployeeMatchInformation(match.getKey());
                     }
                 }
             }
@@ -64,8 +67,79 @@ public class MatchesActivity extends AppCompatActivity {
         });
     }
 
-    private void FetchMatchInformation(String key) {
-        DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child(key);
+    private void getJobsId(final String employerId) {
+        //Log.i(LOGTAG, "getJobsId" + "   " + employerId);
+        DatabaseReference jobsDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(employerId).child("jobs");
+        jobsDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //final String tempEmployerID = employerId;
+                if (dataSnapshot.exists()){
+                    for(DataSnapshot job : dataSnapshot.getChildren()){
+                        FetchEmployeeMatchInformation(employerId, job.getKey());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void FetchEmployeeMatchInformation(final String employerId, final String jobId) {
+        DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(employerId).child("jobs").child(jobId);
+        userDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    String jobId = dataSnapshot.getKey();
+                    String jobTitle = "";
+                    String jobImageUrl = "";
+                    if(dataSnapshot.child("title").getValue()!=null){
+                        jobTitle = dataSnapshot.child("title").getValue().toString();
+                    }
+                    if(dataSnapshot.child("jobImageUrl").getValue()!=null){
+                        jobImageUrl = dataSnapshot.child("jobImageUrl").getValue().toString();
+                    }
+
+                    MatchesObject obj = new MatchesObject(userId, name, profileImageUrl);
+                    resultsMatches.add(obj);
+                    mMatchesAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void getEmployerUserJobMatchId() {
+
+        DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(cusrrentUserID).child("connections").child("matches");
+        matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for(DataSnapshot match : dataSnapshot.getChildren()){
+                        //FetchEmployerJobMatchInformation(match.getKey());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void FetchEmployerJobMatchInformation(String key) {
+        DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child("jobs").child(key);
         userDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
