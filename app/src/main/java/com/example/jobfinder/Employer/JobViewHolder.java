@@ -1,7 +1,8 @@
-package com.example.jobfinder.Matches;
+package com.example.jobfinder.Employer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,27 +10,34 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jobfinder.Chat.ChatActivity;
+import com.example.jobfinder.JobMainActivity;
+import com.example.jobfinder.MainActivity;
 import com.example.jobfinder.R;
 
-public class MatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-    public TextView mMatchId, mMatchName;
-    public ImageView mMatchImage;
-    public MatchesViewHolder(View itemView) {
+public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private static final String LOGTAG = "UserRole";
+
+    public TextView mJobId, mJobTitle, mEmployerId;
+    public ImageView mJobImage;
+    public JobViewHolder(View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
 
-        mMatchId = (TextView) itemView.findViewById(R.id.Matchid);
-        mMatchName = (TextView) itemView.findViewById(R.id.MatchName);
+        mJobId = (TextView) itemView.findViewById(R.id.JobId);
+        mJobTitle = (TextView) itemView.findViewById(R.id.JobTitle);
+        mEmployerId = (TextView) itemView.findViewById(R.id.EmployerId);
 
-        mMatchImage = (ImageView) itemView.findViewById(R.id.MatchImage);
+        mJobImage = (ImageView) itemView.findViewById(R.id.JobImage);
     }
 
 
     @Override
     public void onClick(View view) {
-        Intent intent = new Intent(view.getContext(), ChatActivity.class);
+        Intent intent = new Intent(view.getContext(), JobMainActivity.class);
+        Log.i(LOGTAG, mJobId.getText().toString());
         Bundle b = new Bundle();
-        b.putString("matchId", mMatchId.getText().toString());
+        b.putString("jobId", mJobId.getText().toString());
+        b.putString("employerId", mEmployerId.getText().toString());
         intent.putExtras(b);
         view.getContext().startActivity(intent);
     }

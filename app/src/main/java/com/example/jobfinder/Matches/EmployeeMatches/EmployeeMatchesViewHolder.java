@@ -1,4 +1,4 @@
-package com.example.jobfinder.Matches;
+package com.example.jobfinder.Matches.EmployeeMatches;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,17 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.jobfinder.Chat.ChatActivity;
 import com.example.jobfinder.R;
 
-public class MatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-    public TextView mMatchId, mMatchName;
-    public ImageView mMatchImage;
-    public MatchesViewHolder(View itemView) {
+public class EmployeeMatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public TextView mMatchJobId, mMatchJobTitle;
+    public ImageView mMatchJobImage;
+    public EmployeeMatchesViewHolder(View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
 
-        mMatchId = (TextView) itemView.findViewById(R.id.Matchid);
-        mMatchName = (TextView) itemView.findViewById(R.id.MatchName);
+        mMatchJobId = (TextView) itemView.findViewById(R.id.Matchid);
+        mMatchJobTitle = (TextView) itemView.findViewById(R.id.MatchName);
 
-        mMatchImage = (ImageView) itemView.findViewById(R.id.MatchImage);
+        mMatchJobImage = (ImageView) itemView.findViewById(R.id.MatchImage);
     }
 
 
@@ -29,7 +29,7 @@ public class MatchesViewHolder extends RecyclerView.ViewHolder implements View.O
     public void onClick(View view) {
         Intent intent = new Intent(view.getContext(), ChatActivity.class);
         Bundle b = new Bundle();
-        b.putString("matchId", mMatchId.getText().toString());
+        b.putString("matchId", mMatchJobId.getText().toString());
         intent.putExtras(b);
         view.getContext().startActivity(intent);
     }

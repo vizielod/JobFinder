@@ -1,35 +1,44 @@
 package com.example.jobfinder.Cards;
 
-public class Cards {
-    private String userId;
-    private String name;
-    private String profileImageUrl;
+public class JobCard {
+    private String employerId;
+    private String jobId;
+    private String jobTitle;
+    private String jobImageUrl;
 
-    public Cards(String userId, String name, String profileImageUrl){
-        this.userId = userId;
-        this.name = name;
-        this.profileImageUrl = profileImageUrl;
-    }
-
-    public String getUserId(){
-        return userId;
-    }
-    public void setUserID(String userID){
-        this.userId = userId;
+    public JobCard(String employerId, String jobId, String jobTitle, String jobImageUrl){
+        this.employerId = employerId;
+        this.jobId = jobId;
+        this.jobTitle = jobTitle;
+        this.jobImageUrl = jobImageUrl;
     }
 
-    public String getName(){
-        return name;
+    public String getEmployerId(){
+        return employerId;
     }
-    public void setName(String name){
-        this.name = name;
+    public void setEmployerId(String employerId){
+        this.employerId = employerId;
     }
 
-    public String getProfileImageUrl(){
-        return profileImageUrl;
+    public String getJobId(){
+        return jobId;
     }
-    public void setProfileImageUrl(String profileImageUrl){
-        this.profileImageUrl = profileImageUrl;
+    public void setJobID(String userID){
+        this.jobId = jobId;
+    }
+
+    public String getJobTitle(){
+        return jobTitle;
+    }
+    public void setJobTitle(String jobTitle){
+        this.jobTitle = jobTitle;
+    }
+
+    public String getJobImageUrl(){
+        return jobImageUrl;
+    }
+    public void setJobImageUrl(String jobImageUrl){
+        this.jobImageUrl = jobImageUrl;
     }
 
 }

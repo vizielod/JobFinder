@@ -1,12 +1,13 @@
-package com.example.jobfinder.Matches;
+package com.example.jobfinder.Matches.EmployeeMatches;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
 
+import com.example.jobfinder.Matches.EmployerJobMatches.EmployerJobMatchesAdapter;
+import com.example.jobfinder.Matches.EmployerJobMatches.MatchesEmployeeObject;
 import com.example.jobfinder.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -18,36 +19,37 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MatchesActivity extends AppCompatActivity {
+public class EmployeeMatchesActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mMatchesAdapter;
-    private RecyclerView.LayoutManager mMatchesLayoutManager;
+    private RecyclerView.Adapter mEmployeeMatchesAdapter;
+    private RecyclerView.LayoutManager mEmployeeMatchesLayoutManager;
 
-    private String cusrrentUserID, userRole;
+    private String currentUserID, userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matches);
 
-        cusrrentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         userRole = getIntent().getExtras().getString("userRole");
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setHasFixedSize(true);
-        mMatchesLayoutManager = new LinearLayoutManager(MatchesActivity.this);
-        mRecyclerView.setLayoutManager(mMatchesLayoutManager);
-        mMatchesAdapter = new MatchesAdapter(getDataSetMatches(), MatchesActivity.this);
-        mRecyclerView.setAdapter(mMatchesAdapter);
+        mEmployeeMatchesLayoutManager = new LinearLayoutManager(EmployeeMatchesActivity.this);
+        mRecyclerView.setLayoutManager(mEmployeeMatchesLayoutManager);
+        mEmployeeMatchesAdapter = new EmployeeMatchesAdapter(getDataSetEmployeeMatches(), EmployeeMatchesActivity.this);
+        mRecyclerView.setAdapter(mEmployeeMatchesAdapter);
 
         //getUserMatchId();
+        getEmployeeUserMatchId();
     }
 
     private void getEmployeeUserMatchId() {
 
-        DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(cusrrentUserID).child("connections").child("matches");
+        DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(currentUserID).child("connections").child("matches");
         matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -88,6 +90,10 @@ public class MatchesActivity extends AppCompatActivity {
         });
     }
 
+    private ArrayList<MatchesJobObject> resultsEmployeeMatches = new ArrayList<MatchesJobObject>();
+    private List<MatchesJobObject> getDataSetEmployeeMatches() {
+        return resultsEmployeeMatches;
+    }
     private void FetchEmployeeMatchInformation(final String employerId, final String jobId) {
         DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(employerId).child("jobs").child(jobId);
         userDb.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -104,9 +110,9 @@ public class MatchesActivity extends AppCompatActivity {
                         jobImageUrl = dataSnapshot.child("jobImageUrl").getValue().toString();
                     }
 
-                    MatchesObject obj = new MatchesObject(userId, name, profileImageUrl);
-                    resultsMatches.add(obj);
-                    mMatchesAdapter.notifyDataSetChanged();
+                    MatchesJobObject obj = new MatchesJobObject(jobId, jobTitle, jobImageUrl);
+                    resultsEmployeeMatches.add(obj);
+                    mEmployeeMatchesAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -117,61 +123,5 @@ public class MatchesActivity extends AppCompatActivity {
         });
 
     }
-
-    private void getEmployerUserJobMatchId() {
-
-        DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(cusrrentUserID).child("connections").child("matches");
-        matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    for(DataSnapshot match : dataSnapshot.getChildren()){
-                        //FetchEmployerJobMatchInformation(match.getKey());
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void FetchEmployerJobMatchInformation(String key) {
-        DatabaseReference userDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child("jobs").child(key);
-        userDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    String userId = dataSnapshot.getKey();
-                    String name = "";
-                    String profileImageUrl = "";
-                    if(dataSnapshot.child("name").getValue()!=null){
-                        name = dataSnapshot.child("name").getValue().toString();
-                    }
-                    if(dataSnapshot.child("profileImageUrl").getValue()!=null){
-                        profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
-                    }
-
-                    MatchesObject obj = new MatchesObject(userId, name, profileImageUrl);
-                    resultsMatches.add(obj);
-                    mMatchesAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-    private ArrayList<MatchesObject> resultsMatches = new ArrayList<MatchesObject>();
-    private List<MatchesObject> getDataSetMatches() {
-        return resultsMatches;
-    }
-
 
 }

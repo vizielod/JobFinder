@@ -1,4 +1,4 @@
-package com.example.jobfinder.Matches;
+package com.example.jobfinder.Matches.EmployerJobMatches;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,29 +13,29 @@ import com.example.jobfinder.R;
 import java.util.List;
 
 //dapters provide a binding from an app-specific data set to views that are displayed within a RecyclerView.
-public class MatchesAdapter extends RecyclerView.Adapter<MatchesViewHolder>{
-    private List<MatchesObject> matchesList;
+public class EmployerJobMatchesAdapter extends RecyclerView.Adapter<EmployerJobMatchesViewHolder>{
+    private List<MatchesEmployeeObject> matchesList;
     private Context context;
 
 
-    public MatchesAdapter(List<MatchesObject> matchesList, Context context){
+    public EmployerJobMatchesAdapter(List<MatchesEmployeeObject> matchesList, Context context){
         this.matchesList = matchesList;
         this.context = context;
     }
 
     @Override
-    public MatchesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EmployerJobMatchesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_matches, null, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp);
-        MatchesViewHolder rcv = new MatchesViewHolder(layoutView);
+        EmployerJobMatchesViewHolder rcv = new EmployerJobMatchesViewHolder(layoutView);
 
         return rcv;
     }
 
     @Override
-    public void onBindViewHolder(MatchesViewHolder holder, int position) {
+    public void onBindViewHolder(EmployerJobMatchesViewHolder holder, int position) {
         holder.mMatchId.setText(matchesList.get(position).getUserId());
         holder.mMatchName.setText(matchesList.get(position).getName());
         if(!matchesList.get(position).getProfileImageUrl().equals("default")){

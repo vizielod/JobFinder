@@ -16,7 +16,6 @@ import java.util.List;
 public class MyArrayAdapter extends ArrayAdapter<Cards> {
 
     Context context;
-
     public MyArrayAdapter(Context context, int resourceId, List<Cards> items){
         super(context, resourceId, items);
     }

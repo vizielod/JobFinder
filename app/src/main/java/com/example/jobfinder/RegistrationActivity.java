@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RegistrationActivity extends AppCompatActivity {
+    private static final String LOGTAG = "UserRole";
 
     private Button mRegister;
     private EditText mEmail, mPassword, mName;
@@ -34,7 +36,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
 
-    private String userRole;
+    //private String userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +93,8 @@ public class RegistrationActivity extends AppCompatActivity {
                         else{
                             String userId = mAuth.getCurrentUser().getUid();
                             DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(role_radioButton.getText().toString()).child(userId);
-                            userRole = role_radioButton.getText().toString();
+                            //userRole = role_radioButton.getText().toString();
+                            //Log.i(LOGTAG, userRole);
                             Map userInfo = new HashMap<>();
                             userInfo.put("name", name);
                             userInfo.put("role", role_radioButton.getText().toString());
@@ -109,13 +112,16 @@ public class RegistrationActivity extends AppCompatActivity {
         int selectRoleID = mRole_RadioGroup.getCheckedRadioButtonId();
         RadioButton role_radioButton = (RadioButton) findViewById(selectRoleID);
         if(role_radioButton.getText().toString().equals("Employee")){
-            Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+            Intent intent = new Intent(RegistrationActivity.this, EmployeeMainActivity.class);
             startActivity(intent);
             finish();
             return;
         }
         else if(role_radioButton.getText().toString().equals("Employer")){
+            final String userRole = role_radioButton.getText().toString();
             Intent intent = new Intent(RegistrationActivity.this, EmployerActivity.class);
+            intent.putExtra("userRole", userRole);
+            Log.i(LOGTAG, userRole);
             startActivity(intent);
             finish();
             return;

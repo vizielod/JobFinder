@@ -9,12 +9,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Employer.CreateJobActivity"></activity>
+        <activity android:name=".Employer.EditJobActivity"></activity>
         <activity
             android:name=".Employer.EmployerActivity"
             android:label="@string/title_activity_employer"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Chat.ChatActivity" />
-        <activity android:name=".Matches.MatchesActivity" />
+        <activity android:name=".Matches.EmployeeMatches.EmployeeMatchesActivity" />
+        <activity android:name=".Matches.EmployerJobMatches.EmployerJobMatchesActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".LoginActivity" />
@@ -26,6 +29,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
+        <activity android:name=".JobMainActivity" />
+        <activity android:name=".EmployeeMainActivity" />
     </application>
 
 </manifest>

@@ -1,10 +1,10 @@
-package com.example.jobfinder.Matches;
+package com.example.jobfinder.Matches.EmployerJobMatches;
 
-public class MatchesObject {
+public class MatchesEmployeeObject {
     private String userId;
     private String name;
     private String profileImageUrl;
-    public MatchesObject (String userId, String name, String profileImageUrl){
+    public MatchesEmployeeObject(String userId, String name, String profileImageUrl){
         this.userId = userId;
         this.name = name;
         this.profileImageUrl = profileImageUrl;

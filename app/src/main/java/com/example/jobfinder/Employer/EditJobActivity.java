@@ -1,4 +1,4 @@
-package com.example.jobfinder;
+package com.example.jobfinder.Employer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.R;
+import com.example.jobfinder.SettingsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -34,32 +37,34 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SettingsActivity extends AppCompatActivity {
+public class EditJobActivity extends AppCompatActivity {
+    private static final String LOGTAG = "UserRole";
 
-    private EditText mNameField, mPhoneField;
+    private EditText mTitleField, mDescriptionField;
 
     private Button mBack, mConfirm;
 
-    private ImageView mProfileImage;
+    private ImageView mJobImage;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
 
-    private String userId, name, phone, profileImageUrl, userSex;
+    private String userId, title, description, jobImageUrl, jobId;
 
     private Uri resultUri;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_edit_job);
 
-        String userRole = getIntent().getExtras().getString("userRole");
+        jobId = getIntent().getExtras().getString("jobId");
+        Log.i(LOGTAG, jobId);
 
-        mNameField = (EditText) findViewById(R.id.name);
-        mPhoneField = (EditText) findViewById(R.id.phone);
+        mTitleField = (EditText) findViewById(R.id.jobTitle);
+        mDescriptionField = (EditText) findViewById(R.id.jobDescription);
 
-        mProfileImage = (ImageView) findViewById(R.id.profileImage);
+        mJobImage = (ImageView) findViewById(R.id.jobImage);
 
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
@@ -67,11 +72,14 @@ public class SettingsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
 
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(userId);
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(userId);
+        Log.i(LOGTAG, userId);
 
-        getUserInfo();
+        if (jobId != null && mUserDatabase!= null){
+            getJobInfo();
+        }
 
-        mProfileImage.setOnClickListener(new View.OnClickListener() {
+        mJobImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_PICK);
@@ -79,10 +87,13 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                saveUserInformation();
+            public void onClick(View v) {
+                saveJobInformation(jobId);
+                finish();
+                return;
             }
         });
         mBack.setOnClickListener(new View.OnClickListener() {
@@ -92,38 +103,34 @@ public class SettingsActivity extends AppCompatActivity {
                 return;
             }
         });
-
     }
 
-
-    private void getUserInfo() {
-        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getJobInfo() {
+        DatabaseReference jobDb = mUserDatabase.child("jobs").child(jobId);
+        jobDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    if(map.get("name")!=null){
-                        name = map.get("name").toString();
-                        mNameField.setText(name);
+                    if(map.get("title")!=null){
+                        title = map.get("title").toString();
+                        mTitleField.setText(title);
                     }
-                    if(map.get("phone")!=null){
-                        phone = map.get("phone").toString();
-                        mPhoneField.setText(phone);
+                    if(map.get("description")!=null){
+                        description = map.get("description").toString();
+                        mDescriptionField.setText(description);
                     }
-                    if(map.get("sex")!=null){
-                        userSex = map.get("sex").toString();
-                    }
-                    Glide.clear(mProfileImage);
+                    Glide.clear(mJobImage);
 
-                    if(map.get("profileImageUrl")!=null){
-                        profileImageUrl = map.get("profileImageUrl").toString();
-                        Glide.with(getApplication()).load(profileImageUrl).into(mProfileImage);
-                        switch(profileImageUrl){
+                    if(map.get("jobImageUrl")!=null){
+                        jobImageUrl = map.get("jobImageUrl").toString();
+                        Glide.with(getApplication()).load(jobImageUrl).into(mJobImage);
+                        switch(jobImageUrl){
                             case "default":
-                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mProfileImage);
+                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mJobImage);
                                 break;
                             default:
-                                Glide.with(getApplication()).load(profileImageUrl).into(mProfileImage);
+                                Glide.with(getApplication()).load(jobImageUrl).into(mJobImage);
                                 break;
                         }
                     }
@@ -137,17 +144,17 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
     }
-
-    private void saveUserInformation() {
-        name = mNameField.getText().toString();
-        phone = mPhoneField.getText().toString();
-
+    private void saveJobInformation(String key) {
+        title = mTitleField.getText().toString();
+        description = mDescriptionField.getText().toString();
         Map userInfo = new HashMap();
-        userInfo.put("name", name);
-        userInfo.put("phone", phone);
-        mUserDatabase.updateChildren(userInfo);
+        userInfo.put("title", title);
+        userInfo.put("description", description);
+        userInfo.put("jobImageUrl", "default");
+        mUserDatabase.child("jobs").child(key).updateChildren(userInfo);
         if(resultUri != null){
-            StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profileImages").child(userId);
+            final String jobId = key;
+            StorageReference filepath = FirebaseStorage.getInstance().getReference().child("jobImages").child(jobId);
             Bitmap bitmap = null;
 
             try {
@@ -174,12 +181,12 @@ public class SettingsActivity extends AppCompatActivity {
                     while(!uri.isComplete());
                     Uri downloadUrl = uri.getResult();
 
-                    Toast.makeText(SettingsActivity.this, "Upload Success, download URL " +
+                    Toast.makeText(EditJobActivity.this, "Upload Success, download URL " +
                             downloadUrl.toString(), Toast.LENGTH_LONG).show();
 
                     Map userInfo = new HashMap();
-                    userInfo.put("profileImageUrl", downloadUrl.toString());
-                    mUserDatabase.updateChildren(userInfo);
+                    userInfo.put("jobImageUrl", downloadUrl.toString());
+                    mUserDatabase.child("jobs").child(jobId).updateChildren(userInfo);
 
                     finish();
                     return;
@@ -196,9 +203,7 @@ public class SettingsActivity extends AppCompatActivity {
         if(requestCode == 1 && resultCode == Activity.RESULT_OK){
             final Uri imageUri = data.getData();
             resultUri = imageUri;
-            mProfileImage.setImageURI(resultUri);
+            mJobImage.setImageURI(resultUri);
         }
     }
-
-
 }

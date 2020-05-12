@@ -123,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                             setUserRole("Employer");
                             Log.i(LOGTAG, getUserRole());
                             Intent intent = new Intent(LoginActivity.this, EmployerActivity.class);
+                            intent.putExtra("userRole", userRole);
                             startActivity(intent);
                             finish();
                             return;
@@ -147,7 +148,8 @@ public class LoginActivity extends AppCompatActivity {
                         if(snapshot.getKey().equals(user.getUid())){
                             setUserRole("Employee");
                             Log.i(LOGTAG, getUserRole());
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, EmployeeMainActivity.class);
+                            intent.putExtra("userRole", userRole);
                             startActivity(intent);
                             finish();
                             return;

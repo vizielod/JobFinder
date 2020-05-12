@@ -12,8 +12,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.jobfinder.Cards.Cards;
+import com.example.jobfinder.Cards.JobCard;
 import com.example.jobfinder.Cards.MyArrayAdapter;
-import com.example.jobfinder.Matches.MatchesActivity;
+import com.example.jobfinder.Cards.MyJobCardArrayAdapter;
+import com.example.jobfinder.Employer.EditJobActivity;
+import com.example.jobfinder.Matches.EmployeeMatches.EmployeeMatchesActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -28,8 +31,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String LOGTAG = "UserRole";
+
     private Cards cards_data[];
     private MyArrayAdapter arrayAdapter;
+    private MyJobCardArrayAdapter jobArrayAdapter;
     private int i;
 
     private FirebaseAuth mAuth;
@@ -40,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
     List<Cards> rowItems;
+    List<JobCard> jobCardItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,36 +61,38 @@ public class MainActivity extends AppCompatActivity {
         //checkUserSex();
         checkUserRole();
 
-        rowItems = new ArrayList<Cards>();
+        jobCardItems = new ArrayList<JobCard>();
 
-        arrayAdapter = new MyArrayAdapter(this, R.layout.item, rowItems);
+        jobArrayAdapter = new MyJobCardArrayAdapter(this, R.layout.item, jobCardItems);
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
-        flingContainer.setAdapter(arrayAdapter);
+        flingContainer.setAdapter(jobArrayAdapter);
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
-                rowItems.remove(0);
-                arrayAdapter.notifyDataSetChanged();
+                jobCardItems.remove(0);
+                jobArrayAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onLeftCardExit(Object dataObject) {
-                Cards obj = (Cards) dataObject;
-                String userId = obj.getUserId();
-                usersDb.child(oppositeUserRole).child(userId).child("connections").child("disliked").child(currentUId).setValue(true);
+                JobCard jobCard = (JobCard) dataObject;
+                String employerId = jobCard.getEmployerId();
+                String jobId = jobCard.getJobId();
+                usersDb.child(oppositeUserRole).child(employerId).child("jobs").child(jobId).child("connections").child("disliked").child(currentUId).setValue(true);
                 Toast.makeText(MainActivity.this, "Left!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
-                Cards obj = (Cards) dataObject;
-                String userId = obj.getUserId();
-                usersDb.child(oppositeUserRole).child(userId).child("connections").child("liked").child(currentUId).setValue(true);
-                isConnectionMatch(userId);
+                JobCard jobCard = (JobCard) dataObject;
+                String employerId = jobCard.getEmployerId();
+                String jobId = jobCard.getJobId();
+                usersDb.child(oppositeUserRole).child(employerId).child("jobs").child(jobId).child("connections").child("liked").child(currentUId).setValue(true);
+                isConnectionMatch(employerId, jobId);
                 Toast.makeText(MainActivity.this, "Right!", Toast.LENGTH_SHORT).show();
             }
 
@@ -113,8 +122,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void isConnectionMatch(String userId) {
-        DatabaseReference currentUserConnectionsDb = usersDb.child(userRole).child(currentUId).child("connections").child("liked").child(userId);
+    private void isConnectionMatch(final String employerId, final String jobId) {
+        DatabaseReference currentUserConnectionsDb = usersDb.child(userRole).child(currentUId).child("connections").child("liked").child(jobId);
         currentUserConnectionsDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -124,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     String key = FirebaseDatabase.getInstance().getReference().child("Chat").push().getKey();
 
                     //usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUId).setValue(true);
-                    usersDb.child(oppositeUserRole).child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUId).child("chatId").setValue(key);
+                    usersDb.child(oppositeUserRole).child(employerId).child("jobs").child(jobId).child("connections").child("matches").child(currentUId).child("chatId").setValue(key);
                     //usersDb.child(currentUId).child("connections").child("matches").child(dataSnapshot.getKey()).setValue(true);
                     usersDb.child(userRole).child(currentUId).child("connections").child("matches").child(dataSnapshot.getKey()).child("chatId").setValue(key);
                 }
@@ -143,15 +152,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void checkUserRole(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference employerDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer");
-
-        employerDb.addChildEventListener(new ChildEventListener() {
+        DatabaseReference employeeDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employee");
+        employeeDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.getKey().equals(user.getUid())){
-                    userRole = "Employer";
-                    oppositeUserRole = "Employee";
-                    getOppositeRoleUsers();
+                    userRole = "Employee";
+                    oppositeUserRole = "Employer";
+                    //getOppositeRoleUsers();
+                    getJobsForEmployee();
                 }
             }
             @Override
@@ -168,28 +177,74 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        DatabaseReference employeeDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employee");
+    }
 
-        employeeDb.addChildEventListener(new ChildEventListener() {
+    public void getJobsForEmployee(){
+            Log.i(LOGTAG, "getJobsForEmployee");
+            DatabaseReference oppositeRoleDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer");
+            oppositeRoleDb.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    if (dataSnapshot.exists()){
+                        getJobsId(dataSnapshot.getKey());
+                    }
+                }
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                }
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+    }
+
+    private void getJobsId(final String employerId) {
+        Log.i(LOGTAG, "getJobsId" + "   " + employerId);
+        DatabaseReference jobsDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(employerId).child("jobs");
+        jobsDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.getKey().equals(user.getUid())){
-                    userRole = "Employee";
-                    oppositeUserRole = "Employer";
-                    getOppositeRoleUsers();
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //final String tempEmployerID = employerId;
+                if (dataSnapshot.exists()){
+                    for(DataSnapshot job : dataSnapshot.getChildren()){
+                        FetchJobInformation(employerId, job.getKey());
+                    }
                 }
             }
+
             @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onCancelled(DatabaseError databaseError) {
+
             }
+        });
+    }
+
+    private void FetchJobInformation(final String employerId, final String key) {
+        Log.i(LOGTAG, "FetchJobInformation" + "   " + employerId + "   " + key);
+        DatabaseReference jobDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(employerId).child("jobs").child(key);
+        jobDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && !dataSnapshot.child("connections").child("disliked").hasChild(currentUId) && !dataSnapshot.child("connections").child("liked").hasChild(currentUId)) {
+                    String jobImageUrl = "default";
+                    if (!dataSnapshot.child("jobImageUrl").getValue().equals("default")) {
+                        jobImageUrl = dataSnapshot.child("jobImageUrl").getValue().toString();
+                    }
+                    JobCard item = new JobCard(employerId, dataSnapshot.getKey(), dataSnapshot.child("title").getValue().toString(), jobImageUrl);
+                    jobCardItems.add(item);
+                    jobArrayAdapter.notifyDataSetChanged();
+                }
             }
+
             @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
@@ -254,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     public void getOppositeSexUsers(){
         usersDb.addChildEventListener(new ChildEventListener() {
             @Override
@@ -294,14 +350,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToSettings(View view) {
-        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-        intent.putExtra("userRole", userRole);
+        Intent intent = new Intent();
+        if(userRole != null && userRole.equals("Employee")){
+            intent = new Intent(MainActivity.this, SettingsActivity.class);
+            intent.putExtra("userRole", userRole);
+        }
+        if(userRole != null && userRole.equals("Employer")){
+            intent = new Intent(MainActivity.this, EditJobActivity.class);
+            final String jobId = getIntent().getExtras().getString("jobId");
+            Log.i(LOGTAG, jobId);
+            Bundle b = new Bundle();
+            b.putString("userRole", userRole);
+            b.putString("jobId", jobId);
+            intent.putExtras(b);
+        }
+        //intent.putExtra("userRole", userRole);
         startActivity(intent);
         return;
     }
 
     public void goToMatches(View view) {
-        Intent intent = new Intent(MainActivity.this, MatchesActivity.class);
+        Intent intent = new Intent(MainActivity.this, EmployeeMatchesActivity.class);
         intent.putExtra("userRole", userRole);
         startActivity(intent);
         return;

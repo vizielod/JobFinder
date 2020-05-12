@@ -55,6 +55,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         String userRole = getIntent().getExtras().getString("userRole");
+        //matchId = getIntent().getExtras().getString("matchId");
 
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phone);

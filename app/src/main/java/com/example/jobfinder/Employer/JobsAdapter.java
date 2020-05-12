@@ -1,4 +1,4 @@
-package com.example.jobfinder.Matches;
+package com.example.jobfinder.Employer;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,38 +13,39 @@ import com.example.jobfinder.R;
 import java.util.List;
 
 //dapters provide a binding from an app-specific data set to views that are displayed within a RecyclerView.
-public class MatchesAdapter extends RecyclerView.Adapter<MatchesViewHolder>{
-    private List<MatchesObject> matchesList;
+public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
+    private List<JobObject> jobsList;
     private Context context;
 
 
-    public MatchesAdapter(List<MatchesObject> matchesList, Context context){
-        this.matchesList = matchesList;
+    public JobsAdapter(List<JobObject> jobsList, Context context){
+        this.jobsList = jobsList;
         this.context = context;
     }
 
     @Override
-    public MatchesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public JobViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_matches, null, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_job, null, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp);
-        MatchesViewHolder rcv = new MatchesViewHolder(layoutView);
+        JobViewHolder rcv = new JobViewHolder(layoutView);
 
         return rcv;
     }
 
     @Override
-    public void onBindViewHolder(MatchesViewHolder holder, int position) {
-        holder.mMatchId.setText(matchesList.get(position).getUserId());
-        holder.mMatchName.setText(matchesList.get(position).getName());
-        if(!matchesList.get(position).getProfileImageUrl().equals("default")){
-            Glide.with(context).load(matchesList.get(position).getProfileImageUrl()).into(holder.mMatchImage);
+    public void onBindViewHolder(JobViewHolder holder, int position) {
+        holder.mJobId.setText(jobsList.get(position).getJobId());
+        holder.mJobTitle.setText(jobsList.get(position).getJobTitle());
+        if(!jobsList.get(position).getJobImageUrl().equals("default")){
+            Glide.with(context).load(jobsList.get(position).getJobImageUrl()).into(holder.mJobImage);
         }
+        holder.mEmployerId.setText(jobsList.get(position).getEmployerId());
     }
 
     @Override
     public int getItemCount() {
-        return this.matchesList.size();
+        return this.jobsList.size();
     }
 }

@@ -1,4 +1,4 @@
-package com.example.jobfinder.Matches;
+package com.example.jobfinder.Matches.EmployeeMatches;
 
 public class MatchesJobObject {
     private String jobId;

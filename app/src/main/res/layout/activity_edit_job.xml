@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Employer.CreateJobActivity"
+    tools:context=".Employer.EditJobActivity"
     android:orientation="vertical"
     android:padding="20sp">
 
@@ -33,8 +33,8 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/create"
-        android:text="create"/>
+        android:id="@+id/confirm"
+        android:text="confirm edit"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

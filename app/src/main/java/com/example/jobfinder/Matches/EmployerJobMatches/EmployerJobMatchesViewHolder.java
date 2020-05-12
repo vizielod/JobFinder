@@ -1,4 +1,4 @@
-package com.example.jobfinder.Matches;
+package com.example.jobfinder.Matches.EmployerJobMatches;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,10 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.jobfinder.Chat.ChatActivity;
 import com.example.jobfinder.R;
 
-public class MatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class EmployerJobMatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     public TextView mMatchId, mMatchName;
     public ImageView mMatchImage;
-    public MatchesViewHolder(View itemView) {
+    public EmployerJobMatchesViewHolder(View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
 
