@@ -69,6 +69,7 @@ public class EmployeeMatchesActivity extends AppCompatActivity {
         });
     }
 
+    //Iterate through every job created by the Employer who's ID = employerID, that has a match with the current employee user
     private void getJobsId(final String employerId) {
         //Log.i(LOGTAG, "getJobsId" + "   " + employerId);
         DatabaseReference jobsDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(employerId).child("jobs");
@@ -110,7 +111,7 @@ public class EmployeeMatchesActivity extends AppCompatActivity {
                         jobImageUrl = dataSnapshot.child("jobImageUrl").getValue().toString();
                     }
 
-                    MatchesJobObject obj = new MatchesJobObject(jobId, jobTitle, jobImageUrl);
+                    MatchesJobObject obj = new MatchesJobObject(employerId, jobId, jobTitle, jobImageUrl);
                     resultsEmployeeMatches.add(obj);
                     mEmployeeMatchesAdapter.notifyDataSetChanged();
                 }

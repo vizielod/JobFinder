@@ -1,13 +1,22 @@
 package com.example.jobfinder.Matches.EmployeeMatches;
 
 public class MatchesJobObject {
+    private String employerId;
     private String jobId;
     private String jobTitle;
     private String jobImageUrl;
-    public MatchesJobObject(String jobId, String jobTitle, String jobImageUrl){
+    public MatchesJobObject(String employerId, String jobId, String jobTitle, String jobImageUrl){
+        this.employerId = employerId;
         this.jobId = jobId;
         this.jobTitle = jobTitle;
         this.jobImageUrl = jobImageUrl;
+    }
+
+    public String getEmployerId(){
+        return employerId;
+    }
+    public void setEmployerId(String employerId){
+        this.employerId = employerId;
     }
 
     public String getJobId(){

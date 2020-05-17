@@ -49,6 +49,10 @@ public class EmployerJobMatchesActivity extends AppCompatActivity {
         getEmployerUserJobMatchId();
     }
 
+    public String getJobId(){
+        return jobId;
+    }
+
     private void getEmployerUserJobMatchId() {
         DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(cusrrentUserID).child("jobs").child(jobId).child("connections").child("matches");
         matchDb.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -86,7 +90,7 @@ public class EmployerJobMatchesActivity extends AppCompatActivity {
                         profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
                     }
 
-                    MatchesEmployeeObject obj = new MatchesEmployeeObject(userId, name, profileImageUrl);
+                    MatchesEmployeeObject obj = new MatchesEmployeeObject(userId, name, profileImageUrl, jobId);
                     resultsMatches.add(obj);
                     mEmployerJobMatchesAdapter.notifyDataSetChanged();
                 }

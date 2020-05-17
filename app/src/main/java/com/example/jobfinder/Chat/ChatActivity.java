@@ -32,7 +32,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private Button mSendButton;
 
-    private String currentUserID, matchId, chatId;
+    private String currentUserID, matchId, chatId, jobId, employerId, userRole;
 
     DatabaseReference mDatabaseUser, mDatabaseChat;
 
@@ -42,10 +42,19 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         matchId = getIntent().getExtras().getString("matchId");
+        userRole = getIntent().getExtras().getString("userRole");
 
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId).child("chatId");
+        if(userRole.equals("Employee")){
+            employerId = getIntent().getExtras().getString("employerId");
+            mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(currentUserID).child("connections").child("matches").child(employerId).child(matchId).child("chatId");
+        }
+        else if(userRole.equals("Employer")){
+            jobId = getIntent().getExtras().getString("jobId");
+            mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(currentUserID).child("jobs").child(jobId).child("connections").child("matches").child(matchId).child("chatId");
+        }
+
         mDatabaseChat = FirebaseDatabase.getInstance().getReference().child("Chat");
 
         getChatId();
@@ -78,7 +87,6 @@ public class ChatActivity extends AppCompatActivity {
             Map newMessage = new HashMap();
             newMessage.put("createdByUser", currentUserID);
             newMessage.put("text", sendMessageText);
-
             newMessageDb.setValue(newMessage);
         }
         mSendEditText.setText(null);

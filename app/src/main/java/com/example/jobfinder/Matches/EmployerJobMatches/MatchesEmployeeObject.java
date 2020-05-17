@@ -4,10 +4,12 @@ public class MatchesEmployeeObject {
     private String userId;
     private String name;
     private String profileImageUrl;
-    public MatchesEmployeeObject(String userId, String name, String profileImageUrl){
+    private String jobId;
+    public MatchesEmployeeObject(String userId, String name, String profileImageUrl, String jobId){
         this.userId = userId;
         this.name = name;
         this.profileImageUrl = profileImageUrl;
+        this.jobId = jobId;
     }
 
     public String getUserId(){
@@ -29,5 +31,12 @@ public class MatchesEmployeeObject {
     }
     public void setProfileImageUrl(String profileImageUrl){
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getJobId(){
+        return jobId;
+    }
+    public void setJobID(String jobId){
+        this.jobId = jobId;
     }
 }

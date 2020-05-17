@@ -27,6 +27,18 @@
             android:text="Match's ID"
             android:layout_gravity="center"
             android:id="@+id/Matchid"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:layout_gravity="center"
+            android:id="@+id/EmployerId"
+            android:visibility="invisible"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:layout_gravity="center"
+            android:id="@+id/JobId"
+            android:visibility="invisible"/>
     </LinearLayout>
 
 </LinearLayout>

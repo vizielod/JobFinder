@@ -38,6 +38,7 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
 
     @Override
     public void onBindViewHolder(EmployeeMatchesViewHolder holder, int position) {
+        holder.mMatchEmployerId.setText(matchesList.get(position).getEmployerId());
         holder.mMatchJobId.setText(matchesList.get(position).getJobId());
         holder.mMatchJobTitle.setText(matchesList.get(position).getJobTitle());
         if(!matchesList.get(position).getJobImageUrl().equals("default")){
