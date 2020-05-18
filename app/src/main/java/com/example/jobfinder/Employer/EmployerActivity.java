@@ -164,4 +164,10 @@ public class EmployerActivity extends AppCompatActivity {
         startActivity(intent);
         return;
     }
+
+    public void goToEditProfile(View view) {
+        Intent intent = new Intent(EmployerActivity.this, EditEmployerProfileActivity.class);
+        startActivity(intent);
+        return;
+    }
 }

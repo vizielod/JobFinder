@@ -4,39 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Employer.EditJobActivity"
+    tools:context=".Employer.CreateEmployerProfileActivity"
     android:orientation="vertical"
     android:padding="20sp"
     android:clickable="true"
     android:focusableInTouchMode="true">
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create the profile of your company!"
+        android:padding="10sp"
+        android:textAlignment="center"
+        android:textSize="20sp"/>
     <ImageView
         android:layout_width="100sp"
         android:layout_height="100sp"
-        android:id="@+id/jobImage"
+        android:id="@+id/employerImage"
         android:src="@mipmap/ic_launcher"
         android:layout_marginBottom="20sp" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/jobTitle"
+        android:id="@+id/employerName"
         android:background="@null"
-        android:hint="Job's Title"
+        android:hint="Company's Name"
         android:layout_marginBottom="20sp"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/jobDescription"
+        android:id="@+id/employerDescription"
         android:background="@null"
-        android:hint="Job Description"
+        android:hint="Company's description"
         android:layout_marginBottom="20sp"
         android:inputType="text"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/phone"
+        android:background="@null"
+        android:hint="Phone"
+        android:layout_marginBottom="20sp"
+        android:inputType="phone"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/confirm"
-        android:text="confirm edit"/>
+        android:id="@+id/create"
+        android:text="confirm"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

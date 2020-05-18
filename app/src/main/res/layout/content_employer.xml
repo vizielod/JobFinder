@@ -28,8 +28,14 @@
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Edit Profile"
+            android:onClick="goToEditProfile" />
+        <!--<Button
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Settings"
-            android:onClick="goToSettings" />
+            android:onClick="goToSettings" />-->
     </LinearLayout>
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".Employer.CreateJobActivity"
     android:orientation="vertical"
-    android:padding="20sp">
+    android:padding="20sp"
+    android:clickable="true"
+    android:focusableInTouchMode="true">
 
     <ImageView
         android:layout_width="100sp"
@@ -28,7 +30,7 @@
         android:background="@null"
         android:hint="Job Description"
         android:layout_marginBottom="20sp"
-        android:inputType="phone"/>
+        android:inputType="text"/>
 
     <Button
         android:layout_width="match_parent"

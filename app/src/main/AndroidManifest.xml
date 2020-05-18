@@ -9,8 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Employer.CreateJobActivity"></activity>
-        <activity android:name=".Employer.EditJobActivity"></activity>
+        <activity android:name=".Employee.EditEmployeeProfileActivity"></activity>
+        <activity android:name=".Employee.CreateEmployeeProfileActivity" />
+        <activity android:name=".Employer.EditEmployerProfileActivity" />
+        <activity android:name=".Employer.CreateEmployerProfileActivity" />
+        <activity android:name=".Employer.CreateJobActivity" />
+        <activity android:name=".Employer.EditJobActivity" />
         <activity
             android:name=".Employer.EmployerActivity"
             android:label="@string/title_activity_employer"
@@ -29,8 +33,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".JobMainActivity" />
-        <activity android:name=".EmployeeMainActivity" />
+        <activity android:name=".Employer.JobMainActivity" />
+        <activity android:name=".Employee.EmployeeMainActivity" />
     </application>
 
 </manifest>

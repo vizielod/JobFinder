@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EmployeeMainActivity"
+    tools:context=".Employee.EmployeeMainActivity"
     android:orientation="vertical">
 
     <LinearLayout
@@ -26,8 +26,8 @@
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Settings"
-            android:onClick="goToSettings" />
+            android:text="Edit Profile"
+            android:onClick="goToEditProfile" />
     </LinearLayout>
 
     <com.lorentzos.flingswipe.SwipeFlingAdapterView

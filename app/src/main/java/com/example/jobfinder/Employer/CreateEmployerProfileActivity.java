@@ -17,14 +17,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.jobfinder.R;
-import com.example.jobfinder.SettingsActivity;
+import com.example.jobfinder.RegistrationActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -34,31 +38,32 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateJobActivity extends AppCompatActivity {
+public class CreateEmployerProfileActivity extends AppCompatActivity {
     private static final String LOGTAG = "UserRole";
 
-    private EditText mTitleField, mDescriptionField;
+    private EditText mNameField, mDescriptionField, mPhoneField;
 
     private Button mBack, mCreate;
 
-    private ImageView mJobImage;
+    private ImageView mEmployerImage;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
 
-    private String userId, title, description, profileImageUrl, userSex;
+    private String userId, name, description, phone, profileImageUrl, userRole;
 
     private Uri resultUri;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_job);
+        setContentView(R.layout.activity_create_employer_profile);
 
-        mTitleField = (EditText) findViewById(R.id.jobTitle);
-        mDescriptionField = (EditText) findViewById(R.id.jobDescription);
+        mNameField = (EditText) findViewById(R.id.employerName);
+        mDescriptionField = (EditText) findViewById(R.id.employerDescription);
+        mPhoneField = (EditText) findViewById(R.id.phone);
 
-        mJobImage = (ImageView) findViewById(R.id.jobImage);
+        mEmployerImage = (ImageView) findViewById(R.id.employerImage);
 
         mBack = (Button) findViewById(R.id.back);
         mCreate = (Button) findViewById(R.id.create);
@@ -69,9 +74,13 @@ public class CreateJobActivity extends AppCompatActivity {
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(userId);
         Log.i(LOGTAG, userId);
 
+        userRole = getIntent().getStringExtra("userRole");
+        Log.i(LOGTAG, userRole);
+
+        getUserInfo();
         hideEditTextKeypadOnFocusChange();
 
-        mJobImage.setOnClickListener(new View.OnClickListener() {
+        mEmployerImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_PICK);
@@ -83,11 +92,11 @@ public class CreateJobActivity extends AppCompatActivity {
         mCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String key = mUserDatabase.child("jobs").push().getKey();
-                Log.i(LOGTAG, key);
-                //title = mTitleField.getText().toString();
-                //mUserDatabase.child("jobs").child(key);/*.child("jobTitle").setValue(title);*/
-                saveJobInformation(key);
+                saveEmployerInformation();
+                Intent intent = new Intent(CreateEmployerProfileActivity.this, EmployerActivity.class);
+                intent.putExtra("userRole", userRole);
+                //Log.i(LOGTAG, userRole);
+                startActivity(intent);
                 finish();
                 return;
             }
@@ -95,23 +104,59 @@ public class CreateJobActivity extends AppCompatActivity {
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mAuth.signOut();
                 finish();
                 return;
             }
         });
     }
 
-    private void saveJobInformation(String key) {
-        title = mTitleField.getText().toString();
+    private void getUserInfo() {
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if(map.get("name")!=null){
+                        name = map.get("name").toString();
+                        mNameField.setText(name);
+                    }
+                    Glide.clear(mEmployerImage);
+
+                    if(map.get("profileImageUrl")!=null){
+                        profileImageUrl = map.get("profileImageUrl").toString();
+                        Glide.with(getApplication()).load(profileImageUrl).into(mEmployerImage);
+                        switch(profileImageUrl){
+                            case "default":
+                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mEmployerImage);
+                                break;
+                            default:
+                                Glide.with(getApplication()).load(profileImageUrl).into(mEmployerImage);
+                                break;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void saveEmployerInformation() {
+        name = mNameField.getText().toString();
         description = mDescriptionField.getText().toString();
+        phone = mPhoneField.getText().toString();
         Map userInfo = new HashMap();
-        userInfo.put("title", title);
+        userInfo.put("name", name);
         userInfo.put("description", description);
-        userInfo.put("jobImageUrl", "default");
-        mUserDatabase.child("jobs").child(key).updateChildren(userInfo);
+        userInfo.put("phone", phone);
+        mUserDatabase.updateChildren(userInfo);
         if(resultUri != null){
-            final String jobId = key;
-            StorageReference filepath = FirebaseStorage.getInstance().getReference().child("jobImages").child(jobId);
+            StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profileImages/employerProfileImages").child(userId);
             Bitmap bitmap = null;
 
             try {
@@ -138,12 +183,12 @@ public class CreateJobActivity extends AppCompatActivity {
                     while(!uri.isComplete());
                     Uri downloadUrl = uri.getResult();
 
-                    Toast.makeText(CreateJobActivity.this, "Upload Success, download URL " +
+                    Toast.makeText(CreateEmployerProfileActivity.this, "Upload Success, download URL " +
                             downloadUrl.toString(), Toast.LENGTH_LONG).show();
 
                     Map userInfo = new HashMap();
-                    userInfo.put("jobImageUrl", downloadUrl.toString());
-                    mUserDatabase.child("jobs").child(jobId).updateChildren(userInfo);
+                    userInfo.put("profileImageUrl", downloadUrl.toString());
+                    mUserDatabase.updateChildren(userInfo);
 
                     finish();
                     return;
@@ -160,7 +205,7 @@ public class CreateJobActivity extends AppCompatActivity {
         if(requestCode == 1 && resultCode == Activity.RESULT_OK){
             final Uri imageUri = data.getData();
             resultUri = imageUri;
-            mJobImage.setImageURI(resultUri);
+            mEmployerImage.setImageURI(resultUri);
         }
     }
 
@@ -170,7 +215,7 @@ public class CreateJobActivity extends AppCompatActivity {
     }
 
     public void hideEditTextKeypadOnFocusChange(){
-        mTitleField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mNameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
@@ -179,6 +224,14 @@ public class CreateJobActivity extends AppCompatActivity {
             }
         });
         mDescriptionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mPhoneField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {

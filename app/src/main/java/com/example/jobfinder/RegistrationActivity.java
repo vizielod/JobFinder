@@ -3,16 +3,20 @@ package com.example.jobfinder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.example.jobfinder.Employee.CreateEmployeeProfileActivity;
+import com.example.jobfinder.Employer.CreateEmployerProfileActivity;
 import com.example.jobfinder.Employer.EmployerActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,7 +32,7 @@ import java.util.Map;
 public class RegistrationActivity extends AppCompatActivity {
     private static final String LOGTAG = "UserRole";
 
-    private Button mRegister;
+    private Button mRegister, mBack;
     private EditText mEmail, mPassword, mName;
 
     private RadioGroup mRole_RadioGroup, mGender_RadioGroup;
@@ -50,34 +54,30 @@ public class RegistrationActivity extends AppCompatActivity {
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null){
                     startActivityAfterRegistration();
-                    /*Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;*/
                 }
             }
         };
 
         mRegister = (Button) findViewById(R.id.register);
+        mBack = (Button) findViewById(R.id.back);
 
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
         mName = (EditText) findViewById(R.id.name);
 
-        mGender_RadioGroup = (RadioGroup) findViewById(R.id.gender_radioGroup);
         mRole_RadioGroup = (RadioGroup) findViewById(R.id.role_radioGroup);
+
+        hideEditTextKeypadOnFocusChange();
 
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int selectRoleID = mRole_RadioGroup.getCheckedRadioButtonId();
-                int selectGenderID = mGender_RadioGroup.getCheckedRadioButtonId();
 
-                final RadioButton role_radioButton = (RadioButton) findViewById(selectRoleID);
-                final RadioButton gender_radioButton = (RadioButton) findViewById(selectGenderID);
+                final RadioButton role_radioButton = (RadioButton) findViewById(selectRoleID);;
 
                 //innen a gendert majd ki lehet venni kb teljesen, vagy csak ha employer mezőt válassza akkor jelenjen meg az az opció. Másképp itt nem létszükséglet
-                if(role_radioButton.getText() == null || gender_radioButton.getText() == null){
+                if(role_radioButton.getText() == null/* || gender_radioButton.getText() == null*/){
                     return;
                 }
 
@@ -93,17 +93,24 @@ public class RegistrationActivity extends AppCompatActivity {
                         else{
                             String userId = mAuth.getCurrentUser().getUid();
                             DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(role_radioButton.getText().toString()).child(userId);
-                            //userRole = role_radioButton.getText().toString();
-                            //Log.i(LOGTAG, userRole);
                             Map userInfo = new HashMap<>();
+                            userInfo.put("email", email);
                             userInfo.put("name", name);
                             userInfo.put("role", role_radioButton.getText().toString());
-                            userInfo.put("sex", gender_radioButton.getText().toString());
                             userInfo.put("profileImageUrl", "default");
                             currentUserDb.updateChildren(userInfo);
                         }
                     }
                 });
+            }
+        });
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RegistrationActivity.this, ChooseLoginRegistrationActivity.class);
+                startActivity(intent);
+                finish();
+                return;
             }
         });
     }
@@ -112,19 +119,20 @@ public class RegistrationActivity extends AppCompatActivity {
         int selectRoleID = mRole_RadioGroup.getCheckedRadioButtonId();
         RadioButton role_radioButton = (RadioButton) findViewById(selectRoleID);
         if(role_radioButton.getText().toString().equals("Employee")){
-            Intent intent = new Intent(RegistrationActivity.this, EmployeeMainActivity.class);
+            Intent intent = new Intent(RegistrationActivity.this, CreateEmployeeProfileActivity.class);
             startActivity(intent);
-            finish();
-            return;
+            //finish();
+            //return;
         }
         else if(role_radioButton.getText().toString().equals("Employer")){
             final String userRole = role_radioButton.getText().toString();
-            Intent intent = new Intent(RegistrationActivity.this, EmployerActivity.class);
+            //Intent intent = new Intent(RegistrationActivity.this, EmployerActivity.class);
+            Intent intent = new Intent(RegistrationActivity.this, CreateEmployerProfileActivity.class);
             intent.putExtra("userRole", userRole);
             Log.i(LOGTAG, userRole);
             startActivity(intent);
-            finish();
-            return;
+            //finish();
+            //return;
         }
     }
     @Override
@@ -137,5 +145,37 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         mAuth.removeAuthStateListener(firebaseAuthStateListener);
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public void hideEditTextKeypadOnFocusChange(){
+        mName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
     }
 }

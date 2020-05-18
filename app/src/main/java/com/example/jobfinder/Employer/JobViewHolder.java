@@ -9,9 +9,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.jobfinder.Chat.ChatActivity;
-import com.example.jobfinder.JobMainActivity;
-import com.example.jobfinder.MainActivity;
 import com.example.jobfinder.R;
 
 public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

@@ -4,12 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsActivity"
+    tools:context=".Employee.CreateEmployeeProfileActivity"
     android:orientation="vertical"
     android:padding="20sp"
     android:clickable="true"
     android:focusableInTouchMode="true">
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create your profile!"
+        android:padding="10sp"
+        android:textAlignment="center"
+        android:textSize="20sp"/>
     <ImageView
         android:layout_width="100sp"
         android:layout_height="100sp"
@@ -21,8 +27,37 @@
         android:layout_height="wrap_content"
         android:id="@+id/name"
         android:background="@null"
-        android:hint="Name"
+        android:hint="Your Full Name"
         android:layout_marginBottom="20sp"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/employeeDescription"
+        android:background="@null"
+        android:hint="About you"
+        android:layout_marginBottom="20sp"
+        android:inputType="text"/>
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gender_radioGroup"
+        android:layout_marginBottom="20sp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10sp"
+            android:textSize="18sp"
+            android:text="Pick your gender:"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Male" />
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Female"/>
+    </RadioGroup>
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,7 +70,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/confirm"
+        android:id="@+id/create"
         android:text="confirm"/>
     <Button
         android:layout_width="match_parent"

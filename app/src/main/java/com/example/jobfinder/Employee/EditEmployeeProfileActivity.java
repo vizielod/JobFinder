@@ -1,9 +1,10 @@
-package com.example.jobfinder.Employer;
+package com.example.jobfinder.Employee;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,11 +16,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.jobfinder.R;
-import com.example.jobfinder.SettingsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -38,34 +40,34 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EditJobActivity extends AppCompatActivity {
+public class EditEmployeeProfileActivity extends AppCompatActivity {
     private static final String LOGTAG = "UserRole";
 
-    private EditText mTitleField, mDescriptionField;
+    private EditText mNameField, mDescriptionField, mPhoneField;
 
     private Button mBack, mConfirm;
 
-    private ImageView mJobImage;
+    private ImageView mProfileImage;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
 
-    private String userId, title, description, jobImageUrl, jobId;
+    private String userId, name, phone, description, profileImageUrl, userSex;
 
     private Uri resultUri;
+    private RadioGroup mGender_RadioGroup;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_job);
+        setContentView(R.layout.activity_edit_employee_profile);
 
-        jobId = getIntent().getExtras().getString("jobId");
-        Log.i(LOGTAG, jobId);
+        mNameField = (EditText) findViewById(R.id.name);
+        mDescriptionField = (EditText) findViewById(R.id.employeeDescription);
+        mGender_RadioGroup = (RadioGroup) findViewById(R.id.gender_radioGroup);
+        mPhoneField = (EditText) findViewById(R.id.phone);
 
-        mTitleField = (EditText) findViewById(R.id.jobTitle);
-        mDescriptionField = (EditText) findViewById(R.id.jobDescription);
-
-        mJobImage = (ImageView) findViewById(R.id.jobImage);
+        mProfileImage = (ImageView) findViewById(R.id.profileImage);;
 
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
@@ -73,16 +75,13 @@ public class EditJobActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
 
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(userId);
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Employee").child(userId);
         Log.i(LOGTAG, userId);
 
-        if (jobId != null && mUserDatabase!= null){
-            getJobInfo();
-        }
-
+        getUserInfo();
         hideEditTextKeypadOnFocusChange();
 
-        mJobImage.setOnClickListener(new View.OnClickListener() {
+        mProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_PICK);
@@ -90,13 +89,10 @@ public class EditJobActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
-
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                saveJobInformation(jobId);
-                finish();
-                return;
+            public void onClick(View view) {
+                saveUserInformation();
             }
         });
         mBack.setOnClickListener(new View.OnClickListener() {
@@ -108,32 +104,53 @@ public class EditJobActivity extends AppCompatActivity {
         });
     }
 
-    private void getJobInfo() {
-        DatabaseReference jobDb = mUserDatabase.child("jobs").child(jobId);
-        jobDb.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getUserInfo() {
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                final int genderID;
                 if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    if(map.get("title")!=null){
-                        title = map.get("title").toString();
-                        mTitleField.setText(title);
+                    if(map.get("name")!=null){
+                        name = map.get("name").toString();
+                        mNameField.setText(name);
                     }
                     if(map.get("description")!=null){
                         description = map.get("description").toString();
                         mDescriptionField.setText(description);
                     }
-                    Glide.clear(mJobImage);
-
-                    if(map.get("jobImageUrl")!=null){
-                        jobImageUrl = map.get("jobImageUrl").toString();
-                        Glide.with(getApplication()).load(jobImageUrl).into(mJobImage);
-                        switch(jobImageUrl){
-                            case "default":
-                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mJobImage);
+                    if(map.get("sex")!=null){
+                        userSex = map.get("sex").toString();
+                        switch(userSex){
+                            case "Male":
+                                mGender_RadioGroup.check(R.id.rb_male);
+                                genderID = 1;
+                                break;
+                            case "Female":
+                                mGender_RadioGroup.check(R.id.rb_female);
+                                genderID = 2;
                                 break;
                             default:
-                                Glide.with(getApplication()).load(jobImageUrl).into(mJobImage);
+                                mGender_RadioGroup.clearCheck();
+                                genderID = 0;
+                                break;
+                        }
+                    }
+                    if(map.get("phone")!=null){
+                        phone = map.get("phone").toString();
+                        mPhoneField.setText(phone);
+                    }
+                    Glide.clear(mProfileImage);
+
+                    if(map.get("profileImageUrl")!=null){
+                        profileImageUrl = map.get("profileImageUrl").toString();
+                        Glide.with(getApplication()).load(profileImageUrl).into(mProfileImage);
+                        switch(profileImageUrl){
+                            case "default":
+                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mProfileImage);
+                                break;
+                            default:
+                                Glide.with(getApplication()).load(profileImageUrl).into(mProfileImage);
                                 break;
                         }
                     }
@@ -145,19 +162,31 @@ public class EditJobActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
-    private void saveJobInformation(String key) {
-        title = mTitleField.getText().toString();
+    private void saveUserInformation() {
+        int selectGenderID = mGender_RadioGroup.getCheckedRadioButtonId();
+        final RadioButton gender_radioButton = (RadioButton) findViewById(selectGenderID);
+
+        /* Egyelőre ezt nem rakom be, hogy tesztelésnél könnyen lehessen pörgetni és ne legyen még kötelező nemet választani
+        De majd mindenképp kéne ilyen feltétel azokra a mezőkre amiket nem akarom, hogy üresen hagyhasson a felhasználó regisztráláskor
+        if(gender_radioButton.getText() == null){
+            return;
+        }*/
+
+        name = mNameField.getText().toString();
         description = mDescriptionField.getText().toString();
+        phone = mPhoneField.getText().toString();
+        userSex = gender_radioButton.getText().toString();
         Map userInfo = new HashMap();
-        userInfo.put("title", title);
+        userInfo.put("name", name);
         userInfo.put("description", description);
-        userInfo.put("jobImageUrl", "default");
-        mUserDatabase.child("jobs").child(key).updateChildren(userInfo);
+        userInfo.put("sex", userSex);
+        userInfo.put("phone", phone);
+        mUserDatabase.updateChildren(userInfo);
         if(resultUri != null){
-            final String jobId = key;
-            StorageReference filepath = FirebaseStorage.getInstance().getReference().child("jobImages").child(jobId);
+            StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profileImages/employeeProfileImages").child(userId);
             Bitmap bitmap = null;
 
             try {
@@ -184,12 +213,12 @@ public class EditJobActivity extends AppCompatActivity {
                     while(!uri.isComplete());
                     Uri downloadUrl = uri.getResult();
 
-                    Toast.makeText(EditJobActivity.this, "Upload Success, download URL " +
+                    Toast.makeText(EditEmployeeProfileActivity.this, "Upload Success, download URL " +
                             downloadUrl.toString(), Toast.LENGTH_LONG).show();
 
                     Map userInfo = new HashMap();
-                    userInfo.put("jobImageUrl", downloadUrl.toString());
-                    mUserDatabase.child("jobs").child(jobId).updateChildren(userInfo);
+                    userInfo.put("profileImageUrl", downloadUrl.toString());
+                    mUserDatabase.updateChildren(userInfo);
 
                     finish();
                     return;
@@ -206,7 +235,7 @@ public class EditJobActivity extends AppCompatActivity {
         if(requestCode == 1 && resultCode == Activity.RESULT_OK){
             final Uri imageUri = data.getData();
             resultUri = imageUri;
-            mJobImage.setImageURI(resultUri);
+            mProfileImage.setImageURI(resultUri);
         }
     }
 
@@ -216,7 +245,7 @@ public class EditJobActivity extends AppCompatActivity {
     }
 
     public void hideEditTextKeypadOnFocusChange(){
-        mTitleField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mNameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
@@ -225,6 +254,14 @@ public class EditJobActivity extends AppCompatActivity {
             }
         });
         mDescriptionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mPhoneField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
