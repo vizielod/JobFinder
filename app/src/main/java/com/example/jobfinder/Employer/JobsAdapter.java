@@ -41,6 +41,9 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
         if(!jobsList.get(position).getJobImageUrl().equals("default")){
             Glide.with(context).load(jobsList.get(position).getJobImageUrl()).into(holder.mJobImage);
         }
+        else{
+            Glide.with(context).load(R.mipmap.ic_launcher).into(holder.mJobImage);
+        }
         holder.mEmployerId.setText(jobsList.get(position).getEmployerId());
     }
 

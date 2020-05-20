@@ -88,7 +88,6 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
         mTextViewPreviewCV = (TextView) findViewById(R.id.textViewPreviewCV);
 
         mProfileImage = (ImageView) findViewById(R.id.profileImage);
-        //mSelectCV = (Button) findViewById(R.id.btn_select_cv);
         mUploadCV = (Button) findViewById(R.id.btn_upload_cv);
         mSelectCV = (Button) findViewById(R.id.btn_select_cv);
         mPreviewCV = (Button) findViewById(R.id.btn_preview_cv);

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +17,9 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
 
     public TextView mJobId, mJobTitle, mEmployerId;
     public ImageView mJobImage;
+
+    public Button mDeleteButton;
+
     public JobViewHolder(View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
@@ -25,6 +29,15 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
         mEmployerId = (TextView) itemView.findViewById(R.id.EmployerId);
 
         mJobImage = (ImageView) itemView.findViewById(R.id.JobImage);
+        mDeleteButton = (Button) itemView.findViewById(R.id.btn_deleteJob);
+
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(LOGTAG, "DELETE" + mJobId.getText().toString());
+                //kitörölni ehhez a JobID-hoz tartozó adatot az adatbázisból, illetve ha tartozik hozzá kép vagy fájl, azokat is kitörölni a Storage-ből.
+            }
+        });
     }
 
 
@@ -38,4 +51,5 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
         intent.putExtras(b);
         view.getContext().startActivity(intent);
     }
+
 }

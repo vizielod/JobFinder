@@ -3,36 +3,43 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="20sp">
-
     <ImageView
-        android:layout_width="50sp"
-        android:layout_height="50sp"
+        android:layout_width="60sp"
+        android:layout_height="60sp"
         android:src="@mipmap/ic_launcher"
         android:id="@+id/JobImage"/>
-    <LinearLayout
-        android:paddingLeft="20sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center">
-        <TextView
-            android:paddingBottom="20sp"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_weight="10"
+            android:paddingLeft="20sp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Job's Title"
-            android:id="@+id/JobTitle"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Job's ID"
-            android:layout_gravity="center"
-            android:id="@+id/JobId"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0sp"
-            android:layout_gravity="center"
-            android:id="@+id/EmployerId"
-            android:visibility="invisible"/>
-    </LinearLayout>
+            android:orientation="vertical">
+                <TextView
 
+                    android:id="@+id/JobTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="20sp"
+                    android:text="Job's Title" />
+
+                <TextView
+                    android:id="@+id/JobId"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:text="Job's ID" />
+                <TextView
+                    android:id="@+id/EmployerId"
+                    android:layout_width="match_parent"
+                    android:layout_height="0sp"
+                    android:layout_gravity="center"
+                    android:visibility="invisible" />
+        </LinearLayout>
+
+    <Button
+        android:layout_weight="1"
+        android:id="@+id/btn_deleteJob"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:text="delete" />
 </LinearLayout>

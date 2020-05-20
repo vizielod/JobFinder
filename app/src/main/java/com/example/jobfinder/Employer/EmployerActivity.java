@@ -3,6 +3,7 @@ package com.example.jobfinder.Employer;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.example.jobfinder.ChooseLoginRegistrationActivity;
 import com.example.jobfinder.SettingsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -127,7 +128,6 @@ public class EmployerActivity extends AppCompatActivity {
                     if(dataSnapshot.child("jobImageUrl").getValue()!=null){
                         jobImageUrl = dataSnapshot.child("jobImageUrl").getValue().toString();
                     }
-
                     JobObject obj = new JobObject(currentUId, jobId, title, jobImageUrl);
                     resultsJobs.add(obj);
                     mJobsAdapter.notifyDataSetChanged();
