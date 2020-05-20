@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -39,10 +40,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateEmployeeProfileActivity extends AppCompatActivity {
-
+    //this is the pic pdf code used in file chooser
+    final static int PICK_PDF_CODE = 2342;
+    private static final String LOGTAG = "UserRole";
     private EditText mNameField, mDescriptionField, mPhoneField;
 
-    private Button mBack, mCreate;
+    private Button mBack, mCreate, mSkip, mSelectCV, mUploadCV;
 
     private ImageView mProfileImage;
 
@@ -51,7 +54,7 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
 
     private String userId, name, phone, description, profileImageUrl, userSex;
 
-    private Uri resultUri;
+    private Uri resultUri, resultFileUri;
 
     private RadioGroup mGender_RadioGroup;
 
@@ -66,9 +69,12 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
         mPhoneField = (EditText) findViewById(R.id.phone);
 
         mProfileImage = (ImageView) findViewById(R.id.profileImage);
+        mSelectCV = (Button) findViewById(R.id.btn_select_cv);
+        mUploadCV = (Button) findViewById(R.id.btn_upload_cv);
 
         mBack = (Button) findViewById(R.id.back);
         mCreate = (Button) findViewById(R.id.create);
+        mSkip = (Button) findViewById(R.id.skip);
 
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
@@ -86,10 +92,28 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+        mSelectCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("pdf/*");
+                startActivityForResult(Intent.createChooser(intent, "Select file"), PICK_PDF_CODE);
+            }
+        });
         mCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saveUserInformation();
+                Intent intent = new Intent(CreateEmployeeProfileActivity.this, EmployeeMainActivity.class);
+                //intent.putExtra("userRole", userRole);
+                startActivity(intent);
+                finish();
+                return;
+            }
+        });
+        mSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(CreateEmployeeProfileActivity.this, EmployeeMainActivity.class);
                 //intent.putExtra("userRole", userRole);
                 startActivity(intent);
@@ -144,6 +168,8 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
 
     private void saveUserInformation() {
         int selectGenderID = mGender_RadioGroup.getCheckedRadioButtonId();
+        //Ha nem választunk, akkor az ID -1 lesz
+        //Log.i(LOGTAG, Integer.toString(selectGenderID));
         final RadioButton gender_radioButton = (RadioButton) findViewById(selectGenderID);
 
         /* Egyelőre ezt nem rakom be, hogy tesztelésnél könnyen lehessen pörgetni és ne legyen még kötelező nemet választani
@@ -155,13 +181,111 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
         name = mNameField.getText().toString();
         description = mDescriptionField.getText().toString();
         phone = mPhoneField.getText().toString();
-        userSex = gender_radioButton.getText().toString();
+        if(selectGenderID > 0 && gender_radioButton.getText() != null){
+            userSex = gender_radioButton.getText().toString();
+        }
+        else{
+            userSex = "";
+        }
         Map userInfo = new HashMap();
         userInfo.put("name", name);
         userInfo.put("description", description);
         userInfo.put("sex", userSex);
         userInfo.put("phone", phone);
         mUserDatabase.updateChildren(userInfo);
+        if(resultFileUri != null){
+            StorageReference pdffilepath = FirebaseStorage.getInstance().getReference().child("userFiles/userCV").child(userId);
+            UploadTask uploadTask = pdffilepath.putFile(resultFileUri);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    finish();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Task<Uri> uri = taskSnapshot.getStorage().getDownloadUrl();
+                    while(!uri.isComplete());
+                    Uri downloadUrl = uri.getResult();
+
+                    Toast.makeText(CreateEmployeeProfileActivity.this, "Upload Success, download URL " +
+                            downloadUrl.toString(), Toast.LENGTH_LONG).show();
+
+                    Map userInfo = new HashMap();
+                    userInfo.put("userCVUrl", downloadUrl.toString());
+                    mUserDatabase.updateChildren(userInfo);
+                    finish();
+                    return;
+                }
+            });
+        }else{
+            finish();
+        }
+        if(resultUri != null){
+            StorageReference imagefilepath = FirebaseStorage.getInstance().getReference().child("profileImages/employeeProfileImages").child(userId);
+            Bitmap bitmap = null;
+
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), resultUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+            byte[] data = baos.toByteArray();
+            UploadTask uploadTask = imagefilepath.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    finish();
+                }
+            });
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    Task<Uri> uri = taskSnapshot.getStorage().getDownloadUrl();
+                    while(!uri.isComplete());
+                    Uri downloadUrl = uri.getResult();
+
+                    Toast.makeText(CreateEmployeeProfileActivity.this, "Upload Success, download URL " +
+                            downloadUrl.toString(), Toast.LENGTH_LONG).show();
+
+                    Map userInfo = new HashMap();
+                    userInfo.put("profileImageUrl", downloadUrl.toString());
+                    mUserDatabase.updateChildren(userInfo);
+
+                    finish();
+                    return;
+                }
+            });
+        }else{
+            finish();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1 && resultCode == Activity.RESULT_OK){
+            final Uri imageUri = data.getData();
+            resultUri = imageUri;
+            mProfileImage.setImageURI(resultUri);
+        }
+        else if(requestCode == PICK_PDF_CODE && resultCode == Activity.RESULT_OK && data != null){
+            if(data.getData() != null){
+                final Uri fileUri = data.getData();
+                resultFileUri = fileUri;
+                //uploadFile(data.getData());
+            }
+            else{
+                Toast.makeText(CreateEmployeeProfileActivity.this, "No File Chosen", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void uploadFile(){
         if(resultUri != null){
             StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profileImages/employeeProfileImages").child(userId);
             Bitmap bitmap = null;
@@ -205,16 +329,37 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
             finish();
         }
     }
+    /*private void uploadFile(Uri data) {
+        //progressBar.setVisibility(View.VISIBLE);
+        StorageReference sRef = mStorageReference.child(Constants.STORAGE_PATH_UPLOADS + System.currentTimeMillis() + ".pdf");
+        sRef.putFile(data)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @SuppressWarnings("VisibleForTests")
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressBar.setVisibility(View.GONE);
+                        textViewStatus.setText("File Uploaded Successfully");
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1 && resultCode == Activity.RESULT_OK){
-            final Uri imageUri = data.getData();
-            resultUri = imageUri;
-            mProfileImage.setImageURI(resultUri);
-        }
-    }
+                        Upload upload = new Upload(editTextFilename.getText().toString(), taskSnapshot.getDownloadUrl().toString());
+                        mDatabaseReference.child(mDatabaseReference.push().getKey()).setValue(upload);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @SuppressWarnings("VisibleForTests")
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        textViewStatus.setText((int) progress + "% Uploading...");
+                    }
+                });
+
+    }*/
 
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);

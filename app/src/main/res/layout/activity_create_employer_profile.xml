@@ -54,7 +54,13 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/skip"
+        android:text="Skip this step"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/back"
-        android:text="back"/>
+        android:text="Back"
+        android:layout_marginTop="100sp"/>
 
 </LinearLayout>

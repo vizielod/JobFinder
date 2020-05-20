@@ -2,22 +2,34 @@ package com.example.jobfinder.Employee;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.provider.Settings;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -32,29 +44,35 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class EditEmployeeProfileActivity extends AppCompatActivity {
+    final static int PICK_PDF_CODE = 2342;
     private static final String LOGTAG = "UserRole";
 
     private EditText mNameField, mDescriptionField, mPhoneField;
+    private TextView mTextViewStatus, mTextViewPreviewCV;
 
-    private Button mBack, mConfirm;
+    private Button mBack, mConfirm, mPreviewCV, mUploadCV, mSelectCV;
+
+    private ProgressBar mProgressBar;
 
     private ImageView mProfileImage;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
 
-    private String userId, name, phone, description, profileImageUrl, userSex;
+    private String userId, name, phone, description, profileImageUrl, userSex, userCVUrl;
 
-    private Uri resultUri;
+    private Uri resultUri, resultFileUri;
     private RadioGroup mGender_RadioGroup;
 
     @Override
@@ -66,8 +84,16 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
         mDescriptionField = (EditText) findViewById(R.id.employeeDescription);
         mGender_RadioGroup = (RadioGroup) findViewById(R.id.gender_radioGroup);
         mPhoneField = (EditText) findViewById(R.id.phone);
+        mTextViewStatus = (TextView) findViewById(R.id.textViewStatus);
+        mTextViewPreviewCV = (TextView) findViewById(R.id.textViewPreviewCV);
 
-        mProfileImage = (ImageView) findViewById(R.id.profileImage);;
+        mProfileImage = (ImageView) findViewById(R.id.profileImage);
+        //mSelectCV = (Button) findViewById(R.id.btn_select_cv);
+        mUploadCV = (Button) findViewById(R.id.btn_upload_cv);
+        mSelectCV = (Button) findViewById(R.id.btn_select_cv);
+        mPreviewCV = (Button) findViewById(R.id.btn_preview_cv);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
+
 
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
@@ -76,23 +102,53 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
         userId = mAuth.getCurrentUser().getUid();
 
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Employee").child(userId);
-        Log.i(LOGTAG, userId);
+        //Log.i(LOGTAG, userId);
 
         getUserInfo();
         hideEditTextKeypadOnFocusChange();
 
+        mSelectCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPDF();
+                //mTextViewStatus.setText("File Selected, Click Upload!");
+            }
+        });
+        mUploadCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(resultFileUri != null){
+                    uploadFile(resultFileUri);
+                }
+            }
+        });
+        mPreviewCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (userCVUrl != null){
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(userCVUrl));
+                    startActivity(intent);
+                }
+            }
+        });
         mProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
                 startActivityForResult(intent, 1);
+                /*if(resultUri != null){
+                    //mProfileImage.setImageURI(resultUri);
+                    //uploadImage();
+                }*/
             }
         });
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saveUserInformation();
+                //getUserInfo();
             }
         });
         mBack.setOnClickListener(new View.OnClickListener() {
@@ -108,7 +164,6 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                final int genderID;
                 if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                     if(map.get("name")!=null){
@@ -124,21 +179,23 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                         switch(userSex){
                             case "Male":
                                 mGender_RadioGroup.check(R.id.rb_male);
-                                genderID = 1;
                                 break;
                             case "Female":
                                 mGender_RadioGroup.check(R.id.rb_female);
-                                genderID = 2;
                                 break;
                             default:
                                 mGender_RadioGroup.clearCheck();
-                                genderID = 0;
                                 break;
                         }
                     }
                     if(map.get("phone")!=null){
                         phone = map.get("phone").toString();
                         mPhoneField.setText(phone);
+                    }
+                    if(map.get("userCVUrl") != null){
+                        userCVUrl = map.get("userCVUrl").toString();
+                        mTextViewPreviewCV.setText("Preview your CV/Resume here:");
+                        mPreviewCV.setText("Preview CV/Resume");
                     }
                     Glide.clear(mProfileImage);
 
@@ -154,6 +211,7 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                                 break;
                         }
                     }
+                    //Log.i(LOGTAG, profileImageUrl);
                 }
             }
 
@@ -178,14 +236,20 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
         name = mNameField.getText().toString();
         description = mDescriptionField.getText().toString();
         phone = mPhoneField.getText().toString();
-        userSex = gender_radioButton.getText().toString();
+        if(selectGenderID > 0 && gender_radioButton.getText() != null){
+            userSex = gender_radioButton.getText().toString();
+        }
+        else{
+            userSex = "";
+        }
         Map userInfo = new HashMap();
         userInfo.put("name", name);
         userInfo.put("description", description);
         userInfo.put("sex", userSex);
         userInfo.put("phone", phone);
         mUserDatabase.updateChildren(userInfo);
-        if(resultUri != null){
+        Toast.makeText(EditEmployeeProfileActivity.this, "Changes Successfully Saved", Toast.LENGTH_LONG).show();
+        /*if(resultUri != null){
             StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profileImages/employeeProfileImages").child(userId);
             Bitmap bitmap = null;
 
@@ -219,14 +283,9 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                     Map userInfo = new HashMap();
                     userInfo.put("profileImageUrl", downloadUrl.toString());
                     mUserDatabase.updateChildren(userInfo);
-
-                    finish();
-                    return;
                 }
             });
-        }else{
-            finish();
-        }
+        }*/
     }
 
     @Override
@@ -236,7 +295,127 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
             final Uri imageUri = data.getData();
             resultUri = imageUri;
             mProfileImage.setImageURI(resultUri);
+            uploadImage();
         }
+        else if(requestCode == PICK_PDF_CODE && resultCode == Activity.RESULT_OK && data != null){
+            if(data.getData() != null){
+                final Uri fileUri = data.getData();
+                resultFileUri = fileUri;
+                //Display Selected File name in the TextView
+                Cursor returnCursor =
+                        getContentResolver().query(fileUri, null, null, null, null);
+                int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                returnCursor.moveToFirst();
+                mTextViewStatus.setText(returnCursor.getString(nameIndex));
+                mTextViewStatus.setTextColor(Color.BLUE);
+                mTextViewStatus.setText(Html.fromHtml("<u>"+returnCursor.getString(nameIndex)+"</u>"));
+            }
+            else{
+                Toast.makeText(EditEmployeeProfileActivity.this, "No File Chosen", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void uploadImage() {
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Uploading");
+        progressDialog.show();
+
+        StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profileImages/employeeProfileImages").child(userId);
+        Bitmap bitmap = null;
+
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), resultUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+        byte[] data = baos.toByteArray();
+        UploadTask uploadTask = filepath.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
+            }
+        });
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                progressDialog.dismiss();
+                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                Task<Uri> uri = taskSnapshot.getStorage().getDownloadUrl();
+                while(!uri.isComplete());
+                Uri downloadUrl = uri.getResult();
+
+                Toast.makeText(EditEmployeeProfileActivity.this, "Image Uploaded Successfully", Toast.LENGTH_LONG).show();
+
+                Map userInfo = new HashMap();
+                userInfo.put("profileImageUrl", downloadUrl.toString());
+                mUserDatabase.updateChildren(userInfo);
+                profileImageUrl = downloadUrl.toString();
+            }
+        });
+    }
+
+    private void getPDF() {
+        Intent intent = new Intent();
+        intent.setType("application/pdf");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select PDF File"), PICK_PDF_CODE);
+    }
+
+    private void uploadFile(Uri data) {
+        mProgressBar.setVisibility(View.VISIBLE);
+        //StorageReference sRef = mStorageReference.child(Constants.STORAGE_PATH_UPLOADS + System.currentTimeMillis() + ".pdf");
+        StorageReference pdffilepath = FirebaseStorage.getInstance().getReference().child("userFiles/userCV").child(userId);
+        UploadTask uploadFileTask = pdffilepath.putFile(data);
+        uploadFileTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+        uploadFileTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @SuppressWarnings("VisibleForTests")
+            @Override
+            public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                mTextViewStatus.setText((int) progress + "% Uploading...");
+            }
+        });
+        uploadFileTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @SuppressWarnings("VisibleForTests")
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                mProgressBar.setVisibility(View.GONE);
+                mTextViewStatus.setText("File Uploaded Successfully");
+                mTextViewPreviewCV.setText("Preview your CV/Resume here:");
+                mPreviewCV.setText("Preview CV/Resume");
+                Task<Uri> uri = taskSnapshot.getStorage().getDownloadUrl();
+                while(!uri.isComplete());
+                Uri downloadUrl = uri.getResult();
+
+                /*Toast.makeText(EditEmployeeProfileActivity.this, "Upload Success, download URL " +
+                        downloadUrl.toString(), Toast.LENGTH_LONG).show();*/
+                Map userInfo = new HashMap();
+                userInfo.put("userCVUrl", downloadUrl.toString());
+                mUserDatabase.updateChildren(userInfo);
+                userCVUrl = downloadUrl.toString();
+            }
+        });
+
     }
 
     public void hideKeyboard(View view) {

@@ -43,7 +43,7 @@ public class CreateEmployerProfileActivity extends AppCompatActivity {
 
     private EditText mNameField, mDescriptionField, mPhoneField;
 
-    private Button mBack, mCreate;
+    private Button mBack, mCreate, mSkip;
 
     private ImageView mEmployerImage;
 
@@ -67,6 +67,7 @@ public class CreateEmployerProfileActivity extends AppCompatActivity {
 
         mBack = (Button) findViewById(R.id.back);
         mCreate = (Button) findViewById(R.id.create);
+        mSkip = (Button) findViewById(R.id.skip);
 
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
@@ -93,6 +94,17 @@ public class CreateEmployerProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 saveEmployerInformation();
+                Intent intent = new Intent(CreateEmployerProfileActivity.this, EmployerActivity.class);
+                intent.putExtra("userRole", userRole);
+                //Log.i(LOGTAG, userRole);
+                startActivity(intent);
+                finish();
+                return;
+            }
+        });
+        mSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(CreateEmployerProfileActivity.this, EmployerActivity.class);
                 intent.putExtra("userRole", userRole);
                 //Log.i(LOGTAG, userRole);
