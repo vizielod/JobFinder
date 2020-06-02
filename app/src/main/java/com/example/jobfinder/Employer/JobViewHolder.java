@@ -7,10 +7,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jobfinder.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.List;
 
 public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     private static final String LOGTAG = "UserRole";
@@ -19,10 +33,29 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
     public ImageView mJobImage;
 
     public Button mDeleteButton;
+    private List<JobObject> jobsList;
+
+    private FirebaseAuth mAuth;
+    private String currentUId;
+    private DatabaseReference usersDb;
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mJobsAdapter;
+    private RecyclerView.LayoutManager mJobsLayoutManager;
+
+    private String userRole;
 
     public JobViewHolder(View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
+
+
+        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUId = mAuth.getCurrentUser().getUid();
+
+
 
         mJobId = (TextView) itemView.findViewById(R.id.JobId);
         mJobTitle = (TextView) itemView.findViewById(R.id.JobTitle);
@@ -31,13 +64,6 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
         mJobImage = (ImageView) itemView.findViewById(R.id.JobImage);
         mDeleteButton = (Button) itemView.findViewById(R.id.btn_deleteJob);
 
-        mDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(LOGTAG, "DELETE" + mJobId.getText().toString());
-                //kitörölni ehhez a JobID-hoz tartozó adatot az adatbázisból, illetve ha tartozik hozzá kép vagy fájl, azokat is kitörölni a Storage-ből.
-            }
-        });
     }
 
 
@@ -51,5 +77,6 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
         intent.putExtras(b);
         view.getContext().startActivity(intent);
     }
+
 
 }

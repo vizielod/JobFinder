@@ -3,6 +3,7 @@ package com.example.jobfinder.Matches.EmployeeMatches;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ import com.example.jobfinder.R;
 public class EmployeeMatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     public TextView mMatchJobId, mMatchEmployerId, mMatchJobTitle;
     public ImageView mMatchJobImage;
+    public Button mGetFileButton;
     public EmployeeMatchesViewHolder(View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
@@ -23,6 +25,10 @@ public class EmployeeMatchesViewHolder extends RecyclerView.ViewHolder implement
         mMatchEmployerId = (TextView) itemView.findViewById(R.id.EmployerId);
 
         mMatchJobImage = (ImageView) itemView.findViewById(R.id.MatchImage);
+        mGetFileButton = (Button) itemView.findViewById(R.id.btn_getFile);
+        mGetFileButton.setText("View File");
+
+
     }
 
 
@@ -36,4 +42,6 @@ public class EmployeeMatchesViewHolder extends RecyclerView.ViewHolder implement
         intent.putExtras(b);
         view.getContext().startActivity(intent);
     }
+
+
 }

@@ -118,7 +118,7 @@ public class EditJobActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (jobDescriptionUrl != null){
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    Intent intent = new Intent(Intent.ACTION_QUICK_VIEW);
                     intent.setData(Uri.parse(jobDescriptionUrl));
                     startActivity(intent);
                 }

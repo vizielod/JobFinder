@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
@@ -33,6 +34,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.ChooseLoginRegistrationActivity;
+import com.example.jobfinder.Employer.EditJobActivity;
+import com.example.jobfinder.LoginActivity;
+import com.example.jobfinder.MainActivity;
+import com.example.jobfinder.Matches.EmployeeMatches.EmployeeMatchesActivity;
 import com.example.jobfinder.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -68,7 +74,7 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
     private ImageView mProfileImage;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mUserDatabase;
+    private DatabaseReference mUserDatabase, usersDb, chatDb;
 
     private String userId, name, phone, description, profileImageUrl, userSex, userCVUrl;
 
@@ -101,6 +107,7 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
         userId = mAuth.getCurrentUser().getUid();
 
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Employee").child(userId);
+        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         //Log.i(LOGTAG, userId);
 
         getUserInfo();
@@ -125,7 +132,7 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (userCVUrl != null){
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    Intent intent = new Intent(Intent.ACTION_QUICK_VIEW);
                     intent.setData(Uri.parse(userCVUrl));
                     startActivity(intent);
                 }
@@ -445,6 +452,180 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                 if (!hasFocus) {
                     hideKeyboard(v);
                 }
+            }
+        });
+    }
+
+    public void onDeleteProfileButtonClick(View view) {
+        //Itt is először megnézni, ha vannak kötődések akkor azokat kitörölni. Chat-et is, majd csak utána törölni a profilt.
+        deleteEmployeeProfileDataAndStorageFiles();
+        Intent intent = new Intent(EditEmployeeProfileActivity.this, ChooseLoginRegistrationActivity.class);
+        Toast.makeText(EditEmployeeProfileActivity.this, "Profile successfully deleted", Toast.LENGTH_LONG).show();
+        startActivity(intent);
+        //mUserDatabase.removeValue();
+        mAuth.getCurrentUser().delete();
+        finish();
+        return;
+    }
+
+    public void deleteEmployeeProfileDataAndStorageFiles(){
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    //Clear Data from Job Connections even if it only liked or disliked the job but didn't match
+                    deleteUserIDFromJobConnections();
+                    if(dataSnapshot.child("connections").child("matches").exists()){
+                        Log.i(LOGTAG, "Torolni kell elemeket");
+                        deleteChatAndEmployeeDataFromChatAndEmployerDb();
+                    }
+                    if(dataSnapshot.child("profileImageUrl").getValue()!=null && !dataSnapshot.child("profileImageUrl").getValue().equals("default")){
+                        StorageReference imagefilepath = FirebaseStorage.getInstance().getReference().child("profileImages").child("employeeProfileImages").child(userId);
+                        imagefilepath.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(EditEmployeeProfileActivity.this, "Image deleted successfully", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "Image Deleted Successfully!");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(EditEmployeeProfileActivity.this, "Image delete failed", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "Error while deleting image!");
+                            }
+                        });
+                    }
+                    if(dataSnapshot.child("userCVUrl").getValue()!=null){
+                        //delete file from storage
+                        StorageReference pdffilepath = FirebaseStorage.getInstance().getReference().child("userFiles/userCV").child(userId);
+                        pdffilepath.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(EditEmployeeProfileActivity.this, "File deleted successfully", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "File Deleted Successfully!");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(EditEmployeeProfileActivity.this, "File delete failed", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "Error while deleting file!");
+                            }
+                        });
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void deleteChatAndEmployeeDataFromChatAndEmployerDb() {
+        final DatabaseReference userMatchesConnectionsDb = mUserDatabase.child("connections").child("matches");
+        userMatchesConnectionsDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for(DataSnapshot matchedEmployerProfileId : dataSnapshot.getChildren()){
+                        Log.i(LOGTAG, matchedEmployerProfileId.getKey());
+                        final String employerID = matchedEmployerProfileId.getKey();
+                        userMatchesConnectionsDb.child(employerID).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()){
+                                    for(DataSnapshot matchedJobId : dataSnapshot.getChildren()){
+                                        Log.i(LOGTAG, matchedJobId.toString());
+                                        Log.i(LOGTAG, matchedJobId.getKey());
+                                        final String jobId = matchedJobId.getKey();
+                                        //Megkeresni az Employer adatbázisba a getKey által visszaadott ID-val rendelkező felhasználót és annak a connections/matches ágából kitörölni
+                                        usersDb.child("Employer").child(employerID).child("jobs").child(jobId).child("connections").child("matches").child(userId).removeValue();
+                                        if(matchedJobId.child("chatId").exists()){
+                                            final String chatID = matchedJobId.child("chatId").getValue().toString();
+                                            Log.i(LOGTAG, chatID);
+                                            //A Chat részben megkeresni ezekhez a chatID-khoz tartozó adatot és azokat is eltávolítani
+                                            deleteChatDataOnEmployeeProfileDelete(chatID);
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                }
+                else{
+                    mUserDatabase.removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void deleteChatDataOnEmployeeProfileDelete(final String chatID){
+        chatDb = FirebaseDatabase.getInstance().getReference().child("Chat");
+        chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    chatDb.child(chatID).removeValue();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        mUserDatabase.removeValue();
+    }
+
+    public void deleteUserIDFromJobConnections(){
+        final DatabaseReference employerDb =  usersDb.child("Employer");
+        employerDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for(DataSnapshot employer : dataSnapshot.getChildren()){
+                        final String employerId = employer.getKey();
+                        final DatabaseReference jobsDb = employerDb.child(employerId).child("jobs");
+                        jobsDb.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()){
+                                    for(DataSnapshot job : dataSnapshot.getChildren()){
+                                        final String jobId = job.getKey();
+                                        if(job.child("connections").child("liked").exists() && job.child("connections").child("liked").child(userId).exists()){
+                                            usersDb.child("Employer").child(employerId).child("jobs").child(jobId).child("connections").child("liked").child(userId).removeValue();
+                                        }
+                                        else if(job.child("connections").child("disliked").exists() && job.child("connections").child("disliked").child(userId).exists()){
+                                            usersDb.child("Employer").child(employerId).child("jobs").child(jobId).child("connections").child("disliked").child(userId).removeValue();
+                                        }
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }

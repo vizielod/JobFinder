@@ -55,5 +55,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/back"
         android:text="back"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_deleteUserProfile"
+        android:text="Delete profile"
+        android:onClick="onDeleteProfileButtonClick"/>
 
 </LinearLayout>

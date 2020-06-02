@@ -121,8 +121,8 @@ public class RegistrationActivity extends AppCompatActivity {
         if(role_radioButton.getText().toString().equals("Employee")){
             Intent intent = new Intent(RegistrationActivity.this, CreateEmployeeProfileActivity.class);
             startActivity(intent);
-            //finish();
-            //return;
+            finish();
+            return;
         }
         else if(role_radioButton.getText().toString().equals("Employer")){
             final String userRole = role_radioButton.getText().toString();
@@ -131,8 +131,8 @@ public class RegistrationActivity extends AppCompatActivity {
             intent.putExtra("userRole", userRole);
             Log.i(LOGTAG, userRole);
             startActivity(intent);
-            //finish();
-            //return;
+            finish();
+            return;
         }
     }
     @Override

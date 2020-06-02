@@ -183,7 +183,7 @@ public class JobMainActivity extends AppCompatActivity {
         oppositeRoleDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.exists() && !dataSnapshot.child("connections").child("disliked").hasChild(jobId) && !dataSnapshot.child("connections").child("liked").hasChild(jobId)) {
+                if (dataSnapshot.exists() && !dataSnapshot.child("connections").child("disliked").child(employerId).hasChild(jobId) && !dataSnapshot.child("connections").child("liked").child(employerId).hasChild(jobId)) {
                     String profileImageUrl = "default";
                     if (!dataSnapshot.child("profileImageUrl").getValue().equals("default")) {
                         profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
@@ -192,6 +192,7 @@ public class JobMainActivity extends AppCompatActivity {
                     rowItems.add(item);
                     arrayAdapter.notifyDataSetChanged();
                 }
+
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {

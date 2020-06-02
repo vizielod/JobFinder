@@ -95,27 +95,8 @@ public class CreateJobActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 getPDF();
-                //mTextViewStatus.setText("File Selected, Click Upload!");
             }
         });
-        /*mUploadCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(resultFileUri != null){
-                    uploadFile(resultFileUri);
-                }
-            }
-        });*/
-        /*mPreviewCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (jobDescriptionUrl != null){
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(jobDescriptionUrl));
-                    startActivity(intent);
-                }
-            }
-        });*/
 
         mJobImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,7 +185,7 @@ public class CreateJobActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select PDF File"), PICK_PDF_CODE);
     }
 
-    private void uploadFile(Uri data, String jobId) {
+    private void uploadFile(Uri data, final String jobId) {
         mProgressBar.setVisibility(View.VISIBLE);
         StorageReference pdffilepath = FirebaseStorage.getInstance().getReference().child("jobFiles/jobDetailedDescriptions").child(jobId);
         UploadTask uploadFileTask = pdffilepath.putFile(data);
@@ -241,7 +222,7 @@ public class CreateJobActivity extends AppCompatActivity {
                 Map userInfo = new HashMap();
                 userInfo.put("jobDescriptionUrl", downloadUrl.toString());
                 //userInfo.put("jobDescriptionFileName", );
-                mUserDatabase.updateChildren(userInfo);
+                mUserDatabase.child("jobs").child(jobId).updateChildren(userInfo);
                 jobDescriptionUrl = downloadUrl.toString();
                 fileUploadSuccess = true;
                 if(resultImageUri != null && imageUploadSuccess){

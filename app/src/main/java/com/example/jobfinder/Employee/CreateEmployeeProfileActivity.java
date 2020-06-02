@@ -119,7 +119,7 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (userCVUrl != null){
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    Intent intent = new Intent(Intent.ACTION_QUICK_VIEW);
                     intent.setData(Uri.parse(userCVUrl));
                     startActivity(intent);
                 }

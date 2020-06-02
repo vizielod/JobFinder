@@ -1,11 +1,17 @@
 package com.example.jobfinder.Matches.EmployerJobMatches;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jobfinder.Matches.EmployeeMatches.EmployeeMatchesAdapter;
 import com.example.jobfinder.Matches.EmployeeMatches.MatchesJobObject;
 import com.example.jobfinder.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +54,16 @@ public class EmployerJobMatchesActivity extends AppCompatActivity {
         //getUserMatchId();
         getEmployerUserJobMatchId();
     }
+
+    public BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            if (EmployeeMatchesAdapter.getDownloadID() == id) {
+                Toast.makeText(context, "Download Completed", Toast.LENGTH_LONG).show();
+            }
+        }
+    };
 
     public String getJobId(){
         return jobId;

@@ -10,20 +10,20 @@
         android:src="@mipmap/ic_launcher"
         android:id="@+id/MatchImage"/>
     <LinearLayout
+        android:layout_weight="10"
         android:paddingLeft="20sp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center">
+        android:orientation="vertical">
         <TextView
             android:paddingBottom="20sp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="Match's Name"
             android:id="@+id/MatchName"/>
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="Match's ID"
             android:layout_gravity="center"
             android:id="@+id/Matchid"/>
@@ -40,5 +40,10 @@
             android:id="@+id/JobId"
             android:visibility="invisible"/>
     </LinearLayout>
-
+    <Button
+        android:layout_weight="1"
+        android:id="@+id/btn_getFile"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:text="View CV"/>
 </LinearLayout>

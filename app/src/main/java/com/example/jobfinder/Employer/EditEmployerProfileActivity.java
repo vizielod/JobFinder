@@ -19,6 +19,8 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.ChooseLoginRegistrationActivity;
+import com.example.jobfinder.Employee.EditEmployeeProfileActivity;
 import com.example.jobfinder.R;
 import com.example.jobfinder.SettingsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -50,9 +52,9 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
     private ImageView mEmployerImage;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mUserDatabase;
+    private DatabaseReference mUserDatabase, chatDb, usersDb, jobsDb;
 
-    private String userId, name, description, phone, profileImageUrl, userRole;
+    private String userId, name, description, phone, profileImageUrl, userRole, employeeID;
 
     private Uri resultUri;
 
@@ -74,6 +76,7 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
         userId = mAuth.getCurrentUser().getUid();
 
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(userId);
+        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
         Log.i(LOGTAG, userId);
 
         getUserInfo();
@@ -237,6 +240,211 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
                 if (!hasFocus) {
                     hideKeyboard(v);
                 }
+            }
+        });
+    }
+
+    public void onDeleteProfileButtonClick(View view) {
+        deleteEmployerProfileDataAndStorageFiles();
+        Intent intent = new Intent(EditEmployerProfileActivity.this, ChooseLoginRegistrationActivity.class);
+        Toast.makeText(EditEmployerProfileActivity.this, "Profile successfully deleted", Toast.LENGTH_LONG).show();
+        startActivity(intent);
+        mAuth.getCurrentUser().delete();
+        finish();
+        return;
+    }
+
+    public void deleteEmployerProfileDataAndStorageFiles(){
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    if(dataSnapshot.child("profileImageUrl").getValue()!=null && !dataSnapshot.child("profileImageUrl").getValue().equals("default")){
+                        StorageReference imagefilepath = FirebaseStorage.getInstance().getReference().child("profileImages").child("employerProfileImages").child(userId);
+                        imagefilepath.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(EditEmployerProfileActivity.this, "Image deleted successfully", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "Image Deleted Successfully!");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(EditEmployerProfileActivity.this, "Image delete failed", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "Error while deleting image!");
+                            }
+                        });
+                    }
+                    //Clear Data from Job Connections even if it only liked or disliked the job but didn't match
+                    deleteEmployerUserIdFromEmployeeConnections();
+                    if(dataSnapshot.child("jobs").exists()){
+                        Log.i(LOGTAG, "Torolni kell elemeket");
+                        deleteChatAndEmployerDataFromChatAndEmployeeDb();
+                    }
+                    else{
+                        mUserDatabase.removeValue();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void deleteChatAndEmployerDataFromChatAndEmployeeDb(){
+        DatabaseReference jobsDb = mUserDatabase.child("jobs");
+        jobsDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for (DataSnapshot job : dataSnapshot.getChildren()){
+                        final String jobId = job.getKey();
+                        deleteJob(jobId);
+                    }
+                    //usersDb.child("Employee").child(employeeID).child("connections").child("matches").child(userId).removeValue();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    public void deleteJob(final String jobId){
+        final DatabaseReference jobDb = usersDb.child("Employer").child(userId).child("jobs").child(jobId);
+        jobDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    if(dataSnapshot.child("connections").child("matches").exists()){
+                        //Job Data must be removed from EmployeeDB and Chat Db
+                        //In case if the job is removed but it has connections with Employeee users and if they had
+                        //a conversation, all should be removed from the DB. Otherwise it remains there as a "trash"
+                        //Same happens in Tinder, also if somebody Disconnects from their pair of Deletes his/her own profile.
+                        //The chat and the profile of the User who disconnected is no longer available from the user's profile who was disconnected
+                        deleteChatAndJobDataFromChatAndEmployeeDb(jobId);
+                    }
+                    if(dataSnapshot.child("jobImageUrl").getValue()!=null && !dataSnapshot.child("jobImageUrl").getValue().equals("default")){
+                        //delete image from storage
+                        StorageReference imagefilepath = FirebaseStorage.getInstance().getReference().child("jobImages").child(jobId);
+                        imagefilepath.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(EditEmployerProfileActivity.this, "Image deleted successfully", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "Image Deleted Successfully!");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(EditEmployerProfileActivity.this, "Image delete failed", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "Error while deleting image!");
+                            }
+                        });
+                    }
+                    if(dataSnapshot.child("jobDescriptionUrl").getValue()!=null){
+                        //delete file from storage
+                        StorageReference pdffilepath = FirebaseStorage.getInstance().getReference().child("jobFiles/jobDetailedDescriptions").child(jobId);
+                        pdffilepath.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(EditEmployerProfileActivity.this, "File deleted successfully", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "File Deleted Successfully!");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(EditEmployerProfileActivity.this, "File delete failed", Toast.LENGTH_LONG).show();
+                                Log.i(LOGTAG, "Error while deleting file!");
+                            }
+                        });
+                    }
+                    //delete connections
+                    jobDb.removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void deleteChatAndJobDataFromChatAndEmployeeDb(final String jobId) {
+        final DatabaseReference jobMatchesConnectionsDb = usersDb.child("Employer").child(userId).child("jobs").child(jobId).child("connections").child("matches");
+        jobMatchesConnectionsDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for(DataSnapshot matchedUser : dataSnapshot.getChildren()){
+                        employeeID = matchedUser.getKey();
+                        //Megkeresni az Employee adatbázisba a getKey által visszaadott ID-val rendelkező felhasználót és annak a connections/matches ágából kitörölni a jobID-t
+                        usersDb.child("Employee").child(employeeID).child("connections").child("matches").child(userId).child(jobId).removeValue();
+                        //Log.i(LOGTAG, matchedUser.toString());
+                        //Log.i(LOGTAG, matchedUser.getKey());
+                        if(matchedUser.child("chatId").exists()){
+                            final String chatID = matchedUser.child("chatId").getValue().toString();
+                            //Log.i(LOGTAG, matchedUser.child("chatId").getValue().toString());
+                            //A Chat részben megkeresni ezekhez a chatID-khoz tartozó adatot és azokat is eltávolítani
+                            deleteChatDataOnJobDelete(chatID);
+                        }
+                    }
+                    //notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void deleteChatDataOnJobDelete(final String chatID){
+        chatDb = FirebaseDatabase.getInstance().getReference().child("Chat");
+        chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    chatDb.child(chatID).removeValue();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        mUserDatabase.removeValue();
+    }
+
+    public void deleteEmployerUserIdFromEmployeeConnections(){
+        final DatabaseReference employeeDb =  usersDb.child("Employee");
+        employeeDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for(DataSnapshot employee : dataSnapshot.getChildren()){
+                        final String employeeId = employee.getKey();
+                        //final DatabaseReference jobsDb = employerDb.child(employerId).child("jobs");
+                        if(employee.child("connections").child("liked").exists() && employee.child("connections").child("liked").child(userId).exists()){
+                            usersDb.child("Employee").child(employeeId).child("connections").child("liked").child(userId).removeValue();
+                        }
+                        else if(employee.child("connections").child("disliked").exists() && employee.child("connections").child("disliked").child(userId).exists()){
+                            usersDb.child("Employee").child(employeeId).child("connections").child("disliked").child(userId).removeValue();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
