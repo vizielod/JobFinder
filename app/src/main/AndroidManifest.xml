@@ -12,7 +12,10 @@
         <activity android:name=".Employee.EditEmployeeProfileActivity"></activity>
         <activity android:name=".Employee.CreateEmployeeProfileActivity" />
         <activity android:name=".Employer.EditEmployerProfileActivity" />
-        <activity android:name=".Employer.CreateEmployerProfileActivity" />
+        <activity android:name=".Employer.CreateEmployerProfileActivity">
+
+        </activity>
+
         <activity android:name=".Employer.CreateJobActivity" />
         <activity android:name=".Employer.EditJobActivity" />
         <activity

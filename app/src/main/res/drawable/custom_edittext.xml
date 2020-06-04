@@ -4,7 +4,7 @@
         <layer-list>
             <!-- SHADOW -->
             <item android:bottom="3dp" android:left="3dp"
-                android:drawable="@drawable/button_shadow">
+                android:drawable="@drawable/edittext_shadow">
                 <!--<shape>
                     <solid android:color="@color/white"/>
                     <corners android:radius="27dp"/>
@@ -20,8 +20,8 @@
                     android:shape="rectangle">
                     <gradient
                         android:angle="90"
-                        android:endColor="@color/lightgreen"
-                        android:startColor="@color/darkgreen" />
+                        android:endColor="@color/white"
+                        android:startColor="@color/white" />
                     <padding
                         android:bottom="7dp"
                         android:left="7dp"
@@ -29,7 +29,7 @@
                         android:top="10dp" />
                     <stroke
                         android:width="2dp"
-                        android:color="#FFF" />
+                        android:color="@color/lightgreen" />
                     <!--android:dashGap="1dp"
                     android:dashWidth="4dp"-->
                     <corners android:radius="27dp" />

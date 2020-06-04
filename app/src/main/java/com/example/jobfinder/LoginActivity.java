@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jobfinder.Employee.EmployeeMainActivity;
@@ -32,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private Button mLogin, mBack;
     private EditText mEmail, mPassword;
+    private TextView mRegister;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
@@ -63,8 +65,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        mLogin = (Button) findViewById(R.id.login);
-        mBack = (Button) findViewById(R.id.back);
+        mLogin = (Button) findViewById(R.id.loginBtn);
+        mRegister = (TextView) findViewById(R.id.register);
+        //mBack = (Button) findViewById(R.id.back);
 
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
@@ -93,7 +96,17 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
-        mBack.setOnClickListener(new View.OnClickListener() {
+        mRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+                startActivity(intent);
+                //finish();
+                return;
+            }
+        });
+
+        /*mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, ChooseLoginRegistrationActivity.class);
@@ -101,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
                 return;
             }
-        });
+        });*/
 
     }
 

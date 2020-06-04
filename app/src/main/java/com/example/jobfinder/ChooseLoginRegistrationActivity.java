@@ -36,7 +36,8 @@ public class ChooseLoginRegistrationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ChooseLoginRegistrationActivity.this, RegistrationActivity.class);
                 startActivity(intent);
-                finish();
+                //Finish nem kell, ha azt szeretném, hogy simán megnyomva a home gombot csak vissza lépjen az előző activity-re és ne tálcára vigye az app-ot
+                //finish();
                 return;
             }
         });

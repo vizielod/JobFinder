@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jobfinder.Employee.CreateEmployeeProfileActivity;
@@ -33,7 +34,8 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final String LOGTAG = "UserRole";
 
     private Button mRegister, mBack;
-    private EditText mEmail, mPassword, mName;
+    private EditText mEmail, mPassword, mReEnterPassword, mName;
+    private TextView mLogin;
 
     private RadioGroup mRole_RadioGroup, mGender_RadioGroup;
 
@@ -59,13 +61,16 @@ public class RegistrationActivity extends AppCompatActivity {
         };
 
         mRegister = (Button) findViewById(R.id.register);
-        mBack = (Button) findViewById(R.id.back);
+        //mBack = (Button) findViewById(R.id.back);
 
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
+        mReEnterPassword = (EditText) findViewById(R.id.re_password);
         mName = (EditText) findViewById(R.id.name);
 
         mRole_RadioGroup = (RadioGroup) findViewById(R.id.role_radioGroup);
+
+        mLogin = (TextView) findViewById(R.id.loginTV);
 
         hideEditTextKeypadOnFocusChange();
 
@@ -83,30 +88,47 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
+                final String re_password = mReEnterPassword.getText().toString();
                 final String name = mName.getText().toString();
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful()){
-                            Toast.makeText(RegistrationActivity.this, "sign up error", Toast.LENGTH_SHORT).show();
+
+                if(!password.equals(re_password)){
+                    Toast.makeText(RegistrationActivity.this, "Please make sure your passwords match", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(!task.isSuccessful()){
+                                Toast.makeText(RegistrationActivity.this, "sign up error", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                String userId = mAuth.getCurrentUser().getUid();
+                                DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(role_radioButton.getText().toString()).child(userId);
+                                Map userInfo = new HashMap<>();
+                                userInfo.put("email", email);
+                                userInfo.put("name", name);
+                                userInfo.put("role", role_radioButton.getText().toString());
+                                userInfo.put("profileImageUrl", "default");
+                                currentUserDb.updateChildren(userInfo);
+                            }
                         }
-                        else{
-                            String userId = mAuth.getCurrentUser().getUid();
-                            DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(role_radioButton.getText().toString()).child(userId);
-                            Map userInfo = new HashMap<>();
-                            userInfo.put("email", email);
-                            userInfo.put("name", name);
-                            userInfo.put("role", role_radioButton.getText().toString());
-                            userInfo.put("profileImageUrl", "default");
-                            currentUserDb.updateChildren(userInfo);
-                        }
-                    }
-                });
+                    });
+                }
+
             }
         });
-        mBack.setOnClickListener(new View.OnClickListener() {
+        /*mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(RegistrationActivity.this, ChooseLoginRegistrationActivity.class);
+                startActivity(intent);
+                finish();
+                return;
+            }
+        });*/
+        mLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 Intent intent = new Intent(RegistrationActivity.this, ChooseLoginRegistrationActivity.class);
                 startActivity(intent);
                 finish();
@@ -170,6 +192,14 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
         mPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mReEnterPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
