@@ -13,7 +13,7 @@ import com.example.jobfinder.Chat.ChatActivity;
 import com.example.jobfinder.R;
 
 public class EmployerJobMatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-    public TextView mMatchId, mMatchJobId, mMatchName;
+    public TextView mMatchId, mMatchJobId, mMatchName, mMatchProfession;
     public ImageView mMatchImage;
 
     public Button mGetFileButton;
@@ -22,8 +22,9 @@ public class EmployerJobMatchesViewHolder extends RecyclerView.ViewHolder implem
         super(itemView);
         itemView.setOnClickListener(this);
 
-        mMatchId = (TextView) itemView.findViewById(R.id.Matchid);
+        mMatchId = (TextView) itemView.findViewById(R.id.MatchId);
         mMatchName = (TextView) itemView.findViewById(R.id.MatchName);
+        mMatchProfession = (TextView) itemView.findViewById(R.id.MatchProfession);
         mMatchJobId = (TextView) itemView.findViewById(R.id.JobId);
 
         mMatchImage = (ImageView) itemView.findViewById(R.id.MatchImage);

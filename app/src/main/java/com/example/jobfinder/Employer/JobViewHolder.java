@@ -29,7 +29,7 @@ import java.util.List;
 public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     private static final String LOGTAG = "UserRole";
 
-    public TextView mJobId, mJobTitle, mEmployerId;
+    public TextView mJobId, mJobTitle, mEmployerId, mJobCategory;
     public ImageView mJobImage;
 
     public Button mDeleteButton;
@@ -59,6 +59,7 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
 
         mJobId = (TextView) itemView.findViewById(R.id.JobId);
         mJobTitle = (TextView) itemView.findViewById(R.id.JobTitle);
+        mJobCategory = (TextView) itemView.findViewById(R.id.JobCategory);
         mEmployerId = (TextView) itemView.findViewById(R.id.EmployerId);
 
         mJobImage = (ImageView) itemView.findViewById(R.id.JobImage);

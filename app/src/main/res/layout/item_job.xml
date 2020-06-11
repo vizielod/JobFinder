@@ -1,4 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+
+    android:layout_margin="5dp"
+    android:background="@drawable/custom_recyclerviewitem_background">
+
+    <ImageView
+        android:id="@+id/JobImage"
+        android:layout_width="70dp"
+        android:layout_height="74dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginBottom="13dp"
+        android:scaleType="centerCrop"
+        android:cropToPadding="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/JobTitle"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginStart="90dp"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="JobTitle"
+        android:textColor="@color/white"
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/JobImage"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/JobCategory"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginStart="90dp"
+        android:layout_marginLeft="90dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
+        android:fontFamily="@font/montserrat_regular"
+        android:text="Job Category"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/JobImage"
+        app:layout_constraintTop_toBottomOf="@+id/JobTitle" />
+
+    <TextView
+        android:id="@+id/JobId"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="7dp" />
+
+    <TextView
+        android:id="@+id/EmployerId"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="7dp" />
+
+    <Button
+        android:id="@+id/btn_deleteJob"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="@drawable/deleteitem_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,13 +109,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingBottom="20sp"
-                    android:text="Job's Title" />
+                    android:text="Job's Title"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:textColor="@color/white"/>
                 <TextView
                     android:id="@+id/JobId"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:text="Job's ID" />
+                    android:text="Job's ID"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:textColor="@color/white"/>
                 <TextView
                     android:id="@+id/EmployerId"
                     android:layout_width="match_parent"
@@ -40,4 +134,4 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:text="delete" />
-</LinearLayout>
+</LinearLayout>-->

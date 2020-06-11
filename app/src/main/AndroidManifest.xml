@@ -39,7 +39,7 @@
         <activity android:name=".Employer.JobMainActivity" />
         <activity android:name=".Employee.EmployeeMainActivity" />
 
-        <provider
+        <!--<provider
             android:name=".GenericFileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
@@ -47,7 +47,7 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
-        </provider>
+        </provider>-->
     </application>
 
 </manifest>

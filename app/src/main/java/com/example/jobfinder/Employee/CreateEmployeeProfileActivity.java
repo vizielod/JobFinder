@@ -2,17 +2,26 @@ package com.example.jobfinder.Employee;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -51,19 +60,22 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
     //this is the pic pdf code used in file chooser
     final static int PICK_PDF_CODE = 2342;
     private static final String LOGTAG = "UserRole";
-    private EditText mNameField, mDescriptionField, mPhoneField;
+
+    private EditText mNameField, mDescriptionField, mPhoneField, mAgeField, mProfessionField, mCountryField, mCityField, mFacebookField, mLinkedInField, mWebsiteField, mSkypeField;
+
     private TextView mTextViewStatus, mTextViewPreviewCV;
 
     private Button mBack, mCreate, mSkip, mPreviewCV, mSelectCV, mUploadCV;
 
     private ProgressBar mProgressBar;
 
-    private ImageView mProfileImage;
+    private ImageView mProfileImage, mBackIV;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
 
-    private String userId, name, phone, description, profileImageUrl, userSex, userCVUrl;
+    private String userId, userSex, userCVUrl;
+    private String name, description, profileImageUrl, phone, age, profession, country, city, facebook, linkedIn, websiteURL, skype;
 
     private Uri resultUri, resultFileUri;
 
@@ -74,12 +86,21 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_employee_profile);
 
-        mNameField = (EditText) findViewById(R.id.name);
-        mDescriptionField = (EditText) findViewById(R.id.employeeDescription);
-        mGender_RadioGroup = (RadioGroup) findViewById(R.id.gender_radioGroup);
-        mPhoneField = (EditText) findViewById(R.id.phone);
         mTextViewStatus = (TextView) findViewById(R.id.textViewStatus);
         mTextViewPreviewCV = (TextView) findViewById(R.id.textViewPreviewCV);
+
+        mNameField = (EditText) findViewById(R.id.name);
+        mGender_RadioGroup = (RadioGroup) findViewById(R.id.gender_radioGroup);
+        mAgeField = (EditText) findViewById(R.id.age);
+        mProfessionField = (EditText) findViewById(R.id.profession);
+        mDescriptionField = (EditText) findViewById(R.id.employeeDescription);
+        mPhoneField = (EditText) findViewById(R.id.phone);
+        mCountryField = (EditText) findViewById(R.id.country);
+        mCityField = (EditText) findViewById(R.id.city);
+        mFacebookField = (EditText) findViewById(R.id.facebook);
+        mLinkedInField = (EditText) findViewById(R.id.linkedIn);
+        mWebsiteField = (EditText) findViewById(R.id.websiteURL);
+        mSkypeField = (EditText) findViewById(R.id.skype);
 
         mProfileImage = (ImageView) findViewById(R.id.profileImage);
         mUploadCV = (Button) findViewById(R.id.btn_upload_cv);
@@ -87,7 +108,7 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
         mPreviewCV = (Button) findViewById(R.id.btn_preview_cv);
         mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
 
-        //mBack = (Button) findViewById(R.id.back);
+        mBackIV = (ImageView) findViewById(R.id.back_arrow);
         mCreate = (Button) findViewById(R.id.create);
         mSkip = (Button) findViewById(R.id.skip);
 
@@ -96,6 +117,8 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
 
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Employee").child(userId);
 
+
+        mPreviewCV.setEnabled(false);
         getUserInfo();
         hideEditTextKeypadOnFocusChange();
 
@@ -112,6 +135,7 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(resultFileUri != null){
                     uploadFile(resultFileUri);
+                    mPreviewCV.setEnabled(true);
                 }
             }
         });
@@ -150,6 +174,14 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
                 Intent intent = new Intent(CreateEmployeeProfileActivity.this, EmployeeMainActivity.class);
                 //intent.putExtra("userRole", userRole);
                 startActivity(intent);
+                finish();
+                return;
+            }
+        });
+        mBackIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth.signOut();
                 finish();
                 return;
             }
@@ -210,8 +242,16 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
         }*/
 
         name = mNameField.getText().toString();
+        age = mAgeField.getText().toString();
+        profession = mProfessionField.getText().toString();
         description = mDescriptionField.getText().toString();
         phone = mPhoneField.getText().toString();
+        country = mCountryField.getText().toString();
+        city = mCityField.getText().toString();
+        facebook = mFacebookField.getText().toString();
+        linkedIn = mLinkedInField.getText().toString();
+        websiteURL = mWebsiteField.getText().toString();
+        skype = mSkypeField.getText().toString();
         if(selectGenderID > 0 && gender_radioButton.getText() != null){
             userSex = gender_radioButton.getText().toString();
         }
@@ -220,9 +260,17 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
         }
         Map userInfo = new HashMap();
         userInfo.put("name", name);
-        userInfo.put("description", description);
         userInfo.put("sex", userSex);
+        userInfo.put("age", age);
+        userInfo.put("profession", profession);
+        userInfo.put("description", description);
         userInfo.put("phone", phone);
+        userInfo.put("country", country);
+        userInfo.put("city", city);
+        userInfo.put("facebook", facebook);
+        userInfo.put("linkedIn", linkedIn);
+        userInfo.put("websiteURL", websiteURL);
+        userInfo.put("skype", skype);
         mUserDatabase.updateChildren(userInfo);
         Toast.makeText(CreateEmployeeProfileActivity.this, "Changes Successfully Saved", Toast.LENGTH_LONG).show();
     }
@@ -307,6 +355,18 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
     }
 
     private void getPDF() {
+        //for greater than lolipop versions we need the permissions asked on runtime
+        //so if the permission is not available user will go to the screen to allow storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+            return;
+        }
+
+        //creating an intent for file chooser
         Intent intent = new Intent();
         intent.setType("application/pdf");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -341,7 +401,7 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(View.GONE);
                 mTextViewStatus.setText("File Uploaded Successfully");
                 mTextViewPreviewCV.setText("Preview your CV/Resume here:");
-                mPreviewCV.setText("Preview CV/Resume");
+                //mPreviewCV.setText("Preview CV/Resume");
                 Task<Uri> uri = taskSnapshot.getStorage().getDownloadUrl();
                 while(!uri.isComplete());
                 Uri downloadUrl = uri.getResult();
@@ -371,6 +431,22 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
                 }
             }
         });
+        mAgeField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mProfessionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
         mDescriptionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -387,6 +463,53 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
                 }
             }
         });
+        mCountryField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mCityField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mWebsiteField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mFacebookField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mLinkedInField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mSkypeField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
     }
-
 }

@@ -19,7 +19,9 @@
         <item name="buttonStyle">@style/CustomButton</item>
         <item name="editTextStyle">@style/CustomEditText</item>
         <item name="android:windowBackground">@drawable/background</item>
+        <item name="android:alertDialogTheme">@style/AppAlertTheme</item>
     </style>
+
 
     <style name="CustomButton" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/custom_button</item>
@@ -44,6 +46,10 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppAlertTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textColor">@color/darkgreen</item>
+    </style>
 
 
 

@@ -2,17 +2,22 @@ package com.example.jobfinder.Employer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -47,7 +52,7 @@ public class CreateJobActivity extends AppCompatActivity {
     private static final String LOGTAG = "UserRole";
     final static int PICK_PDF_CODE = 2342;
 
-    private EditText mTitleField, mDescriptionField;
+    private EditText mTitleField, mDescriptionField, mCategoryField, mCountryField, mCityField, mContactField, mJobWebsiteUrlField;
     private TextView mTextViewStatus, mTextViewPreviewCV;
 
     private Button mBack, mCreate, mPreviewCV, mSelectCV, mUploadCV;
@@ -58,7 +63,7 @@ public class CreateJobActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
 
-    private String userId, title, description, jobDescriptionUrl, profileImageUrl, jobImageUrl, userSex;
+    private String userId, title, category, description, country, city, contact, jobWebsiteUrl, jobDescriptionUrl, jobImageUrl, userSex;
 
     private Uri resultImageUri, resultFileUri;
 
@@ -71,13 +76,17 @@ public class CreateJobActivity extends AppCompatActivity {
 
         mTitleField = (EditText) findViewById(R.id.jobTitle);
         mDescriptionField = (EditText) findViewById(R.id.jobDescription);
+        mCategoryField = (EditText) findViewById(R.id.category);
+        mCountryField = (EditText) findViewById(R.id.country);
+        mCityField = (EditText) findViewById(R.id.city);
+        mContactField = (EditText) findViewById(R.id.contact);
+        mJobWebsiteUrlField = (EditText) findViewById(R.id.jobWebsiteUrl);
+        
         mTextViewStatus = (TextView) findViewById(R.id.textViewStatus);
         mTextViewPreviewCV = (TextView) findViewById(R.id.textViewPreviewCV);
 
         mJobImage = (ImageView) findViewById(R.id.jobImage);
-        mUploadCV = (Button) findViewById(R.id.btn_upload_cv);
-        mSelectCV = (Button) findViewById(R.id.btn_select_cv);
-        mPreviewCV = (Button) findViewById(R.id.btn_preview_cv);
+        mSelectCV = (Button) findViewById(R.id.btn_select_description);
         mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
 
         mBack = (Button) findViewById(R.id.back);
@@ -125,22 +134,32 @@ public class CreateJobActivity extends AppCompatActivity {
                 return;*/
             }
         });
-        mBack.setOnClickListener(new View.OnClickListener() {
+        /*mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
                 return;
             }
-        });
+        });*/
     }
 
     private void saveJobInformation(String key) {
         title = mTitleField.getText().toString();
+        category = mCategoryField.getText().toString();
         description = mDescriptionField.getText().toString();
+        country = mCountryField.getText().toString();
+        city = mCityField.getText().toString();
+        contact = mContactField.getText().toString();
+        jobWebsiteUrl = mJobWebsiteUrlField.getText().toString();
         Map userInfo = new HashMap();
         userInfo.put("title", title);
+        userInfo.put("category", category);
         userInfo.put("description", description);
         userInfo.put("jobImageUrl", "default");
+        userInfo.put("country", country);
+        userInfo.put("city", city);
+        userInfo.put("contact", contact);
+        userInfo.put("jobWebsiteUrl", jobWebsiteUrl);
         mUserDatabase.child("jobs").child(key).updateChildren(userInfo);
         if(resultImageUri != null){
             uploadImage(key);
@@ -179,6 +198,18 @@ public class CreateJobActivity extends AppCompatActivity {
     }
 
     private void getPDF() {
+        //for greater than lolipop versions we need the permissions asked on runtime
+        //so if the permission is not available user will go to the screen to allow storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+            return;
+        }
+
+        //creating an intent for file chooser
         Intent intent = new Intent();
         intent.setType("application/pdf");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -316,7 +347,47 @@ public class CreateJobActivity extends AppCompatActivity {
                 }
             }
         });
+        mCategoryField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
         mDescriptionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mCountryField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mCityField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mContactField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mJobWebsiteUrlField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {

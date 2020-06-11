@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.File;
 import java.util.List;
 
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 //dapters provide a binding from an app-specific data set to views that are displayed within a RecyclerView.
@@ -67,6 +69,7 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
         holder.mMatchEmployerId.setText(matchesList.get(position).getEmployerId());
         holder.mMatchJobId.setText(matchesList.get(position).getJobId());
         holder.mMatchJobTitle.setText(matchesList.get(position).getJobTitle());
+        holder.mMatchJobCategory.setText(matchesList.get(position).getJobCategory());
         if (!matchesList.get(position).getJobImageUrl().equals("default")) {
             Glide.with(context).load(matchesList.get(position).getJobImageUrl()).into(holder.mMatchJobImage);
         }
@@ -87,7 +90,7 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
                             if(dataSnapshot.child("jobDescriptionUrl").getValue() != null){
                                 final String jobDescriptionUrl = dataSnapshot.child("jobDescriptionUrl").getValue().toString();
                                 if (jobDescriptionUrl != null) {
-                                    downloadFile(context, matchesList.get(temp_position).getJobTitle(), ".pdf", DIRECTORY_DOWNLOADS, jobDescriptionUrl);
+                                    downloadFile(context, matchesList.get(temp_position).getJobTitle(), ".pdf", Environment.getExternalStorageDirectory().getPath(), jobDescriptionUrl);
                                 }
                             }
 

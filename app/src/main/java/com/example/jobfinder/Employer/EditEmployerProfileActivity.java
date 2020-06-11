@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -42,10 +44,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EditEmployerProfileActivity extends AppCompatActivity {
+    private static final String DELETE_PROFILE = "DELETE PROFILE";
 
     private static final String LOGTAG = "UserRole";
 
-    private EditText mNameField, mDescriptionField, mPhoneField;
+    private EditText mNameField, mDescriptionField, mIndustryField, mWebsiteField, mContactField, mAddressField, mLinkedInField, mFacebookField;
 
     private Button mBack, mConfirm;
 
@@ -54,7 +57,9 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, chatDb, usersDb, jobsDb;
 
-    private String userId, name, description, phone, profileImageUrl, userRole, employeeID;
+    private String userId, userRole, employeeID;
+    private String name, description, profileImageUrl, industry, websiteUrl, facebook, linkedIn, address, contact;
+    private String alertDialogTitle, alertDialogMessage;
 
     private Uri resultUri;
 
@@ -65,11 +70,16 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
 
         mNameField = (EditText) findViewById(R.id.employerName);
         mDescriptionField = (EditText) findViewById(R.id.employerDescription);
-        mPhoneField = (EditText) findViewById(R.id.phone);
+        mIndustryField = (EditText) findViewById(R.id.industry);
+        mWebsiteField = (EditText) findViewById(R.id.websiteURL);
+        mFacebookField = (EditText) findViewById(R.id.facebook);
+        mLinkedInField = (EditText) findViewById(R.id.linkedIn);
+        mAddressField = (EditText) findViewById(R.id.headquarter);
+        mContactField = (EditText) findViewById(R.id.contact);
 
         mEmployerImage = (ImageView) findViewById(R.id.employerImage);
 
-        mBack = (Button) findViewById(R.id.back);
+        //mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
 
         mAuth = FirebaseAuth.getInstance();
@@ -96,13 +106,13 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
                 saveUserInformation();
             }
         });
-        mBack.setOnClickListener(new View.OnClickListener() {
+        /*mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
                 return;
             }
-        });
+        });*/
     }
 
     private void getUserInfo() {
@@ -119,9 +129,29 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
                         description = map.get("description").toString();
                         mDescriptionField.setText(description);
                     }
-                    if(map.get("phone")!=null){
-                        phone = map.get("phone").toString();
-                        mPhoneField.setText(phone);
+                    if(map.get("industry")!=null){
+                        industry = map.get("industry").toString();
+                        mIndustryField.setText(industry);
+                    }
+                    if(map.get("websiteUrl")!=null){
+                        websiteUrl = map.get("websiteUrl").toString();
+                        mWebsiteField.setText(websiteUrl);
+                    }
+                    if(map.get("facebook")!=null){
+                        facebook = map.get("facebook").toString();
+                        mFacebookField.setText(facebook);
+                    }
+                    if(map.get("linkedIn")!=null){
+                        linkedIn = map.get("linkedIn").toString();
+                        mLinkedInField.setText(linkedIn);
+                    }
+                    if(map.get("address")!=null){
+                        address = map.get("address").toString();
+                        mAddressField.setText(address);
+                    }
+                    if(map.get("contactEmail")!=null){
+                        contact = map.get("contactEmail").toString();
+                        mContactField.setText(contact);
                     }
                     Glide.clear(mEmployerImage);
 
@@ -151,12 +181,21 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
     private void saveUserInformation() {
         name = mNameField.getText().toString();
         description = mDescriptionField.getText().toString();
-        phone = mPhoneField.getText().toString();
-
+        industry = mIndustryField.getText().toString();
+        websiteUrl = mWebsiteField.getText().toString();
+        facebook = mFacebookField.getText().toString();
+        linkedIn = mLinkedInField.getText().toString();
+        address = mAddressField.getText().toString();
+        contact = mContactField.getText().toString();
         Map userInfo = new HashMap();
         userInfo.put("name", name);
         userInfo.put("description", description);
-        userInfo.put("phone", phone);
+        userInfo.put("industry", industry);
+        userInfo.put("websiteURL", websiteUrl);
+        userInfo.put("facebook", facebook);
+        userInfo.put("linkedIn", linkedIn);
+        userInfo.put("address", address);
+        userInfo.put("contactEmail", contact);
         mUserDatabase.updateChildren(userInfo);
         if(resultUri != null){
             StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profileImages/employerProfileImages").child(userId);
@@ -234,7 +273,47 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
                 }
             }
         });
-        mPhoneField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mIndustryField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mWebsiteField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mFacebookField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mLinkedInField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mAddressField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mContactField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
@@ -245,14 +324,55 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
     }
 
     public void onDeleteProfileButtonClick(View view) {
-        deleteEmployerProfileDataAndStorageFiles();
+        alertDialogTitle = "Confirm Profile Delete";
+        alertDialogMessage = "Are you sure you want to DELETE your profile?";
+        PopAlertDialogMessage(alertDialogTitle, alertDialogMessage, DELETE_PROFILE);
+        /*deleteEmployerProfileDataAndStorageFiles();
         Intent intent = new Intent(EditEmployerProfileActivity.this, ChooseLoginRegistrationActivity.class);
         Toast.makeText(EditEmployerProfileActivity.this, "Profile successfully deleted", Toast.LENGTH_LONG).show();
         startActivity(intent);
         mAuth.getCurrentUser().delete();
         finish();
-        return;
+        return;*/
     }
+
+    public void PopAlertDialogMessage(String title, String message, String callMessage){
+        AlertDialog.Builder builder = new AlertDialog.Builder(EditEmployerProfileActivity.this);
+
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        if(callMessage.equals(DELETE_PROFILE)){
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteEmployerProfileDataAndStorageFiles();
+                    Intent intent = new Intent(EditEmployerProfileActivity.this, ChooseLoginRegistrationActivity.class);
+                    Toast.makeText(EditEmployerProfileActivity.this, "Profile successfully deleted", Toast.LENGTH_LONG).show();
+                    startActivity(intent);
+                    //mUserDatabase.removeValue();
+                    mAuth.getCurrentUser().delete();
+                    finish();
+                    dialog.dismiss();
+                    return;
+                }
+            });
+        }
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
 
     public void deleteEmployerProfileDataAndStorageFiles(){
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {

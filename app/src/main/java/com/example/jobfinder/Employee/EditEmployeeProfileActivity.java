@@ -6,8 +6,10 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -63,11 +65,13 @@ import java.util.Map;
 public class EditEmployeeProfileActivity extends AppCompatActivity {
     final static int PICK_PDF_CODE = 2342;
     private static final String LOGTAG = "UserRole";
+    private static final String UPLOAD_FILE = "UPLOAD FILE";
+    private static final String DELETE_PROFILE = "DELETE PROFILE";
 
-    private EditText mNameField, mDescriptionField, mPhoneField;
-    private TextView mTextViewStatus, mTextViewPreviewCV;
+    private EditText mNameField, mDescriptionField, mPhoneField, mAgeField, mProfessionField, mCountryField, mCityField, mFacebookField, mLinkedInField, mWebsiteField, mSkypeField;
+    private TextView mTextViewStatus, mTextViewPreviewCV, mTextViewFileUploaded;
 
-    private Button mBack, mConfirm, mPreviewCV, mUploadCV, mSelectCV;
+    private Button mBack, mConfirm, mPreviewCV, mUploadCV, mSelectCV, mDeleteBtn;
 
     private ProgressBar mProgressBar;
 
@@ -76,22 +80,37 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, usersDb, chatDb;
 
-    private String userId, name, phone, description, profileImageUrl, userSex, userCVUrl;
+    private String userId, userSex, userCVUrl;
+    private String name, description, profileImageUrl, phone, age, profession, country, city, facebook, linkedIn, websiteURL, skype;
+    private String alertDialogTitle, alertDialogMessage;
 
     private Uri resultUri, resultFileUri;
     private RadioGroup mGender_RadioGroup;
+
+    private boolean deleteProfileAccepted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_employee_profile);
 
-        mNameField = (EditText) findViewById(R.id.name);
-        mDescriptionField = (EditText) findViewById(R.id.employeeDescription);
-        mGender_RadioGroup = (RadioGroup) findViewById(R.id.gender_radioGroup);
-        mPhoneField = (EditText) findViewById(R.id.phone);
+
+        mTextViewFileUploaded = (TextView) findViewById(R.id.fileUploadedTextView);
         mTextViewStatus = (TextView) findViewById(R.id.textViewStatus);
         mTextViewPreviewCV = (TextView) findViewById(R.id.textViewPreviewCV);
+
+        mNameField = (EditText) findViewById(R.id.name);
+        mGender_RadioGroup = (RadioGroup) findViewById(R.id.gender_radioGroup);
+        mAgeField = (EditText) findViewById(R.id.age);
+        mProfessionField = (EditText) findViewById(R.id.profession);
+        mDescriptionField = (EditText) findViewById(R.id.employeeDescription);
+        mPhoneField = (EditText) findViewById(R.id.phone);
+        mCountryField = (EditText) findViewById(R.id.country);
+        mCityField = (EditText) findViewById(R.id.city);
+        mFacebookField = (EditText) findViewById(R.id.facebook);
+        mLinkedInField = (EditText) findViewById(R.id.linkedIn);
+        mWebsiteField = (EditText) findViewById(R.id.websiteURL);
+        mSkypeField = (EditText) findViewById(R.id.skype);
 
         mProfileImage = (ImageView) findViewById(R.id.profileImage);
         mUploadCV = (Button) findViewById(R.id.btn_upload_cv);
@@ -102,6 +121,7 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
 
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
+        mDeleteBtn = (Button) findViewById(R.id.btn_deleteUserProfile);
 
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
@@ -124,7 +144,39 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(resultFileUri != null){
-                    uploadFile(resultFileUri);
+                    alertDialogTitle = "Confirm File Upload";
+                    alertDialogMessage = "Are you sure you want to upload this file as your CV?\n" +
+                            "Note: If you click YES, this change will be confirmed. " +
+                            "You can change your CV anytime.";
+                    PopAlertDialogMessage(alertDialogTitle, alertDialogMessage, UPLOAD_FILE);
+                    /*AlertDialog.Builder builder = new AlertDialog.Builder(EditEmployeeProfileActivity.this);
+
+                    builder.setTitle("Confirm File Upload");
+                    builder.setMessage("Are you sure you want to upload this file as your CV?\n" +
+                            "Note: If you click YES, this change will be confirmed. " +
+                            "You can change your CV anytime.");
+                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            uploadFile(resultFileUri);
+                            mPreviewCV.setEnabled(true);
+                            dialog.dismiss();
+                        }
+                    });
+
+                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            // Do nothing
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();*/
                 }
             }
         });
@@ -157,13 +209,21 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                 //getUserInfo();
             }
         });
-        mBack.setOnClickListener(new View.OnClickListener() {
+        /*mDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialogTitle = "Confirm Profile Delete";
+                alertDialogMessage = "Are you sure you want to DELETE your profile?";
+                PopAlertDialogMessage(alertDialogTitle, alertDialogMessage, DELETE_PROFILE);
+            }
+        });*/
+        /*mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
                 return;
             }
-        });
+        });*/
     }
 
     private void getUserInfo() {
@@ -176,9 +236,45 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                         name = map.get("name").toString();
                         mNameField.setText(name);
                     }
+                    if(map.get("age")!=null){
+                        age = map.get("age").toString();
+                        mAgeField.setText(age);
+                    }
+                    if(map.get("profession")!=null){
+                        profession = map.get("profession").toString();
+                        mProfessionField.setText(profession);
+                    }
                     if(map.get("description")!=null){
                         description = map.get("description").toString();
                         mDescriptionField.setText(description);
+                    }
+                    if(map.get("phone")!=null){
+                        phone = map.get("phone").toString();
+                        mPhoneField.setText(phone);
+                    }
+                    if(map.get("country")!=null){
+                        country = map.get("country").toString();
+                        mCountryField.setText(country);
+                    }
+                    if(map.get("city")!=null){
+                        city = map.get("city").toString();
+                        mCityField.setText(city);
+                    }
+                    if(map.get("facebook")!=null){
+                        facebook = map.get("facebook").toString();
+                        mFacebookField.setText(facebook);
+                    }
+                    if(map.get("linkedIn")!=null){
+                        linkedIn = map.get("linkedIn").toString();
+                        mLinkedInField.setText(linkedIn);
+                    }
+                    if(map.get("websiteURL")!=null){
+                        websiteURL = map.get("websiteURL").toString();
+                        mWebsiteField.setText(websiteURL);
+                    }
+                    if(map.get("skype")!=null){
+                        skype = map.get("skype").toString();
+                        mSkypeField.setText(skype);
                     }
                     if(map.get("sex")!=null){
                         userSex = map.get("sex").toString();
@@ -201,7 +297,12 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                     if(map.get("userCVUrl") != null){
                         userCVUrl = map.get("userCVUrl").toString();
                         mTextViewPreviewCV.setText("Preview your CV/Resume here:");
-                        mPreviewCV.setText("Preview CV/Resume");
+                        mTextViewFileUploaded.setText("File Uploaded!");
+                        mPreviewCV.setEnabled(true);
+                        //mPreviewCV.setText("Preview CV/Resume");
+                    }
+                    else{
+                        mPreviewCV.setEnabled(false);
                     }
                     Glide.clear(mProfileImage);
 
@@ -240,8 +341,16 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
         }*/
 
         name = mNameField.getText().toString();
+        age = mAgeField.getText().toString();
+        profession = mProfessionField.getText().toString();
         description = mDescriptionField.getText().toString();
         phone = mPhoneField.getText().toString();
+        country = mCountryField.getText().toString();
+        city = mCityField.getText().toString();
+        facebook = mFacebookField.getText().toString();
+        linkedIn = mLinkedInField.getText().toString();
+        websiteURL = mWebsiteField.getText().toString();
+        skype = mSkypeField.getText().toString();
         if(selectGenderID > 0 && gender_radioButton.getText() != null){
             userSex = gender_radioButton.getText().toString();
         }
@@ -250,9 +359,17 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
         }
         Map userInfo = new HashMap();
         userInfo.put("name", name);
-        userInfo.put("description", description);
         userInfo.put("sex", userSex);
+        userInfo.put("age", age);
+        userInfo.put("profession", profession);
+        userInfo.put("description", description);
         userInfo.put("phone", phone);
+        userInfo.put("country", country);
+        userInfo.put("city", city);
+        userInfo.put("facebook", facebook);
+        userInfo.put("linkedIn", linkedIn);
+        userInfo.put("websiteURL", websiteURL);
+        userInfo.put("skype", skype);
         mUserDatabase.updateChildren(userInfo);
         Toast.makeText(EditEmployeeProfileActivity.this, "Changes Successfully Saved", Toast.LENGTH_LONG).show();
         /*if(resultUri != null){
@@ -313,7 +430,7 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                 int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                 returnCursor.moveToFirst();
                 mTextViewStatus.setText(returnCursor.getString(nameIndex));
-                mTextViewStatus.setTextColor(Color.BLUE);
+                mTextViewStatus.setTextColor(Color.GREEN);
                 mTextViewStatus.setText(Html.fromHtml("<u>"+returnCursor.getString(nameIndex)+"</u>"));
             }
             else{
@@ -374,6 +491,18 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
     }
 
     private void getPDF() {
+        //for greater than lolipop versions we need the permissions asked on runtime
+        //so if the permission is not available user will go to the screen to allow storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+            return;
+        }
+
+        //creating an intent for file chooser
         Intent intent = new Intent();
         intent.setType("application/pdf");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -408,7 +537,7 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(View.GONE);
                 mTextViewStatus.setText("File Uploaded Successfully");
                 mTextViewPreviewCV.setText("Preview your CV/Resume here:");
-                mPreviewCV.setText("Preview CV/Resume");
+                //mPreviewCV.setText("Preview CV/Resume");
                 Task<Uri> uri = taskSnapshot.getStorage().getDownloadUrl();
                 while(!uri.isComplete());
                 Uri downloadUrl = uri.getResult();
@@ -438,6 +567,22 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                 }
             }
         });
+        mAgeField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mProfessionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
         mDescriptionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -454,18 +599,70 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                 }
             }
         });
+        mCountryField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mCityField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mWebsiteField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mFacebookField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mLinkedInField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mSkypeField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
     }
 
     public void onDeleteProfileButtonClick(View view) {
         //Itt is először megnézni, ha vannak kötődések akkor azokat kitörölni. Chat-et is, majd csak utána törölni a profilt.
-        deleteEmployeeProfileDataAndStorageFiles();
+        alertDialogTitle = "Confirm Profile Delete";
+        alertDialogMessage = "Are you sure you want to DELETE your profile?";
+        PopAlertDialogMessage(alertDialogTitle, alertDialogMessage, DELETE_PROFILE);
+        /*deleteEmployeeProfileDataAndStorageFiles();
         Intent intent = new Intent(EditEmployeeProfileActivity.this, ChooseLoginRegistrationActivity.class);
         Toast.makeText(EditEmployeeProfileActivity.this, "Profile successfully deleted", Toast.LENGTH_LONG).show();
         startActivity(intent);
         //mUserDatabase.removeValue();
         mAuth.getCurrentUser().delete();
         finish();
-        return;
+        return;*/
+
     }
 
     public void deleteEmployeeProfileDataAndStorageFiles(){
@@ -512,7 +709,11 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
                             }
                         });
                     }
-
+                    //Ez így ismét nem jó. Ha van chat cucc, akkor hamarabb kitörli már ezt mint ahogy odáig eljutna így onnan nem tud törölni.
+                    //Rendesen megoldani, ha létrehozok egy Usert és nem csinálok vele semmit akkor és törlődjön rendesen az adatbázisból
+                    if(mUserDatabase.getDatabase() != null){
+                        mUserDatabase.removeValue();
+                    }
                 }
             }
 
@@ -628,5 +829,53 @@ public class EditEmployeeProfileActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void PopAlertDialogMessage(String title, String message, String callMessage){
+        AlertDialog.Builder builder = new AlertDialog.Builder(EditEmployeeProfileActivity.this);
+
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        if(callMessage.equals(UPLOAD_FILE)){
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+
+                    uploadFile(resultFileUri);
+                    mPreviewCV.setEnabled(true);
+                    dialog.dismiss();
+                }
+            });
+        }
+        else if(callMessage.equals(DELETE_PROFILE)){
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteEmployeeProfileDataAndStorageFiles();
+                    Intent intent = new Intent(EditEmployeeProfileActivity.this, ChooseLoginRegistrationActivity.class);
+                    Toast.makeText(EditEmployeeProfileActivity.this, "Profile successfully deleted", Toast.LENGTH_LONG).show();
+                    startActivity(intent);
+                    //mUserDatabase.removeValue();
+                    mAuth.getCurrentUser().delete();
+                    finish();
+                    dialog.dismiss();
+                    return;
+                }
+            });
+        }
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

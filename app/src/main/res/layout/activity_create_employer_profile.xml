@@ -283,8 +283,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="13dp"
                 android:layout_marginLeft="13dp"
-                android:layout_marginTop="9dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginTop="11.5dp"
+                android:layout_marginBottom="7.5dp"
                 app:layout_constraintBottom_toBottomOf="@+id/websiteURL"
                 app:layout_constraintEnd_toEndOf="@+id/websiteURL"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -299,8 +299,8 @@
                 android:layout_height="25dp"
                 android:layout_marginStart="13dp"
                 android:layout_marginLeft="13dp"
-                android:layout_marginTop="9dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginTop="11.5dp"
+                android:layout_marginBottom="7.5dp"
                 app:layout_constraintBottom_toBottomOf="@+id/facebook"
                 app:layout_constraintEnd_toEndOf="@+id/facebook"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -314,8 +314,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="13dp"
                 android:layout_marginLeft="13dp"
-                android:layout_marginTop="9dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginTop="11.5dp"
+                android:layout_marginBottom="7.5dp"
                 app:layout_constraintBottom_toBottomOf="@+id/linkedIn"
                 app:layout_constraintEnd_toEndOf="@+id/linkedIn"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -329,8 +329,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="13dp"
                 android:layout_marginLeft="13dp"
-                android:layout_marginTop="9dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginTop="11.5dp"
+                android:layout_marginBottom="7.5dp"
                 app:layout_constraintBottom_toBottomOf="@+id/headquarter"
                 app:layout_constraintEnd_toEndOf="@+id/headquarter"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -344,8 +344,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="13dp"
                 android:layout_marginLeft="13dp"
-                android:layout_marginTop="9dp"
-                android:layout_marginBottom="9dp"
+                android:layout_marginTop="11.5dp"
+                android:layout_marginBottom="7.5dp"
                 app:layout_constraintBottom_toBottomOf="@+id/contact"
                 app:layout_constraintEnd_toEndOf="@+id/contact"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -359,18 +359,6 @@
 
 
     </ScrollView>
-
-
-
-    <!--<ImageView
-        android:id="@+id/footerbackground"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        app:layout_anchor="@+id/scrollView3"
-        app:layout_anchorGravity="bottom|center"
-        app:srcCompat="@drawable/footerbackground"
-        tools:layout_editor_absoluteX="120dp"
-        tools:layout_editor_absoluteY="638dp" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

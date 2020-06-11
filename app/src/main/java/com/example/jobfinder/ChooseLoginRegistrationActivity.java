@@ -26,7 +26,7 @@ public class ChooseLoginRegistrationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ChooseLoginRegistrationActivity.this, LoginActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
                 return;
             }
         });

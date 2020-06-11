@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -45,6 +46,8 @@ public class EmployeeMainActivity extends AppCompatActivity {
 
     private DatabaseReference usersDb;
 
+    private ImageView likeBtnIV, dislikeBtnIV;
+
     ListView listView;
     List<Cards> rowItems;
     List<JobCard> jobCardItems;
@@ -67,7 +70,6 @@ public class EmployeeMainActivity extends AppCompatActivity {
         jobArrayAdapter = new MyJobCardArrayAdapter(this, R.layout.item, jobCardItems);
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
-
         flingContainer.setAdapter(jobArrayAdapter);
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
@@ -85,6 +87,10 @@ public class EmployeeMainActivity extends AppCompatActivity {
                 String jobId = jobCard.getJobId();
                 usersDb.child(oppositeUserRole).child(employerId).child("jobs").child(jobId).child("connections").child("disliked").child(currentUId).setValue(true);
                 Toast.makeText(EmployeeMainActivity.this, "Left!", Toast.LENGTH_SHORT).show();
+                if(jobCardItems.isEmpty()){
+                    ImageView anchorImageView = (ImageView) findViewById(R.id.anchorImageView);
+                    anchorImageView.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -95,6 +101,10 @@ public class EmployeeMainActivity extends AppCompatActivity {
                 usersDb.child(oppositeUserRole).child(employerId).child("jobs").child(jobId).child("connections").child("liked").child(currentUId).setValue(true);
                 isConnectionMatch(employerId, jobId);
                 Toast.makeText(EmployeeMainActivity.this, "Right!", Toast.LENGTH_SHORT).show();
+                if(jobCardItems.isEmpty()){
+                    ImageView anchorImageView = (ImageView) findViewById(R.id.anchorImageView);
+                    anchorImageView.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -104,12 +114,16 @@ public class EmployeeMainActivity extends AppCompatActivity {
                 arrayAdapter.notifyDataSetChanged();
                 Log.d("LIST", "notified");
                 i++;*/
+                /*ImageView anchorImageView = (ImageView) findViewById(R.id.anchorImageView);
+                anchorImageView.setVisibility(View.GONE);*/
             }
 
             @Override
             public void onScroll(float scrollProgressPercent) {
 
             }
+
+
         });
 
 
@@ -120,6 +134,8 @@ public class EmployeeMainActivity extends AppCompatActivity {
                 Toast.makeText(EmployeeMainActivity.this, "Click!", Toast.LENGTH_SHORT).show();
             }
         });
+
+
 
     }
 
@@ -233,11 +249,20 @@ public class EmployeeMainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists() && !dataSnapshot.child("connections").child("disliked").hasChild(currentUId) && !dataSnapshot.child("connections").child("liked").hasChild(currentUId)) {
+                    String jobId = dataSnapshot.getKey();
+                    String title = "";
+                    String category = "";
                     String jobImageUrl = "default";
+                    if(dataSnapshot.child("title").getValue()!=null){
+                        title = dataSnapshot.child("title").getValue().toString();
+                    }
+                    if(dataSnapshot.child("category").getValue()!=null){
+                        category = dataSnapshot.child("category").getValue().toString();
+                    }
                     if (!dataSnapshot.child("jobImageUrl").getValue().equals("default")) {
                         jobImageUrl = dataSnapshot.child("jobImageUrl").getValue().toString();
                     }
-                    JobCard item = new JobCard(employerId, dataSnapshot.getKey(), dataSnapshot.child("title").getValue().toString(), jobImageUrl);
+                    JobCard item = new JobCard(employerId, jobId, title, category, jobImageUrl);
                     jobCardItems.add(item);
                     jobArrayAdapter.notifyDataSetChanged();
                 }

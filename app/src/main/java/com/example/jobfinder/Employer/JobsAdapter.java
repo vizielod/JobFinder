@@ -1,6 +1,11 @@
 package com.example.jobfinder.Employer;
 
+import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.Matches.EmployeeMatches.EmployeeMatchesAdapter;
 import com.example.jobfinder.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,12 +34,18 @@ import java.util.List;
 //dapters provide a binding from an app-specific data set to views that are displayed within a RecyclerView.
 public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
     private static final String LOGTAG = "UserRole";
+    private static final String DELETE_JOB = "DELETE JOB";
+
     private List<JobObject> jobsList;
     private Context context;
 
     private FirebaseAuth mAuth;
     private String currentUId;
     private DatabaseReference usersDb, chatDb;
+
+    private String alertDialogTitle, alertDialogMessage;
+
+    private boolean deleteJobAccepted = false;
 
     public JobsAdapter(List<JobObject> jobsList, Context context){
         this.jobsList = jobsList;
@@ -53,8 +65,10 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
 
     @Override
     public void onBindViewHolder(final JobViewHolder holder, final int position) {
+        Log.i(LOGTAG, Integer.toString(position));
         holder.mJobId.setText(jobsList.get(position).getJobId());
         holder.mJobTitle.setText(jobsList.get(position).getJobTitle());
+        holder.mJobCategory.setText(jobsList.get(position).getJobCategory());
         if(!jobsList.get(position).getJobImageUrl().equals("default")){
             Glide.with(context).load(jobsList.get(position).getJobImageUrl()).into(holder.mJobImage);
         }
@@ -67,14 +81,47 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
             @Override
             public void onClick(View v) {
                 //Log.i(LOGTAG, "DELETE" + mJobId.getText().toString());
-                removeAt(position);
+                alertDialogTitle = "Confirm Job Delete";
+                alertDialogMessage = "Are you sure you want to DELETE this Job?";
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(alertDialogTitle);
+                builder.setMessage(alertDialogMessage);
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            removeAt(position);
+                            usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+                            mAuth = FirebaseAuth.getInstance();
+                            currentUId = mAuth.getCurrentUser().getUid();
+                            deleteJob(holder.mJobId.getText().toString());
+                            dialog.dismiss();
+                        }
+                    });
+
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //RefreshRecyclerViewList();
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+                /*removeAt(position);
                 usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
                 mAuth = FirebaseAuth.getInstance();
                 currentUId = mAuth.getCurrentUser().getUid();
-                deleteJob(holder.mJobId.getText().toString());
+                deleteJob(holder.mJobId.getText().toString());*/
                 //deleteChatAndJobDataFromChatAndEmployeeDb(holder.mJobId.getText().toString());
             }
         });
+    }
+
+    @Override
+    public int getItemCount() {
+        return this.jobsList.size();
     }
 
     public void removeAt(int position) {
@@ -216,11 +263,6 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
 
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return this.jobsList.size();
     }
 
 

@@ -184,11 +184,25 @@ public class JobMainActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (dataSnapshot.exists() && !dataSnapshot.child("connections").child("disliked").child(employerId).hasChild(jobId) && !dataSnapshot.child("connections").child("liked").child(employerId).hasChild(jobId)) {
+                    String userId = dataSnapshot.getKey();
+                    String name = "Name";
+                    String age = "Age";
+                    String profession = "Profession";
                     String profileImageUrl = "default";
+
+                    if(dataSnapshot.child("name").getValue()!=null){
+                        name = dataSnapshot.child("name").getValue().toString();
+                    }
+                    if(dataSnapshot.child("age").getValue()!=null){
+                        age = dataSnapshot.child("age").getValue().toString();
+                    }
+                    if(dataSnapshot.child("profession").getValue()!=null){
+                        profession = dataSnapshot.child("profession").getValue().toString();
+                    }
                     if (!dataSnapshot.child("profileImageUrl").getValue().equals("default")) {
                         profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
                     }
-                    Cards item = new Cards(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profileImageUrl);
+                    Cards item = new Cards(userId, name, age, profession, profileImageUrl);
                     rowItems.add(item);
                     arrayAdapter.notifyDataSetChanged();
                 }

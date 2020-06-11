@@ -5,10 +5,13 @@ public class MatchesJobObject {
     private String jobId;
     private String jobTitle;
     private String jobImageUrl;
-    public MatchesJobObject(String employerId, String jobId, String jobTitle, String jobImageUrl){
+    private String jobCategory;
+
+    public MatchesJobObject(String employerId, String jobId, String jobTitle, String jobCategory, String jobImageUrl){
         this.employerId = employerId;
         this.jobId = jobId;
         this.jobTitle = jobTitle;
+        this.jobCategory = jobCategory;
         this.jobImageUrl = jobImageUrl;
     }
 
@@ -31,6 +34,13 @@ public class MatchesJobObject {
     }
     public void setJobTitle(String jobTitle){
         this.jobTitle = jobTitle;
+    }
+
+    public String getJobCategory(){
+        return jobCategory;
+    }
+    public void setJobCategory(String jobCategory){
+        this.jobCategory = jobCategory;
     }
 
     public String getJobImageUrl(){

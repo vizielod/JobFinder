@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,6 +80,7 @@ public class EmployerJobMatchesAdapter extends RecyclerView.Adapter<EmployerJobM
         final int temp_position = position;
         holder.mMatchId.setText(matchesList.get(position).getUserId());
         holder.mMatchName.setText(matchesList.get(position).getName());
+        holder.mMatchProfession.setText(matchesList.get(position).getProfession());
         if(!matchesList.get(position).getProfileImageUrl().equals("default")){
             Glide.with(context).load(matchesList.get(position).getProfileImageUrl()).into(holder.mMatchImage);
         }
@@ -99,7 +101,8 @@ public class EmployerJobMatchesAdapter extends RecyclerView.Adapter<EmployerJobM
                             if(dataSnapshot.child("userCVUrl").getValue() != null){
                                 final String userCVUrl = dataSnapshot.child("userCVUrl").getValue().toString();
                                 if (userCVUrl != null){
-                                    downloadFile(context, matchesList.get(temp_position).getName(), ".pdf", DIRECTORY_DOWNLOADS, userCVUrl);
+                                    //downloadFile(context, matchesList.get(temp_position).getName(), ".pdf", DIRECTORY_DOWNLOADS, userCVUrl);
+                                    downloadFile(context, matchesList.get(temp_position).getName(), ".pdf", Environment.getExternalStorageDirectory().getPath(), userCVUrl);
                                 }
                             }
                             }
