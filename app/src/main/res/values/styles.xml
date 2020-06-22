@@ -5,8 +5,12 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/darkgreen</item>
         <item name="buttonStyle">@style/CustomButton</item>
+    </style>
+
+    <style name="AppTheme.Cursor" parent="AppTheme">
+        <item name="colorAccent">@color/darkgreen</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -15,13 +19,12 @@
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/lightgreen</item>
         <item name="buttonStyle">@style/CustomButton</item>
         <item name="editTextStyle">@style/CustomEditText</item>
         <item name="android:windowBackground">@drawable/background</item>
         <item name="android:alertDialogTheme">@style/AppAlertTheme</item>
     </style>
-
 
     <style name="CustomButton" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/custom_button</item>
@@ -37,6 +40,7 @@
         <item name="android:textColor">@color/darkgreen</item>
         <item name="android:textColorHint">@color/darkgreen_50</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:textCursorDrawable">@color/darkgreen</item>
         <item name="android:textSize">15dp</item>
         <item name="android:gravity">left|center_vertical</item>
         <item name="android:fontFamily">@font/montserrat_regular</item>
@@ -49,6 +53,13 @@
 
     <style name="AppAlertTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:textColor">@color/darkgreen</item>
+    </style>
+
+    <style name="AppTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <!--<item name="android:textSize">12sp</item>-->
+        <item name="android:textColor">@color/white</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:fontFamily">@font/montserrat_bold</item>
     </style>
 
 

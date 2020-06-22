@@ -146,7 +146,7 @@ public class EmployerJobMatchesActivity extends AppCompatActivity {
                         profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
                     }
 
-                    MatchesEmployeeObject obj = new MatchesEmployeeObject(userId, name, profession, profileImageUrl, jobId);
+                    MatchesEmployeeObject obj = new MatchesEmployeeObject(userId, name, profession, profileImageUrl, jobId, employerId);
                     resultsMatches.add(obj);
                     mEmployerJobMatchesAdapter.notifyDataSetChanged();
                 }

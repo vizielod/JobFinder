@@ -50,12 +50,14 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
         itemView.setOnClickListener(this);
 
 
-        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+        /*usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
 
         mAuth = FirebaseAuth.getInstance();
-        currentUId = mAuth.getCurrentUser().getUid();
+        currentUId = mAuth.getCurrentUser().getUid();*/
 
-
+        usersDb = EmployerTabbedMainActivity.getUsersDb();
+        mAuth = EmployerTabbedMainActivity.getFirebaseAuth();
+        currentUId = EmployerTabbedMainActivity.getCurrentUId();
 
         mJobId = (TextView) itemView.findViewById(R.id.JobId);
         mJobTitle = (TextView) itemView.findViewById(R.id.JobTitle);
@@ -70,7 +72,8 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
 
     @Override
     public void onClick(View view) {
-        Intent intent = new Intent(view.getContext(), JobMainActivity.class);
+        //Intent intent = new Intent(view.getContext(), JobMainActivity.class);
+        Intent intent = new Intent(view.getContext(), JobTabbedMainActivity.class);
         Log.i(LOGTAG, mJobId.getText().toString());
         Bundle b = new Bundle();
         b.putString("jobId", mJobId.getText().toString());

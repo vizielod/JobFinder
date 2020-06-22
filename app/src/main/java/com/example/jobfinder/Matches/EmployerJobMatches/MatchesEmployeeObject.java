@@ -6,18 +6,23 @@ public class MatchesEmployeeObject {
     private String profession;
     private String profileImageUrl;
     private String jobId;
-    public MatchesEmployeeObject(String userId, String name, String profession, String profileImageUrl, String jobId){
+
+
+
+    private String employerId;
+    public MatchesEmployeeObject(String userId, String name, String profession, String profileImageUrl, String jobId, String employerId){
         this.userId = userId;
         this.name = name;
         this.profession = profession;
         this.profileImageUrl = profileImageUrl;
         this.jobId = jobId;
+        this.employerId = employerId;
     }
 
     public String getUserId(){
         return userId;
     }
-    public void setUserID(String userID){
+    public void setUserId(String userID){
         this.userId = userId;
     }
 
@@ -45,7 +50,16 @@ public class MatchesEmployeeObject {
     public String getJobId(){
         return jobId;
     }
-    public void setJobID(String jobId){
+    public void setJobId(String jobId){
         this.jobId = jobId;
     }
+
+    public String getEmployerId() {
+        return employerId;
+    }
+    public void setEmployerId(String employerId) {
+        this.employerId = employerId;
+    }
+
+
 }

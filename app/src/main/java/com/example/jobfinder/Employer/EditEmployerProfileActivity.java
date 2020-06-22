@@ -2,6 +2,7 @@ package com.example.jobfinder.Employer;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -567,5 +568,12 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ViewPager viewPager = (ViewPager) EmployerTabbedMainActivity.getViewPager();
+        viewPager.setCurrentItem(0);
     }
 }

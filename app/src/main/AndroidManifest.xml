@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jobfinder">
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,13 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".Employee.EditEmployeeProfileActivity"></activity>
+        <activity
+            android:name=".Employer.JobTabbedMainActivity"
+            android:label="@string/title_activity_job_tabbed_main"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".Employer.EmployerTabbedMainActivity"
+            android:label="@string/title_activity_employer_tabbed_main"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Employee.EditEmployeeProfileActivity" />
         <activity android:name=".Employee.CreateEmployeeProfileActivity" />
         <activity android:name=".Employer.EditEmployerProfileActivity" />
-        <activity android:name=".Employer.CreateEmployerProfileActivity">
-
-        </activity>
-
+        <activity android:name=".Employer.CreateEmployerProfileActivity" />
         <activity android:name=".Employer.CreateJobActivity" />
         <activity android:name=".Employer.EditJobActivity" />
         <activity
@@ -38,16 +45,6 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".Employer.JobMainActivity" />
         <activity android:name=".Employee.EmployeeMainActivity" />
-
-        <!--<provider
-            android:name=".GenericFileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
-        </provider>-->
     </application>
 
 </manifest>

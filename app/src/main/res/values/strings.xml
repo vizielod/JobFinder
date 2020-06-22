@@ -2,4 +2,11 @@
     <string name="app_name">JobFinder</string>
     <string name="hello_world">Hello World</string>
     <string name="title_activity_employer">EmployerActivity</string>
+    <string name="title_activity_employer_tabbed_main">EmployerTabbedMainActivity</string>
+    <string name="title_activity_job_tabbed_main">JobTabbedMainActivity</string>
+    <string name="tab_text_1">Exit</string>
+    <string name="tab_text_2">Profile</string>
+    <string name="tab_text_3">Main</string>
+    <string name="tab_text_4">Matches</string>
+
 </resources>

@@ -2,20 +2,45 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20sp"
-        android:id="@+id/container">
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/senderContainer"
+        android:background="@drawable/custom_sender_messagebox">
         <TextView
-            android:paddingBottom="20sp"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Text"
-            android:id="@+id/message"/>
+            android:textColor="@color/white"
+            android:fontFamily="@font/montserrat_regular"
+            android:textSize="15dp"
+            android:id="@+id/senderMessage"/>
+    </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20sp"
+        android:layout_marginRight="100dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/receivedContainer"
+        android:background="@drawable/custom_received_messagebox">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Text"
+            android:textColor="@color/white"
+            android:fontFamily="@font/montserrat_regular"
+            android:textSize="15dp"
+            android:id="@+id/receivedMessage"/>
     </LinearLayout>
 
 </LinearLayout>

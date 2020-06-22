@@ -1,18 +1,23 @@
 package com.example.jobfinder.Matches.EmployeeMatches;
 
+import android.Manifest;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -78,6 +83,15 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
         holder.mGetFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Enable Permission for External Storage if it isn't enabled by default.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(context,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:" + context.getPackageName()));
+                    context.startActivity(intent);
+                    return;
+                }
                 //Log.i(LOGTAG, "DELETE" + mJobId.getText().toString());
                 usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
                 mAuth = FirebaseAuth.getInstance();

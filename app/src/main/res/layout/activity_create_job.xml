@@ -228,6 +228,38 @@
                 app:layout_constraintTop_toBottomOf="@+id/city" />
 
             <EditText
+                android:id="@+id/phone"
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:hint="Phone number"
+                android:inputType="textEmailAddress"
+                android:paddingLeft="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contact" />
+
+            <ImageView
+                android:id="@+id/imageView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="13dp"
+                android:layout_marginLeft="13dp"
+                android:layout_marginTop="11.5dp"
+                android:layout_marginBottom="7.5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/phone"
+                app:layout_constraintEnd_toEndOf="@+id/phone"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/phone"
+                app:layout_constraintTop_toTopOf="@+id/phone"
+                app:srcCompat="@drawable/phone"/>
+
+            <EditText
                 android:id="@+id/jobWebsiteUrl"
                 android:layout_width="match_parent"
                 android:layout_height="43dp"
@@ -242,7 +274,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/contact" />
+                app:layout_constraintTop_toBottomOf="@+id/phone" />
 
             <Button
                 android:id="@+id/create"

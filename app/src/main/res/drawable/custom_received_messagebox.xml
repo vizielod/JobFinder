@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <layer-list>
+            <!-- SHADOW -->
+            <item android:bottom="3dp" android:left="3dp"
+                android:drawable="@drawable/messagebox_shadow">
+                <!--<shape>
+                    <solid android:color="@color/white"/>
+                    <corners android:radius="27dp"/>
+                </shape>-->
+            </item>
+            <!-- BUTTON alttan gölge
+              android:right="5px" to make it round-->
+            <item
+                android:top="3dp"
+                android:right="3dp"
+                >
+                <shape xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:shape="rectangle">
+                    <gradient
+                        android:angle="180"
+                        android:endColor="#667E6F"
+                        android:startColor="@color/darkgreen" />
+                    <padding
+                        android:bottom="7dp"
+                        android:left="7dp"
+                        android:right="10dp"
+                        android:top="10dp" />
+                    <stroke
+                        android:width="2dp"
+                        android:color="#FFF" />
+                    <!--android:dashGap="1dp"
+                    android:dashWidth="4dp"-->
+                    <corners android:radius="10dp" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+
+</selector>

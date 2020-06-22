@@ -151,8 +151,10 @@ public class EmployeeMainActivity extends AppCompatActivity {
 
                     //usersDb.child(dataSnapshot.getKey()).child("connections").child("matches").child(currentUId).setValue(true);
                     usersDb.child(oppositeUserRole).child(employerId).child("jobs").child(jobId).child("connections").child("matches").child(currentUId).child("chatId").setValue(key);
+                    usersDb.child(oppositeUserRole).child(employerId).child("jobs").child(jobId).child("connections").child("matches").child(currentUId).child("messaged").setValue("false");
                     //usersDb.child(currentUId).child("connections").child("matches").child(dataSnapshot.getKey()).setValue(true);
                     usersDb.child(userRole).child(currentUId).child("connections").child("matches").child(employerId).child(dataSnapshot.getKey()).child("chatId").setValue(key);
+                    usersDb.child(userRole).child(currentUId).child("connections").child("matches").child(employerId).child(dataSnapshot.getKey()).child("messaged").setValue("false");
                 }
             }
 

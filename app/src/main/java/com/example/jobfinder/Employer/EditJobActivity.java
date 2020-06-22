@@ -55,7 +55,7 @@ public class EditJobActivity extends AppCompatActivity {
     private static final String LOGTAG = "UserRole";
     final static int PICK_PDF_CODE = 2342;
 
-    private EditText mTitleField, mDescriptionField, mCategoryField, mCountryField, mCityField, mContactField, mJobWebsiteUrlField;
+    private EditText mTitleField, mDescriptionField, mCategoryField, mCountryField, mCityField, mContactField, mPhoneField, mJobWebsiteUrlField;
     private TextView mTextViewStatus, mTextViewPreviewDescription, mTextViewFileUploaded;
 
     private Button mBack, mConfirm, mPreviewDescription, mSelectFile, mUploadFile;
@@ -66,7 +66,7 @@ public class EditJobActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
 
-    private String userId, title, category, description, country, city, contact, jobWebsiteUrl, jobDescriptionUrl, jobImageUrl, userSex, jobId;
+    private String userId, title, category, description, country, city, contact, phone, jobWebsiteUrl, jobDescriptionUrl, jobImageUrl, userSex, jobId;
 
     private Uri resultImageUri, resultFileUri;
 
@@ -84,6 +84,7 @@ public class EditJobActivity extends AppCompatActivity {
         mCountryField = (EditText) findViewById(R.id.country);
         mCityField = (EditText) findViewById(R.id.city);
         mContactField = (EditText) findViewById(R.id.contact);
+        mPhoneField = (EditText) findViewById(R.id.phone);
         mJobWebsiteUrlField = (EditText) findViewById(R.id.jobWebsiteUrl);
 
         mTextViewFileUploaded = (TextView) findViewById(R.id.fileUploadedTextView);
@@ -196,6 +197,10 @@ public class EditJobActivity extends AppCompatActivity {
                         contact = map.get("contact").toString();
                         mContactField.setText(contact);
                     }
+                    if(map.get("phone")!=null){
+                        phone = map.get("phone").toString();
+                        mPhoneField.setText(phone);
+                    }
                     if(map.get("jobWebsiteUrl")!=null){
                         jobWebsiteUrl = map.get("jobWebsiteUrl").toString();
                         mJobWebsiteUrlField.setText(jobWebsiteUrl);
@@ -237,15 +242,17 @@ public class EditJobActivity extends AppCompatActivity {
         country = mCountryField.getText().toString();
         city = mCityField.getText().toString();
         contact = mContactField.getText().toString();
+        phone = mPhoneField.getText().toString();
         jobWebsiteUrl = mJobWebsiteUrlField.getText().toString();
         Map userInfo = new HashMap();
         userInfo.put("title", title);
         userInfo.put("category", category);
         userInfo.put("description", description);
-        userInfo.put("jobImageUrl", "default");
+        //userInfo.put("jobImageUrl", "default");
         userInfo.put("country", country);
         userInfo.put("city", city);
         userInfo.put("contact", contact);
+        userInfo.put("phone", phone);
         userInfo.put("jobWebsiteUrl", jobWebsiteUrl);
         //userInfo.put("jobImageUrl", "default");
         mUserDatabase.child("jobs").child(key).updateChildren(userInfo);
@@ -483,6 +490,14 @@ public class EditJobActivity extends AppCompatActivity {
             }
         });
         mContactField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        mPhoneField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.jobfinder.Employee.EmployeeMainActivity;
 import com.example.jobfinder.Employer.EmployerActivity;
+import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -40,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private DatabaseReference usersDb;
 
-    private String currentUId;
+    private String currentUId, loginMode;
 
     //usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
 
@@ -51,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+        loginMode = getIntent().getStringExtra("LoginMode");
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -148,7 +150,13 @@ public class LoginActivity extends AppCompatActivity {
                         if(snapshot.getKey().equals(user.getUid())){
                             setUserRole("Employer");
                             Log.i(LOGTAG, getUserRole());
-                            Intent intent = new Intent(LoginActivity.this, EmployerActivity.class);
+                            Intent intent;
+                            if(loginMode.equals("EmailLogin")){
+                                intent = new Intent(LoginActivity.this, EmployerActivity.class);
+                            }
+                            else{
+                                intent = new Intent(LoginActivity.this, EmployerTabbedMainActivity.class);
+                            }
                             intent.putExtra("userRole", userRole);
                             startActivity(intent);
                             finish();

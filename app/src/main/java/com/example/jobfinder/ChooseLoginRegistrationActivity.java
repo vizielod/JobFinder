@@ -8,9 +8,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
+
 public class ChooseLoginRegistrationActivity extends AppCompatActivity {
 
-    private Button mLogin;
+    private Button mLogin, mGoogleLoginBtn;
     private TextView mRegister;
 
     @Override
@@ -19,12 +21,25 @@ public class ChooseLoginRegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose_login_registration);
 
         mLogin = (Button) findViewById(R.id.login_email);
+        mGoogleLoginBtn = (Button) findViewById(R.id.login_google);
         mRegister = (TextView) findViewById(R.id.register);
 
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ChooseLoginRegistrationActivity.this, LoginActivity.class);
+                intent.putExtra("LoginMode", "EmailLogin");
+                startActivity(intent);
+                //finish();
+                return;
+            }
+        });
+
+        mGoogleLoginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChooseLoginRegistrationActivity.this, LoginActivity.class);
+                intent.putExtra("LoginMode", "GoogleLogin");
                 startActivity(intent);
                 //finish();
                 return;
