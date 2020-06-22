@@ -1,38 +1,26 @@
-package com.example.jobfinder.Matches.EmployerJobMatches;
+package com.example.jobfinder.Matches.EmployeeMatches;
 
-import android.Manifest;
-import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.Matches.EmployerJobMatches.EmployerJobMatchesViewHolder;
+import com.example.jobfinder.Matches.EmployerJobMatches.MatchesEmployeeObject;
 import com.example.jobfinder.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.util.List;
 
 //dapters provide a binding from an app-specific data set to views that are displayed within a RecyclerView.
-public class EmployerJobNewMatchesAdapter extends RecyclerView.Adapter<EmployerJobMatchesViewHolder>{
+public class EmployeeNewMatchesAdapter extends RecyclerView.Adapter<EmployeeMatchesViewHolder>{
     private static final String LOGTAG = "UserRole";
-    private List<MatchesEmployeeObject> matchesList;
+    private List<MatchesJobObject> matchesList;
     private Context context;
 
     private FirebaseAuth mAuth;
@@ -42,33 +30,33 @@ public class EmployerJobNewMatchesAdapter extends RecyclerView.Adapter<EmployerJ
     private static File userCVFile;
     private static long downloadID;
 
-    public EmployerJobNewMatchesAdapter(List<MatchesEmployeeObject> matchesList, Context context){
+    public EmployeeNewMatchesAdapter(List<MatchesJobObject> matchesList, Context context){
         this.matchesList = matchesList;
         this.context = context;
     }
 
     @Override
-    public EmployerJobMatchesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EmployeeMatchesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_new_matches, null, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp);
-        EmployerJobMatchesViewHolder rcv = new EmployerJobMatchesViewHolder(layoutView);
+        EmployeeMatchesViewHolder rcv = new EmployeeMatchesViewHolder(layoutView);
 
         return rcv;
     }
 
     @Override
-    public void onBindViewHolder(EmployerJobMatchesViewHolder holder, int position) {
+    public void onBindViewHolder(EmployeeMatchesViewHolder holder, int position) {
         final int temp_position = position;
-        holder.mMatchId.setText(matchesList.get(position).getUserId());
+
         holder.mMatchEmployerId.setText(matchesList.get(position).getEmployerId());
-        holder.mMatchName.setText(matchesList.get(position).getName());
-        //holder.mMatchProfession.setText(matchesList.get(position).getProfession());
-        if(!matchesList.get(position).getProfileImageUrl().equals("default")){
-            Glide.with(context).load(matchesList.get(position).getProfileImageUrl()).into(holder.mMatchImage);
-        }
         holder.mMatchJobId.setText(matchesList.get(position).getJobId());
+        holder.mMatchJobTitle.setText(matchesList.get(position).getJobTitle());
+        if (!matchesList.get(position).getJobImageUrl().equals("default")) {
+            Glide.with(context).load(matchesList.get(position).getJobImageUrl()).into(holder.mMatchJobImage);
+        }
+
     }
     // /data/user/0/com.example.jobfinder/cache/Vizi1433498305pdf
     /*public void downloadFile(Context context, String fileName, String fileExtension, String destinationDirectory, String url){

@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
@@ -21,7 +22,9 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.Chat.ChatActivity;
 import com.example.jobfinder.Employer.CreateJobActivity;
+import com.example.jobfinder.Employer.PreviewJobProfileActivity;
 import com.example.jobfinder.Matches.EmployerJobMatches.MatchesEmployeeObject;
 import com.example.jobfinder.Matches.EmployerJobMatches.EmployerJobMatchesViewHolder;
 import com.example.jobfinder.R;
@@ -78,8 +81,18 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
         if (!matchesList.get(position).getJobImageUrl().equals("default")) {
             Glide.with(context).load(matchesList.get(position).getJobImageUrl()).into(holder.mMatchJobImage);
         }
-
-
+        //mGetFileButton.setText("Info");
+        holder.mMatchJobImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, PreviewJobProfileActivity.class);
+                Bundle b = new Bundle();
+                b.putString("jobId", matchesList.get(temp_position).getJobId());
+                b.putString("employerId", matchesList.get(temp_position).getEmployerId());
+                intent.putExtras(b);
+                context.startActivity(intent);
+            }
+        });
         holder.mGetFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

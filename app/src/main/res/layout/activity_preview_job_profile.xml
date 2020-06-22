@@ -5,8 +5,20 @@
     android:id="@+id/scrollView2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:tag="PREVIEW_JOB_PROFILE_FRAGMENT">
+    tools:context=".Employer.PreviewJobProfileActivity">
     <!--tools:context=".Employer.EditEmployerProfileActivity">-->
+
+    <ImageView
+        android:id="@+id/backArrow_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:translationZ="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/arrow_back" />
 
     <ScrollView
         android:id="@+id/scrollView3"
@@ -72,7 +84,7 @@
                 <TextView
                     android:id="@+id/jobCategory_textview"
                     android:layout_width="240dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:fontFamily="@font/montserrat_regular"
                     android:gravity="left"
                     android:paddingLeft="20dp"
@@ -99,11 +111,10 @@
 
                     <TextView
                         android:id="@+id/city_textview"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_width="122dp"
+                        android:layout_height="30dp"
                         android:fontFamily="@font/montserrat_regular"
                         android:text=" City"
-                        android:paddingBottom="10dp"
                         android:textColor="@color/white"
                         android:textSize="20dp" />
                 </LinearLayout>
@@ -112,12 +123,12 @@
                 <TextView
                     android:id="@+id/companyname_textview"
                     android:layout_width="240dp"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_regular"
                     android:gravity="left"
                     android:paddingLeft="20dp"
-                    android:paddingBottom="10dp"
                     android:text="Company Name"
+                    android:paddingBottom="10dp"
                     android:textColor="@color/white"
                     android:textSize="20dp" />
 
@@ -157,46 +168,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/jobDescription" />
 
-            <Button
-                android:id="@+id/edit"
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="100dp"
-                android:gravity="center"
-                android:text="Edit Company Profile"
-                android:textAlignment="center"
-                android:textSize="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.496"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/phone"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <Button
-                android:id="@+id/btn_deleteUserProfile"
-                android:layout_width="180dp"
-                android:layout_height="53dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="100dp"
-                android:gravity="center"
-                android:text="Delete"
-                android:textAlignment="center"
-                android:textSize="25dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edit" />
-
 
             <ImageView
                 android:id="@+id/imageView6"
@@ -215,25 +186,14 @@
                 app:srcCompat="@drawable/at_icon" />
 
             <ImageView
-                android:id="@+id/editImageBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/jobImage"
-                app:layout_constraintTop_toTopOf="@+id/jobImage"
-                app:srcCompat="@drawable/edit_icon" />
-
-            <ImageView
                 android:id="@+id/facebook_icon_imageview"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginBottom="175dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                android:layout_marginTop="25dp"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout"
+                app:layout_constraintTop_toBottomOf="@+id/jobImage"
                 app:srcCompat="@drawable/facebook_colored_icon" />
 
             <ImageView
@@ -242,9 +202,9 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginBottom="175dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                android:layout_marginTop="25dp"
                 app:layout_constraintStart_toEndOf="@+id/facebook_icon_imageview"
+                app:layout_constraintTop_toBottomOf="@+id/jobImage"
                 app:srcCompat="@drawable/linkedin_colored_icon" />
 
             <ImageView
@@ -253,9 +213,9 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginBottom="175dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                android:layout_marginTop="25dp"
                 app:layout_constraintStart_toEndOf="@+id/linkedin_icon_imageview"
+                app:layout_constraintTop_toBottomOf="@+id/jobImage"
                 app:srcCompat="@drawable/website_colored_icon" />
 
             <Button
@@ -280,9 +240,11 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="50dp"
                 android:hint="Phone"
                 android:inputType="text"
                 android:paddingLeft="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/contact" />

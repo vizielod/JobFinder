@@ -2,11 +2,21 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:tag="PREVIEW_JOB_PROFILE_FRAGMENT">
-    <!--tools:context=".Employer.EditEmployerProfileActivity">-->
+    tools:context=".Employee.PreviewEmployeeProfileActivity">
+
+    <ImageView
+        android:id="@+id/backArrow_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:translationZ="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/arrow_back" />
 
     <ScrollView
         android:id="@+id/scrollView3"
@@ -27,7 +37,7 @@
 
 
             <ImageView
-                android:id="@+id/jobImage"
+                android:id="@+id/profileImage"
                 android:layout_width="match_parent"
                 android:layout_height="500dp"
                 android:layout_marginBottom="8dp"
@@ -54,30 +64,42 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/jobImage">
+                app:layout_constraintTop_toBottomOf="@+id/profileImage">
+
 
                 <TextView
-                    android:id="@+id/jobTitle_textview"
-                    android:layout_width="240dp"
+                    android:id="@+id/name_textview"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_semibold"
                     android:gravity="left"
                     android:paddingLeft="20dp"
                     android:paddingTop="20dp"
                     android:paddingBottom="10dp"
-                    android:text="Job Name"
+                    android:text="Name"
                     android:textColor="@color/white"
                     android:textSize="23dp" />
-
                 <TextView
-                    android:id="@+id/jobCategory_textview"
-                    android:layout_width="240dp"
+                    android:id="@+id/age_textview"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_regular"
                     android:gravity="left"
                     android:paddingLeft="20dp"
                     android:paddingBottom="10dp"
-                    android:text="Category"
+                    android:text="Age"
+                    android:textColor="@color/white"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:id="@+id/profession_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:gravity="left"
+                    android:paddingLeft="20dp"
+                    android:paddingBottom="10dp"
+                    android:text="Profession"
                     android:textColor="@color/white"
                     android:textSize="20dp" />
 
@@ -99,32 +121,18 @@
 
                     <TextView
                         android:id="@+id/city_textview"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:fontFamily="@font/montserrat_regular"
                         android:text=" City"
-                        android:paddingBottom="10dp"
                         android:textColor="@color/white"
                         android:textSize="20dp" />
                 </LinearLayout>
 
-
-                <TextView
-                    android:id="@+id/companyname_textview"
-                    android:layout_width="240dp"
-                    android:layout_height="40dp"
-                    android:fontFamily="@font/montserrat_regular"
-                    android:gravity="left"
-                    android:paddingLeft="20dp"
-                    android:paddingBottom="10dp"
-                    android:text="Company Name"
-                    android:textColor="@color/white"
-                    android:textSize="20dp" />
-
             </LinearLayout>
 
             <EditText
-                android:id="@+id/jobDescription"
+                android:id="@+id/employeeDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -133,7 +141,7 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
                 android:clickable="false"
-                android:hint="Company's description"
+                android:hint="About me..."
                 android:inputType="textMultiLine"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -155,47 +163,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/jobDescription" />
-
-            <Button
-                android:id="@+id/edit"
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="100dp"
-                android:gravity="center"
-                android:text="Edit Company Profile"
-                android:textAlignment="center"
-                android:textSize="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.496"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/phone"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <Button
-                android:id="@+id/btn_deleteUserProfile"
-                android:layout_width="180dp"
-                android:layout_height="53dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="100dp"
-                android:gravity="center"
-                android:text="Delete"
-                android:textAlignment="center"
-                android:textSize="25dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edit" />
+                app:layout_constraintTop_toBottomOf="@+id/employeeDescription" />
 
 
             <ImageView
@@ -214,16 +182,6 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/at_icon" />
 
-            <ImageView
-                android:id="@+id/editImageBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/jobImage"
-                app:layout_constraintTop_toTopOf="@+id/jobImage"
-                app:srcCompat="@drawable/edit_icon" />
 
             <ImageView
                 android:id="@+id/facebook_icon_imageview"
@@ -231,9 +189,9 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginBottom="175dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                android:layout_marginTop="25dp"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout"
+                app:layout_constraintTop_toBottomOf="@+id/profileImage"
                 app:srcCompat="@drawable/facebook_colored_icon" />
 
             <ImageView
@@ -242,8 +200,8 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginBottom="175dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                android:layout_marginTop="25dp"
+                app:layout_constraintTop_toBottomOf="@+id/profileImage"
                 app:layout_constraintStart_toEndOf="@+id/facebook_icon_imageview"
                 app:srcCompat="@drawable/linkedin_colored_icon" />
 
@@ -253,23 +211,23 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginBottom="175dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                android:layout_marginTop="25dp"
+                app:layout_constraintTop_toBottomOf="@+id/profileImage"
                 app:layout_constraintStart_toEndOf="@+id/linkedin_icon_imageview"
                 app:srcCompat="@drawable/website_colored_icon" />
 
             <Button
-                android:id="@+id/details"
+                android:id="@+id/btn_preview_cv"
                 android:enabled="false"
-                android:layout_width="160dp"
+                android:layout_width="180dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="475dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
-                android:text="Details"
+                android:text="Preview CV"
                 android:textAlignment="center"
-                app:layout_constraintEnd_toEndOf="@+id/jobImage"
-                app:layout_constraintTop_toTopOf="@+id/jobImage" />
+                app:layout_constraintEnd_toEndOf="@+id/profileImage"
+                app:layout_constraintTop_toTopOf="@+id/profileImage" />
 
             <EditText
                 android:id="@+id/phone"
@@ -280,48 +238,29 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="50dp"
                 android:hint="Phone"
                 android:inputType="text"
                 android:paddingLeft="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/contact" />
-            
-            <ImageView
-            android:id="@+id/imageView7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="13dp"
-            android:layout_marginLeft="13dp"
-            android:layout_marginTop="11.5dp"
-            android:layout_marginBottom="7.5dp"
-            app:layout_constraintBottom_toBottomOf="@+id/phone"
-            app:layout_constraintEnd_toEndOf="@+id/phone"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/phone"
-            app:layout_constraintTop_toTopOf="@+id/phone"
-            app:srcCompat="@drawable/phone"/>
 
             <ImageView
-                android:id="@+id/employerImage"
-                android:layout_width="120dp"
-                android:layout_height="140dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="30dp"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/ic_launcher"
-                android:translationZ="1dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/linearLayout"
-                app:layout_constraintVertical_bias="0.386" />
-
-
-            
-            
-
+                android:id="@+id/imageView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="13dp"
+                android:layout_marginLeft="13dp"
+                android:layout_marginTop="11.5dp"
+                android:layout_marginBottom="7.5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/phone"
+                app:layout_constraintEnd_toEndOf="@+id/phone"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/phone"
+                app:layout_constraintTop_toTopOf="@+id/phone"
+                app:srcCompat="@drawable/phone" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

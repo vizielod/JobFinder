@@ -1,10 +1,14 @@
 package com.example.jobfinder.Chat;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +20,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.Cards.JobCard;
+import com.example.jobfinder.Employee.EmployeeFragments.PreviewEmployeeProfileFragment;
+import com.example.jobfinder.Employee.PreviewEmployeeProfileActivity;
 import com.example.jobfinder.Employer.EditJobActivity;
+import com.example.jobfinder.Employer.JobFragments.PreviewJobProfileFragment;
+import com.example.jobfinder.Employer.PreviewJobProfileActivity;
 import com.example.jobfinder.Matches.EmployerJobMatches.MatchesEmployeeObject;
 import com.example.jobfinder.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,7 +70,10 @@ public class ChatActivity extends AppCompatActivity {
         if(userRole.equals("Employee")){
             oppositeUserRole = "Employer";
             employerId = getIntent().getExtras().getString("employerId");
+            Log.i(LOGTAG, "sendMessage" + " employerId   " + employerId);
+            Log.i(LOGTAG, "sendMessage" + " matchId  " + matchId);
             mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(currentUserID).child("connections").child("matches").child(employerId).child(matchId).child("chatId");
+            FetchJobInformation(employerId, matchId);
         }
         else if(userRole.equals("Employer")){
             oppositeUserRole = "Employee";
@@ -118,7 +130,22 @@ public class ChatActivity extends AppCompatActivity {
         mMatchImage.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Toast.makeText(ChatActivity.this, "Open Employee Profile", Toast.LENGTH_LONG).show();
+                if(userRole.equals("Employee")){
+                    Intent intent = new Intent(ChatActivity.this, PreviewJobProfileActivity.class);
+                    Bundle b = new Bundle();
+                    b.putString("jobId", matchId);
+                    b.putString("employerId", employerId);
+                    intent.putExtras(b);
+                    startActivity(intent);
+                }
+                else if(userRole.equals("Employer")){
+                    Intent intent = new Intent(ChatActivity.this, PreviewEmployeeProfileActivity.class);
+                    intent.putExtra("employeeId", matchId);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(ChatActivity.this, "Cannot open this profile", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
         mDeleteMatchBtnIV.setOnClickListener(new View.OnClickListener(){
@@ -127,6 +154,46 @@ public class ChatActivity extends AppCompatActivity {
                 Toast.makeText(ChatActivity.this, "Delete employee from matches", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+
+    private void FetchJobInformation(final String employerId, final String key) {
+        Log.i(LOGTAG, "FetchJobInformation" + "   " + employerId + "   " + key);
+        DatabaseReference jobDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(employerId).child("jobs").child(key);
+        jobDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String jobId = dataSnapshot.getKey();
+                    String title = "";
+                    String jobImageUrl = "default";
+                    if(dataSnapshot.child("title").getValue()!=null){
+                        title = dataSnapshot.child("title").getValue().toString();
+                        mMatchName.setText(title);
+                    }
+                    Glide.clear(mMatchImage);
+
+                    if(dataSnapshot.child("jobImageUrl").getValue()!=null){
+                        jobImageUrl = dataSnapshot.child("jobImageUrl").getValue().toString();
+                        Glide.with(getApplication()).load(jobImageUrl).into(mMatchImage);
+                        switch(jobImageUrl){
+                            case "default":
+                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mMatchImage);
+                                break;
+                            default:
+                                Glide.with(getApplication()).load(jobImageUrl).into(mMatchImage);
+                                break;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void FetchEmployerJobMatchInformation(String key) {

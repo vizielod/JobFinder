@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jobfinder.Chat.ChatActivity;
@@ -27,7 +29,7 @@ public class EmployeeMatchesViewHolder extends RecyclerView.ViewHolder implement
 
         mMatchJobImage = (ImageView) itemView.findViewById(R.id.MatchImage);
         mGetFileButton = (Button) itemView.findViewById(R.id.btn_getFile);
-        mGetFileButton.setText("Info");
+        //mGetFileButton.setText("Info");
 
     }
 

@@ -11,10 +11,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".Employer.PreviewEmployerProfileActivity"></activity>
+        <activity android:name=".Employee.PreviewEmployeeProfileActivity" />
+        <activity
+            android:name=".Employee.EmployeeTabbedMainActivity"
+            android:label="@string/title_activity_employee_tabbed_main"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Employer.JobTabbedMainActivity"
             android:label="@string/title_activity_job_tabbed_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Employer.EmployerTabbedMainActivity"
             android:label="@string/title_activity_employer_tabbed_main"
@@ -25,6 +31,7 @@
         <activity android:name=".Employer.CreateEmployerProfileActivity" />
         <activity android:name=".Employer.CreateJobActivity" />
         <activity android:name=".Employer.EditJobActivity" />
+        <activity android:name=".Employer.PreviewJobProfileActivity" />
         <activity
             android:name=".Employer.EmployerActivity"
             android:label="@string/title_activity_employer"

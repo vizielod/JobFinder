@@ -8,5 +8,7 @@
     <string name="tab_text_2">Profile</string>
     <string name="tab_text_3">Main</string>
     <string name="tab_text_4">Matches</string>
+    <string name="title_activity_employee_tabbed_main">EmployeeTabbedMainActivity</string>
+
 
 </resources>

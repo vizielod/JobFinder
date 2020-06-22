@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jobfinder.Employee.EmployeeMainActivity;
+import com.example.jobfinder.Employee.EmployeeTabbedMainActivity;
 import com.example.jobfinder.Employer.EmployerActivity;
 import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -182,7 +183,13 @@ public class LoginActivity extends AppCompatActivity {
                         if(snapshot.getKey().equals(user.getUid())){
                             setUserRole("Employee");
                             Log.i(LOGTAG, getUserRole());
-                            Intent intent = new Intent(LoginActivity.this, EmployeeMainActivity.class);
+                            Intent intent;
+                            if(loginMode.equals("EmailLogin")){
+                                intent = new Intent(LoginActivity.this, EmployeeMainActivity.class);
+                            }
+                            else{
+                                intent = new Intent(LoginActivity.this, EmployeeTabbedMainActivity.class);
+                            }
                             intent.putExtra("userRole", userRole);
                             startActivity(intent);
                             finish();

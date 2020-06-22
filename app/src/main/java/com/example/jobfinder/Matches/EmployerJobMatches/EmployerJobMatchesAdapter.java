@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
@@ -24,6 +25,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.Chat.ChatActivity;
+import com.example.jobfinder.Employee.PreviewEmployeeProfileActivity;
 import com.example.jobfinder.Employer.CreateJobActivity;
 import com.example.jobfinder.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -91,6 +94,16 @@ public class EmployerJobMatchesAdapter extends RecyclerView.Adapter<EmployerJobM
             Glide.with(context).load(matchesList.get(position).getProfileImageUrl()).into(holder.mMatchImage);
         }
         holder.mMatchJobId.setText(matchesList.get(position).getJobId());
+
+        holder.mMatchImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, PreviewEmployeeProfileActivity.class);
+                intent.putExtra("employeeId", matchesList.get(temp_position).getUserId());
+                context.startActivity(intent);
+                return;
+            }
+        });
 
         holder.mGetFileButton.setOnClickListener(new View.OnClickListener() {
             @Override

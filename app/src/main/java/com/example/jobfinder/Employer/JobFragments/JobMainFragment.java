@@ -21,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.jobfinder.Cards.Cards;
 import com.example.jobfinder.Cards.MyArrayAdapter;
 import com.example.jobfinder.Cards.MyJobCardArrayAdapter;
+import com.example.jobfinder.Chat.ChatActivity;
 import com.example.jobfinder.ChooseLoginRegistrationActivity;
+import com.example.jobfinder.Employee.PreviewEmployeeProfileActivity;
 import com.example.jobfinder.Employer.EditJobActivity;
 import com.example.jobfinder.Employer.EmployerFragments.EmployerMainFragment;
 import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
@@ -145,7 +147,11 @@ public class JobMainFragment extends Fragment {
         flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
-                Toast.makeText(mFragmentActivity, "Click!", Toast.LENGTH_SHORT).show();
+                Cards obj = (Cards) dataObject;
+                String userId = obj.getUserId();
+                Intent intent = new Intent(mFragmentActivity, PreviewEmployeeProfileActivity.class);
+                intent.putExtra("employeeId", userId);
+                startActivity(intent);
             }
         });
 

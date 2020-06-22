@@ -273,7 +273,7 @@ public class PreviewEmployerProfileFragment extends Fragment {
 
     }
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1 && resultCode == Activity.RESULT_OK){
@@ -281,7 +281,7 @@ public class PreviewEmployerProfileFragment extends Fragment {
             resultUri = imageUri;
             mEmployerImage.setImageURI(resultUri);
         }
-    }
+    }*/
 
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager) mContext.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -356,7 +356,7 @@ public class PreviewEmployerProfileFragment extends Fragment {
     }
 
     public void PopAlertDialogMessage(String title, String message, String callMessage){
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mFragmentActivity);
 
         builder.setTitle(title);
         builder.setMessage(message);
@@ -371,7 +371,7 @@ public class PreviewEmployerProfileFragment extends Fragment {
                     startActivity(intent);
                     //mUserDatabase.removeValue();
                     mAuth.getCurrentUser().delete();
-                    //finish();
+                    mFragmentActivity.finish();
                     dialog.dismiss();
                     return;
                 }
