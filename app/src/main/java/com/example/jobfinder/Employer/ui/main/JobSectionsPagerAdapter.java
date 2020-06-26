@@ -45,6 +45,9 @@ public class JobSectionsPagerAdapter extends FragmentPagerAdapter {
             case 2:
                 fragment = JobMatchesFragment.newInstance();
                 break;
+            case 3:
+                fragment = PreviewEmployerProfileFragment.newInstance();
+                break;
         }
         return fragment;
 

@@ -137,11 +137,13 @@ public class ChatActivity extends AppCompatActivity {
                     b.putString("employerId", employerId);
                     intent.putExtras(b);
                     startActivity(intent);
+                    return;
                 }
                 else if(userRole.equals("Employer")){
                     Intent intent = new Intent(ChatActivity.this, PreviewEmployeeProfileActivity.class);
                     intent.putExtra("employeeId", matchId);
                     startActivity(intent);
+                    return;
                 }else{
                     Toast.makeText(ChatActivity.this, "Cannot open this profile", Toast.LENGTH_LONG).show();
                 }

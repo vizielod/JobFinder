@@ -28,14 +28,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.jobfinder.ChooseLoginRegistrationActivity;
@@ -45,6 +48,8 @@ import com.example.jobfinder.Employer.EmployerFragments.PreviewEmployerProfileFr
 import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
 import com.example.jobfinder.Employer.JobTabbedMainActivity;
 import com.example.jobfinder.Employer.JobsAdapter;
+import com.example.jobfinder.Employer.PreviewEmployerProfileActivity;
+import com.example.jobfinder.Employer.PreviewJobProfileActivity;
 import com.example.jobfinder.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -73,12 +78,12 @@ public class PreviewJobProfileFragment extends Fragment {
 
     private Context mContext;
 
-    private EditText mDescriptionField, mWebsiteField, mContactField, mLinkedInField, mFacebookField, mPhoneField;
+    private TextView mDescriptionField, mContactField, mPhoneField;
     private TextView mCompanyNameField, mTitleField, mCategoryField, mCountryField, mCityField;
 
     private Button mBack, mEditBtn, mPreviewDetailsBtn, mDeleteBtn;
 
-    private ImageView mJobImage, mEmployerImage, mEditBtnIVBtn, mFacebookIcon, mLinkedinIcon, mWebsiteIcon;
+    private ImageView mJobImage, mEmployerImage, mEditBtnIVBtn, mBackArrowBtnIV, mFacebookIcon, mLinkedinIcon, mWebsiteIcon;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, chatDb, usersDb, jobsDb;
@@ -89,6 +94,10 @@ public class PreviewJobProfileFragment extends Fragment {
     private String alertDialogTitle, alertDialogMessage;
 
     private FragmentActivity mFragmentActivity;
+
+    ViewPager viewPager;
+
+    private boolean isJobTabbedMainActivity;
 
 
     public PreviewJobProfileFragment(){
@@ -112,9 +121,9 @@ public class PreviewJobProfileFragment extends Fragment {
         mCityField = (TextView) view.findViewById(R.id.city_textview);
         mCompanyNameField = (TextView) view.findViewById(R.id.companyname_textview);
 
-        mDescriptionField = (EditText) view.findViewById(R.id.jobDescription);
-        mContactField = (EditText) view.findViewById(R.id.contact);
-        mPhoneField = (EditText) view.findViewById(R.id.phone);
+        mDescriptionField = (TextView) view.findViewById(R.id.jobDescription);
+        mContactField = (TextView) view.findViewById(R.id.contact);
+        mPhoneField = (TextView) view.findViewById(R.id.phone);
 
         mFacebookIcon = (ImageView) view.findViewById(R.id.facebook_icon_imageview);
         mLinkedinIcon = (ImageView) view.findViewById(R.id.linkedin_icon_imageview);
@@ -123,15 +132,27 @@ public class PreviewJobProfileFragment extends Fragment {
         mJobImage = (ImageView) view.findViewById(R.id.jobImage);
         mEmployerImage = (ImageView) view.findViewById(R.id.employerImage);
         mEditBtnIVBtn = (ImageView) view.findViewById(R.id.editImageBtn);
+        mBackArrowBtnIV = (ImageView) view.findViewById(R.id.backArrow_imageview);
 
         mEditBtn = (Button)  view.findViewById(R.id.edit);
         mPreviewDetailsBtn = (Button)  view.findViewById(R.id.details);
         mDeleteBtn = (Button)  view.findViewById(R.id.btn_deleteUserProfile);
 
-        if (jobId != null && mUserDatabase!= null){
+        if(!isJobTabbedMainActivity){
+            mDeleteBtn.setVisibility(View.GONE);
+            mEditBtnIVBtn.setVisibility(View.GONE);
+            mEditBtn.setVisibility(View.GONE);
+
+        }
+        if(isJobTabbedMainActivity){
+            mEditBtn.setText("Edit Job Profile");
+            mBackArrowBtnIV.setVisibility(View.GONE);
+        }
+
+        /*if (jobId != null && mUserDatabase!= null){
             getJobInfo();
             getUserInfo();
-        }
+        }*/
 
         hideEditTextKeypadOnFocusChange();
 
@@ -209,7 +230,36 @@ public class PreviewJobProfileFragment extends Fragment {
                 }
             }
         });
+        mEmployerImage.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                /*Intent intent = new Intent(mFragmentActivity, PreviewEmployerProfileActivity.class);
+                intent.putExtra("employerId", employerId);
+                startActivity(intent);*/
+                /*Fragment profileFragment = PreviewEmployerProfileFragment.newInstance();
+                FragmentManager fm = mFragmentActivity.getSupportFragmentManager();*/
+                if(isJobTabbedMainActivity){
+                    //fm.beginTransaction().replace(R.id.container, profileFragment).addToBackStack(null).commit();
+                    Intent intent = new Intent(mFragmentActivity, PreviewEmployerProfileActivity.class);
+                    intent.putExtra("employerId", employerId);
+                    startActivity(intent);
+                }
+                else{
+                    Fragment profileFragment = PreviewEmployerProfileFragment.newInstance();
+                    FragmentManager fm = mFragmentActivity.getSupportFragmentManager();
+                    fm.beginTransaction().replace(R.id.container, profileFragment).addToBackStack(null).commit();
+                }
 
+                return;
+            }
+        });
+        mBackArrowBtnIV.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                mFragmentActivity.finish();
+                return;
+            }
+        });
         return view;
     }
 
@@ -219,20 +269,53 @@ public class PreviewJobProfileFragment extends Fragment {
 
         mContext = getContext();
         mFragmentActivity = getActivity();
-        usersDb = (DatabaseReference) JobTabbedMainActivity.getUsersDb();
-        mUserDatabase = (DatabaseReference) EmployerTabbedMainActivity.getUserDatabase();
-        jobId = (String) JobTabbedMainActivity.getJobId();
-        employerId = (String) JobTabbedMainActivity.getEmployerId();
-        //userRole = (String) EmployerTabbedMainActivity.getUserRole();
-        mAuth = EmployerTabbedMainActivity.getFirebaseAuth();
+        isJobTabbedMainActivity = mContext.getClass().getName().endsWith("JobTabbedMainActivity");
+
+        if(isJobTabbedMainActivity){
+            usersDb = (DatabaseReference) JobTabbedMainActivity.getUsersDb();
+            mUserDatabase = (DatabaseReference) EmployerTabbedMainActivity.getUserDatabase();
+            jobId = (String) JobTabbedMainActivity.getJobId();
+            employerId = (String) JobTabbedMainActivity.getEmployerId();
+            //userRole = (String) EmployerTabbedMainActivity.getUserRole();
+            mAuth = EmployerTabbedMainActivity.getFirebaseAuth();
+            viewPager = JobTabbedMainActivity.getViewPager();
+        }
+        else{
+            usersDb = (DatabaseReference) PreviewJobProfileActivity.getUsersDb();
+            mUserDatabase = (DatabaseReference) PreviewJobProfileActivity.getUserDatabase();
+            jobId = (String) PreviewJobProfileActivity.getJobId();
+            employerId = (String) PreviewJobProfileActivity.getEmployerId();
+            mAuth = PreviewJobProfileActivity.getFirebaseAuth();
+
+            //Customize to finish Parent Activity on default Back pressed by touching home button
+            OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    mFragmentActivity.finish();
+                }
+            };
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+        }
+
 
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getJobInfo();
-        getUserInfo();
+        if (jobId != null && mUserDatabase!= null){
+            getJobInfo();
+            getUserInfo();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        /*if(!isJobTabbedMainActivity){
+            mFragmentActivity.finish();
+        }*/
+
     }
 
     public void getJobInfo() {

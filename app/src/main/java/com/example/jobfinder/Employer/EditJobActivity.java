@@ -22,16 +22,18 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.jobfinder.R;
-import com.example.jobfinder.SettingsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -48,6 +50,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,8 +59,12 @@ public class EditJobActivity extends AppCompatActivity {
     private static final String LOGTAG = "UserRole";
     final static int PICK_PDF_CODE = 2342;
 
-    private EditText mTitleField, mDescriptionField, mCategoryField, mCountryField, mCityField, mContactField, mPhoneField, mJobWebsiteUrlField;
-    private TextView mTextViewStatus, mTextViewPreviewDescription, mTextViewFileUploaded;
+    private EditText mTitleField, mDescriptionField, mCountryField, mCityField, mContactField, mPhoneField, mJobWebsiteUrlField;
+    private TextView mTextViewStatus, mTextViewPreviewDescription, mTextViewFileUploaded, mCategoryField, mTypeField;
+
+    private Spinner mCategorySpinner, mTypeSpinner;
+
+    private ArrayList<String> jobCategorySpinnerList, jobTypeSpinnerList;
 
     private Button mBack, mConfirm, mPreviewDescription, mSelectFile, mUploadFile;
 
@@ -66,8 +74,12 @@ public class EditJobActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
 
-    private String userId, title, category, description, country, city, contact, phone, jobWebsiteUrl, jobDescriptionUrl, jobImageUrl, userSex, jobId;
+    private String userId, title, category, type, description, country, city, contact, phone, jobWebsiteUrl, jobDescriptionUrl, jobImageUrl, userSex, jobId;
+    private String selectedTypeSpinner, selectedCategorySpinner;
 
+    private String resource_category_spinner_str;
+
+    private Boolean initializedCategorySpinner = false;
     private Uri resultImageUri, resultFileUri;
 
     @Override
@@ -80,16 +92,21 @@ public class EditJobActivity extends AppCompatActivity {
 
         mTitleField = (EditText) findViewById(R.id.jobTitle);
         mDescriptionField = (EditText) findViewById(R.id.jobDescription);
-        mCategoryField = (EditText) findViewById(R.id.category);
         mCountryField = (EditText) findViewById(R.id.country);
         mCityField = (EditText) findViewById(R.id.city);
         mContactField = (EditText) findViewById(R.id.contact);
         mPhoneField = (EditText) findViewById(R.id.phone);
         mJobWebsiteUrlField = (EditText) findViewById(R.id.jobWebsiteUrl);
 
+        mCategorySpinner = (Spinner) findViewById(R.id.category_spinner);
+        mTypeSpinner = (Spinner) findViewById(R.id.type_spinner);
+
         mTextViewFileUploaded = (TextView) findViewById(R.id.fileUploadedTextView);
         mTextViewStatus = (TextView) findViewById(R.id.textViewStatus);
         mTextViewPreviewDescription = (TextView) findViewById(R.id.textViewPreviewDescription);
+
+        mCategoryField = (TextView) findViewById(R.id.category_textview);
+        mTypeField = (TextView) findViewById(R.id.type_textview);
 
         mJobImage = (ImageView) findViewById(R.id.jobImage);
         mUploadFile = (Button) findViewById(R.id.btn_upload_file);
@@ -99,6 +116,8 @@ public class EditJobActivity extends AppCompatActivity {
 
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
+
+        resource_category_spinner_str = (String) this.getResources().getString(R.string.category_spinner_str);
 
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
@@ -111,7 +130,11 @@ public class EditJobActivity extends AppCompatActivity {
         }
 
         mPreviewDescription.setEnabled(false);
+        //initializeJobCategorySpinner();
+        //initializeJobTypeSpinner();
         hideEditTextKeypadOnFocusChange();
+
+
 
         mSelectFile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,6 +189,52 @@ public class EditJobActivity extends AppCompatActivity {
         });*/
     }
 
+    private void initializeJobCategorySpinner(){
+        jobCategorySpinnerList = new ArrayList<>();
+        JobObject.populateJobCategorySpinnerList(jobCategorySpinnerList);
+
+        ArrayAdapter<String> categorySpinnerArrayAdapter = new ArrayAdapter<>(EditJobActivity.this,
+                android.R.layout.simple_spinner_dropdown_item, jobCategorySpinnerList);
+
+        mCategorySpinner.setAdapter(categorySpinnerArrayAdapter);
+
+        mCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedCategorySpinner = parent.getItemAtPosition(position).toString();
+                mCategoryField.setText(selectedCategorySpinner);
+                Toast.makeText(EditJobActivity.this, selectedCategorySpinner, Toast.LENGTH_LONG).show();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void initializeJobTypeSpinner(){
+        jobTypeSpinnerList = new ArrayList<>();
+        JobObject.populateJobTypeSpinnerList(jobTypeSpinnerList);
+
+        mTypeSpinner.setAdapter(new ArrayAdapter<>(EditJobActivity.this,
+                android.R.layout.simple_spinner_dropdown_item, jobTypeSpinnerList));
+
+        mTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedTypeSpinner = parent.getItemAtPosition(position).toString();
+                Toast.makeText(EditJobActivity.this, selectedTypeSpinner, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
     private void getJobInfo() {
         DatabaseReference jobDb = mUserDatabase.child("jobs").child(jobId);
         jobDb.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -180,6 +249,13 @@ public class EditJobActivity extends AppCompatActivity {
                     if(map.get("category")!=null){
                         category = map.get("category").toString();
                         mCategoryField.setText(category);
+                        initializeJobCategorySpinner();
+
+                    }
+                    if(map.get("type")!=null){
+                        type = map.get("type").toString();
+                        mTypeField.setText(type);
+                        initializeJobTypeSpinner();
                     }
                     if(map.get("description")!=null){
                         description = map.get("description").toString();
@@ -237,7 +313,8 @@ public class EditJobActivity extends AppCompatActivity {
 
     private void saveJobInformation(String key) {
         title = mTitleField.getText().toString();
-        category = mCategoryField.getText().toString();
+        category = (selectedCategorySpinner!=null) ? selectedCategorySpinner : "";
+        type = (selectedTypeSpinner!=null) ? selectedTypeSpinner : "";
         description = mDescriptionField.getText().toString();
         country = mCountryField.getText().toString();
         city = mCityField.getText().toString();
@@ -247,6 +324,7 @@ public class EditJobActivity extends AppCompatActivity {
         Map userInfo = new HashMap();
         userInfo.put("title", title);
         userInfo.put("category", category);
+        userInfo.put("type", type);
         userInfo.put("description", description);
         //userInfo.put("jobImageUrl", "default");
         userInfo.put("country", country);
@@ -450,14 +528,6 @@ public class EditJobActivity extends AppCompatActivity {
 
     public void hideEditTextKeypadOnFocusChange(){
         mTitleField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mCategoryField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {

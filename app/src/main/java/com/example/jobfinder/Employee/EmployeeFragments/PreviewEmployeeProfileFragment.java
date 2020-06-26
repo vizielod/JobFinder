@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -27,9 +28,7 @@ import com.bumptech.glide.Glide;
 import com.example.jobfinder.ChooseLoginRegistrationActivity;
 import com.example.jobfinder.Employee.EditEmployeeProfileActivity;
 import com.example.jobfinder.Employee.EmployeeTabbedMainActivity;
-import com.example.jobfinder.Employer.EditJobActivity;
-import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
-import com.example.jobfinder.Employer.JobTabbedMainActivity;
+import com.example.jobfinder.Employee.PreviewEmployeeProfileActivity;
 import com.example.jobfinder.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,12 +52,12 @@ public class PreviewEmployeeProfileFragment extends Fragment {
 
     private Context mContext;
 
-    private EditText mDescriptionField, mWebsiteField, mContactField, mLinkedInField, mFacebookField, mPhoneField;
+    private TextView mDescriptionField, mContactField, mPhoneField;
     private TextView mNameField, mAgeField, mProfessionField, mCountryField, mCityField;
 
     private Button mBack, mEditBtn, mPreviewCVBtn, mDeleteBtn, mLogout;
 
-    private ImageView mProfileImage, mEmployerImage, mEditBtnIVBtn, mFacebookIcon, mLinkedinIcon, mWebsiteIcon;
+    private ImageView mProfileImage, mEmployerImage, mEditBtnIVBtn, mBackArrowBtnIV, mFacebookIcon, mLinkedinIcon, mWebsiteIcon;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, chatDb, usersDb, jobsDb;
@@ -69,6 +68,8 @@ public class PreviewEmployeeProfileFragment extends Fragment {
     private String alertDialogTitle, alertDialogMessage;
 
     private FragmentActivity mFragmentActivity;
+
+    private boolean isEmployeeTabbedMainActivity, isPreviewEmployeeProfileActivity;
 
 
     public PreviewEmployeeProfileFragment(){
@@ -92,9 +93,9 @@ public class PreviewEmployeeProfileFragment extends Fragment {
         mCountryField = (TextView) view.findViewById(R.id.country_textview);
         mCityField = (TextView) view.findViewById(R.id.city_textview);
 
-        mDescriptionField = (EditText) view.findViewById(R.id.employeeDescription);
-        mContactField = (EditText) view.findViewById(R.id.contact);
-        mPhoneField = (EditText) view.findViewById(R.id.phone);
+        mDescriptionField = (TextView) view.findViewById(R.id.employeeDescription);
+        mContactField = (TextView) view.findViewById(R.id.contact);
+        mPhoneField = (TextView) view.findViewById(R.id.phone);
 
         mFacebookIcon = (ImageView) view.findViewById(R.id.facebook_icon_imageview);
         mLinkedinIcon = (ImageView) view.findViewById(R.id.linkedin_icon_imageview);
@@ -102,14 +103,25 @@ public class PreviewEmployeeProfileFragment extends Fragment {
 
         mProfileImage = (ImageView) view.findViewById(R.id.profileImage);
         mEditBtnIVBtn = (ImageView) view.findViewById(R.id.editImageBtn);
+        mBackArrowBtnIV = (ImageView) view.findViewById(R.id.backArrow_imageview);
 
         mEditBtn = (Button)  view.findViewById(R.id.edit);
         mPreviewCVBtn = (Button)  view.findViewById(R.id.btn_preview_cv);
         mDeleteBtn = (Button)  view.findViewById(R.id.btn_deleteUserProfile);
         mLogout = (Button)  view.findViewById(R.id.btn_logout);
 
+        mEditBtn.setText("Edit Employee Profile");
         getUserInfo();
-        hideEditTextKeypadOnFocusChange();
+
+        if(!isEmployeeTabbedMainActivity){
+            mDeleteBtn.setVisibility(View.GONE);
+            mEditBtnIVBtn.setVisibility(View.GONE);
+            mEditBtn.setVisibility(View.GONE);
+            mLogout.setVisibility(View.GONE);
+        }
+        if(isEmployeeTabbedMainActivity){
+            mBackArrowBtnIV.setVisibility(View.GONE);
+        }
 
         mFacebookIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,6 +214,13 @@ public class PreviewEmployeeProfileFragment extends Fragment {
                 return;
             }
         });
+        mBackArrowBtnIV.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                mFragmentActivity.finish();
+                return;
+            }
+        });
         return view;
     }
 
@@ -211,11 +230,31 @@ public class PreviewEmployeeProfileFragment extends Fragment {
 
         mContext = getContext();
         mFragmentActivity = getActivity();
-        usersDb = (DatabaseReference) EmployeeTabbedMainActivity.getUsersDb();
-        mUserDatabase = (DatabaseReference) EmployeeTabbedMainActivity.getUserDatabase();
-        userId = EmployeeTabbedMainActivity.getCurrentUId();
-        userRole = (String) EmployeeTabbedMainActivity.getUserRole();
-        mAuth = EmployeeTabbedMainActivity.getFirebaseAuth();
+
+        isEmployeeTabbedMainActivity = mContext.getClass().getName().endsWith("EmployeeTabbedMainActivity");
+        isPreviewEmployeeProfileActivity = mContext.getClass().getName().endsWith("PreviewEmployeeProfileActivity");
+
+        if(isEmployeeTabbedMainActivity){
+            usersDb = (DatabaseReference) EmployeeTabbedMainActivity.getUsersDb();
+            mUserDatabase = (DatabaseReference) EmployeeTabbedMainActivity.getUserDatabase();
+            userId = EmployeeTabbedMainActivity.getCurrentUId();
+            userRole = (String) EmployeeTabbedMainActivity.getUserRole();
+            mAuth = EmployeeTabbedMainActivity.getFirebaseAuth();
+        }
+        else if(isPreviewEmployeeProfileActivity){
+            userId = PreviewEmployeeProfileActivity.getCurrentUId();
+            usersDb = (DatabaseReference) PreviewEmployeeProfileActivity.getUsersDb();
+            mUserDatabase = (DatabaseReference) PreviewEmployeeProfileActivity.getUserDatabase();
+            mAuth = PreviewEmployeeProfileActivity.getFirebaseAuth();
+
+            OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    mFragmentActivity.finish();
+                }
+            };
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+        }
 
     }
 
@@ -300,64 +339,6 @@ public class PreviewEmployeeProfileFragment extends Fragment {
             }
         });
 
-    }
-
-    
-
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)mFragmentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    public void hideEditTextKeypadOnFocusChange(){
-        mNameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mProfessionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mDescriptionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mCountryField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mCityField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mContactField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
     }
 
     public void deleteEmployeeProfileDataAndStorageFiles(){

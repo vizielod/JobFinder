@@ -4,7 +4,7 @@
         <layer-list>
             <!-- SHADOW -->
             <item android:bottom="3dp" android:left="3dp"
-                android:drawable="@drawable/edittext_shadow">
+                android:drawable="@drawable/textview_shadow">
                 <!--<shape>
                     <solid android:color="@color/white"/>
                     <corners android:radius="27dp"/>

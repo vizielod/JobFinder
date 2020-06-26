@@ -10,5 +10,7 @@
     <string name="tab_text_4">Matches</string>
     <string name="title_activity_employee_tabbed_main">EmployeeTabbedMainActivity</string>
 
+    <string name="category_spinner_str">Select Category</string>
+
 
 </resources>

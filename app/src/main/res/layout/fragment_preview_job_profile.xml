@@ -8,13 +8,23 @@
     android:tag="PREVIEW_JOB_PROFILE_FRAGMENT">
     <!--tools:context=".Employer.EditEmployerProfileActivity">-->
 
+    <ImageView
+        android:id="@+id/backArrow_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:translationZ="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/arrow_back" />
+
     <ScrollView
         android:id="@+id/scrollView3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="68dp">
+        android:fillViewport="true">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -72,7 +82,7 @@
                 <TextView
                     android:id="@+id/jobCategory_textview"
                     android:layout_width="240dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:fontFamily="@font/montserrat_regular"
                     android:gravity="left"
                     android:paddingLeft="20dp"
@@ -99,11 +109,10 @@
 
                     <TextView
                         android:id="@+id/city_textview"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_width="122dp"
+                        android:layout_height="30dp"
                         android:fontFamily="@font/montserrat_regular"
                         android:text=" City"
-                        android:paddingBottom="10dp"
                         android:textColor="@color/white"
                         android:textSize="20dp" />
                 </LinearLayout>
@@ -112,19 +121,26 @@
                 <TextView
                     android:id="@+id/companyname_textview"
                     android:layout_width="240dp"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_regular"
                     android:gravity="left"
                     android:paddingLeft="20dp"
-                    android:paddingBottom="10dp"
                     android:text="Company Name"
+                    android:paddingBottom="10dp"
                     android:textColor="@color/white"
                     android:textSize="20dp" />
 
             </LinearLayout>
 
-            <EditText
+            <TextView
                 android:id="@+id/jobDescription"
+                android:background="@drawable/custom_edittext"
+                android:textSize="15dp"
+                android:textColor="@color/darkgreen"
+                android:textColorHint="@color/darkgreen_50"
+                android:fontFamily="@font/montserrat_regular"
+                android:paddingLeft="50dp"
+                android:gravity="left|center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -132,15 +148,20 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
-                android:clickable="false"
                 android:hint="Company's description"
-                android:inputType="textMultiLine"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-            <EditText
+            <TextView
                 android:id="@+id/contact"
+                android:background="@drawable/custom_edittext"
+                android:textSize="15dp"
+                android:textColor="@color/darkgreen"
+                android:textColorHint="@color/darkgreen_50"
+                android:fontFamily="@font/montserrat_regular"
+                android:paddingLeft="50dp"
+                android:gravity="left|center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="43dp"
                 android:layout_marginStart="20dp"
@@ -148,10 +169,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
-                android:clickable="false"
                 android:hint="Contact E-mail"
-                android:inputType="textEmailAddress"
-                android:paddingLeft="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -231,9 +249,9 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginBottom="175dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                android:layout_marginTop="25dp"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout"
+                app:layout_constraintTop_toBottomOf="@+id/jobImage"
                 app:srcCompat="@drawable/facebook_colored_icon" />
 
             <ImageView
@@ -242,9 +260,9 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginBottom="175dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                android:layout_marginTop="25dp"
                 app:layout_constraintStart_toEndOf="@+id/facebook_icon_imageview"
+                app:layout_constraintTop_toBottomOf="@+id/jobImage"
                 app:srcCompat="@drawable/linkedin_colored_icon" />
 
             <ImageView
@@ -253,9 +271,9 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginBottom="175dp"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                android:layout_marginTop="25dp"
                 app:layout_constraintStart_toEndOf="@+id/linkedin_icon_imageview"
+                app:layout_constraintTop_toBottomOf="@+id/jobImage"
                 app:srcCompat="@drawable/website_colored_icon" />
 
             <Button
@@ -271,8 +289,15 @@
                 app:layout_constraintEnd_toEndOf="@+id/jobImage"
                 app:layout_constraintTop_toTopOf="@+id/jobImage" />
 
-            <EditText
+            <TextView
                 android:id="@+id/phone"
+                android:background="@drawable/custom_edittext"
+                android:textSize="15dp"
+                android:textColor="@color/darkgreen"
+                android:textColorHint="@color/darkgreen_50"
+                android:fontFamily="@font/montserrat_regular"
+                android:paddingLeft="50dp"
+                android:gravity="left|center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="43dp"
                 android:layout_marginStart="20dp"
@@ -280,12 +305,14 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="50dp"
                 android:hint="Phone"
-                android:inputType="text"
-                android:paddingLeft="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/contact" />
+                app:layout_constraintTop_toBottomOf="@+id/contact"
+                app:layout_constraintVertical_bias="0.0" />
             
             <ImageView
             android:id="@+id/imageView7"

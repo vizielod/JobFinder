@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -35,6 +36,9 @@ import com.example.jobfinder.Employer.CreateJobActivity;
 import com.example.jobfinder.Employer.EditEmployerProfileActivity;
 import com.example.jobfinder.Employer.EmployerActivity;
 import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
+import com.example.jobfinder.Employer.JobTabbedMainActivity;
+import com.example.jobfinder.Employer.PreviewEmployerProfileActivity;
+import com.example.jobfinder.Employer.PreviewJobProfileActivity;
 import com.example.jobfinder.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -59,12 +63,12 @@ public class PreviewEmployerProfileFragment extends Fragment {
     private static final String LOGTAG = "UserRole";
     private Context mContext;
 
-    private EditText mDescriptionField, mWebsiteField, mContactField, mLinkedInField, mFacebookField;
+    private TextView mDescriptionField, mContactField;
     private TextView mNameField, mIndustryField, mAddressField;
 
     private Button mBack, mEdit, mDeleteBtn, mLogout;
 
-    private ImageView mEmployerImage, mEditIVBtn, mFacebookIcon, mLinkedinIcon, mWebsiteIcon;
+    private ImageView mEmployerImage, mEditIVBtn, mBackArrowBtnIV, mFacebookIcon, mLinkedinIcon, mWebsiteIcon;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, chatDb, usersDb, jobsDb;
@@ -75,6 +79,8 @@ public class PreviewEmployerProfileFragment extends Fragment {
 
     private Uri resultUri;
     private FragmentActivity mFragmentActivity;
+
+    private boolean isEmployerTabbedMainActivity, isJobTabbedMainActivity, isPreviewEmployerProfileActivity;
 
     public PreviewEmployerProfileFragment(){
         // Required empty public constructor
@@ -96,8 +102,8 @@ public class PreviewEmployerProfileFragment extends Fragment {
         mIndustryField = (TextView) view.findViewById(R.id.industry_textview);
         mAddressField = (TextView) view.findViewById(R.id.address_textview);
 
-        mDescriptionField = (EditText) view.findViewById(R.id.employerDescription);
-        mContactField = (EditText) view.findViewById(R.id.contact);
+        mDescriptionField = (TextView) view.findViewById(R.id.employerDescription);
+        mContactField = (TextView) view.findViewById(R.id.contact);
 
         mFacebookIcon = (ImageView) view.findViewById(R.id.facebook_icon_imageview);
         mLinkedinIcon = (ImageView) view.findViewById(R.id.linkedin_icon_imageview);
@@ -110,8 +116,16 @@ public class PreviewEmployerProfileFragment extends Fragment {
         mDeleteBtn = (Button)  view.findViewById(R.id.btn_deleteUserProfile);
         mLogout = (Button)  view.findViewById(R.id.btn_logout);
 
+        if(!isEmployerTabbedMainActivity){
+            mDeleteBtn.setVisibility(View.GONE);
+            mEditIVBtn.setVisibility(View.GONE);
+            mEdit.setVisibility(View.GONE);
+            mLogout.setVisibility(View.GONE);
+        }
+
+
         getUserInfo();
-        //hideEditTextKeypadOnFocusChange();
+        hideEditTextKeypadOnFocusChange();
 
         mFacebookIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,14 +214,42 @@ public class PreviewEmployerProfileFragment extends Fragment {
 
         mContext = getContext();
         mFragmentActivity = getActivity();
-        userRole = (String) EmployerTabbedMainActivity.getUserRole();
-        mAuth = EmployerTabbedMainActivity.getFirebaseAuth();
-        userId = EmployerTabbedMainActivity.getCurrentUId();
-        mUserDatabase = EmployerTabbedMainActivity.getUserDatabase();
-        usersDb = EmployerTabbedMainActivity.getUsersDb();
 
-        Log.i(LOGTAG, "EmployerMainFragment " + mFragmentActivity);
-        Log.i(LOGTAG, "EmployerMainFragment " + userRole);
+        isEmployerTabbedMainActivity = mContext.getClass().getName().endsWith("EmployerTabbedMainActivity");
+        isJobTabbedMainActivity = mContext.getClass().getName().endsWith("JobTabbedMainActivity");
+        isPreviewEmployerProfileActivity = mContext.getClass().getName().endsWith("PreviewEmployerProfileActivity");
+
+        if(isEmployerTabbedMainActivity){
+            userRole = (String) EmployerTabbedMainActivity.getUserRole();
+            mAuth = EmployerTabbedMainActivity.getFirebaseAuth();
+            userId = EmployerTabbedMainActivity.getCurrentUId();
+            mUserDatabase = EmployerTabbedMainActivity.getUserDatabase();
+            usersDb = EmployerTabbedMainActivity.getUsersDb();
+
+            Log.i(LOGTAG, "EmployerMainFragment " + mFragmentActivity);
+            Log.i(LOGTAG, "EmployerMainFragment " + userRole);
+        }
+        else if(isPreviewEmployerProfileActivity){
+            userId = PreviewEmployerProfileActivity.getCurrentUId();
+            usersDb = (DatabaseReference) PreviewEmployerProfileActivity.getUsersDb();
+            mUserDatabase = (DatabaseReference) PreviewEmployerProfileActivity.getUserDatabase();
+            mAuth = PreviewEmployerProfileActivity.getFirebaseAuth();
+
+            OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    mFragmentActivity.finish();
+                }
+            };
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+        }
+        else{
+            userId = PreviewJobProfileActivity.getCurrentUId();
+            usersDb = (DatabaseReference) PreviewJobProfileActivity.getUsersDb();
+            mUserDatabase = (DatabaseReference) PreviewJobProfileActivity.getUserDatabase();
+            mAuth = PreviewJobProfileActivity.getFirebaseAuth();
+        }
+
     }
 
     private void getUserInfo() {
@@ -289,55 +331,7 @@ public class PreviewEmployerProfileFragment extends Fragment {
     }
 
     public void hideEditTextKeypadOnFocusChange(){
-        mNameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
         mDescriptionField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mIndustryField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mWebsiteField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mFacebookField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mLinkedInField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-        mAddressField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
