@@ -134,11 +134,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/jobImage">
-
             </EditText>
 
-            <EditText
-                android:id="@+id/category"
+            <!--<TextView
+                android:id="@+id/category_textview"
+                android:textSize="15dp"
+                android:textColor="@color/darkgreen"
+                android:textColorHint="@color/darkgreen_50"
+                android:fontFamily="@font/montserrat_regular"
+                android:paddingLeft="50dp"
+                android:gravity="left|center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="43dp"
                 android:layout_marginStart="20dp"
@@ -146,12 +151,45 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
-                android:hint="Category"
-                android:inputType="text"
-                android:paddingLeft="50dp"
+                android:text="Select Category"
+                android:translationZ="1dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/jobTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/jobTitle"/>-->
+
+            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                android:id="@+id/category_spinner"
+                android:background="@drawable/custom_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:paddingLeft="30dp"
+                app:hintText="Change/Select Category"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/jobTitle">
+            </com.toptoche.searchablespinnerlibrary.SearchableSpinner>
+
+            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                android:id="@+id/type_spinner"
+                android:background="@drawable/custom_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                app:hintText="Change/Select Type"
+                android:paddingLeft="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/category_spinner">
+            </com.toptoche.searchablespinnerlibrary.SearchableSpinner>
 
 
             <EditText
@@ -169,7 +207,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/category" />
+                app:layout_constraintTop_toBottomOf="@+id/type_spinner" />
 
             <LinearLayout
                 android:id="@+id/uploadFile_linearLeayout"
