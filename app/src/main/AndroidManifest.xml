@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".Employer.PreviewEmployerProfileActivity"></activity>
+        <activity android:name=".Employee.EmployeeSettingsActivity"></activity>
+        <activity android:name=".Employer.PreviewEmployerProfileActivity" />
         <activity android:name=".Employee.PreviewEmployeeProfileActivity" />
         <activity
             android:name=".Employee.EmployeeTabbedMainActivity"

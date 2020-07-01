@@ -27,9 +27,11 @@ import androidx.fragment.app.FragmentActivity;
 import com.bumptech.glide.Glide;
 import com.example.jobfinder.ChooseLoginRegistrationActivity;
 import com.example.jobfinder.Employee.EditEmployeeProfileActivity;
+import com.example.jobfinder.Employee.EmployeeSettingsActivity;
 import com.example.jobfinder.Employee.EmployeeTabbedMainActivity;
 import com.example.jobfinder.Employee.PreviewEmployeeProfileActivity;
 import com.example.jobfinder.R;
+import com.example.jobfinder.SettingsActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,7 +59,7 @@ public class PreviewEmployeeProfileFragment extends Fragment {
 
     private Button mBack, mEditBtn, mPreviewCVBtn, mDeleteBtn, mLogout;
 
-    private ImageView mProfileImage, mEmployerImage, mEditBtnIVBtn, mBackArrowBtnIV, mFacebookIcon, mLinkedinIcon, mWebsiteIcon;
+    private ImageView mProfileImage, mEmployerImage, mEditIVBtn, mSettingsIVBtn, mBackArrowBtnIV, mFacebookIcon, mLinkedinIcon, mWebsiteIcon;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase, chatDb, usersDb, jobsDb;
@@ -102,7 +104,8 @@ public class PreviewEmployeeProfileFragment extends Fragment {
         mWebsiteIcon = (ImageView) view.findViewById(R.id.website_icon_imageview);
 
         mProfileImage = (ImageView) view.findViewById(R.id.profileImage);
-        mEditBtnIVBtn = (ImageView) view.findViewById(R.id.editImageBtn);
+        mEditIVBtn = (ImageView) view.findViewById(R.id.editImageBtn);
+        mSettingsIVBtn = (ImageView) view.findViewById(R.id.settingsImageBtn);
         mBackArrowBtnIV = (ImageView) view.findViewById(R.id.backArrow_imageview);
 
         mEditBtn = (Button)  view.findViewById(R.id.edit);
@@ -115,7 +118,7 @@ public class PreviewEmployeeProfileFragment extends Fragment {
 
         if(!isEmployeeTabbedMainActivity){
             mDeleteBtn.setVisibility(View.GONE);
-            mEditBtnIVBtn.setVisibility(View.GONE);
+            mEditIVBtn.setVisibility(View.GONE);
             mEditBtn.setVisibility(View.GONE);
             mLogout.setVisibility(View.GONE);
         }
@@ -169,11 +172,18 @@ public class PreviewEmployeeProfileFragment extends Fragment {
 
             }
         });
-        mEditBtnIVBtn.setOnClickListener(new View.OnClickListener() {
+        mEditIVBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mFragmentActivity, EditEmployeeProfileActivity.class);
-                intent.putExtra("jobId", jobId);
+                startActivity(intent);
+                return;
+            }
+        });
+        mSettingsIVBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mFragmentActivity, EmployeeSettingsActivity.class);
                 startActivity(intent);
                 return;
             }

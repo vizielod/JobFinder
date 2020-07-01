@@ -261,7 +261,18 @@
                 android:layout_marginRight="8dp"
                 app:layout_constraintEnd_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toTopOf="@+id/profileImage"
-                app:srcCompat="@drawable/edit_icon" />
+                app:srcCompat="@drawable/edit_icon_lightgreen" />
+
+            <ImageView
+                android:id="@+id/settingsImageBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/profileImage"
+                app:layout_constraintTop_toBottomOf="@+id/editImageBtn"
+                app:srcCompat="@drawable/settings_android_btn_icon"/>
 
             <ImageView
                 android:id="@+id/facebook_icon_imageview"

@@ -61,6 +61,7 @@ public class JobObject {
     }
 
     public static void populateJobCategorySpinnerList(ArrayList<String> jobCategorySpinnerList){
+        jobCategorySpinnerList.add("");
         jobCategorySpinnerList.add("IT & Software");
         jobCategorySpinnerList.add("Sales and client care");
         jobCategorySpinnerList.add("Operations");
@@ -98,6 +99,7 @@ public class JobObject {
     }
 
     public static void populateJobTypeSpinnerList(ArrayList<String> jobTypeSpinnerList){
+        jobTypeSpinnerList.add("");
         jobTypeSpinnerList.add("Full-time");
         jobTypeSpinnerList.add("Part-time");
         jobTypeSpinnerList.add("Student worker");
@@ -107,7 +109,7 @@ public class JobObject {
         jobTypeSpinnerList.add("Project");
         jobTypeSpinnerList.add("Voluntary Work");
         jobTypeSpinnerList.add("Thesis");
-        jobTypeSpinnerList.add("Phd / Research");
+        jobTypeSpinnerList.add("Phd or Research");
         jobTypeSpinnerList.add("Temporary");
         jobTypeSpinnerList.add("Graduate programme");
 

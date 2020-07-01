@@ -131,7 +131,7 @@
                 android:layout_marginRight="20dp"
                 android:hint="Job's title"
                 android:inputType="text"
-                android:paddingLeft="50dp"
+                android:paddingLeft="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/jobImage">
@@ -141,6 +141,7 @@
                 android:id="@+id/category_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginEnd="20dp"
@@ -155,13 +156,12 @@
                     android:id="@+id/category_textview"
                     android:layout_width="0dp"
                     android:layout_height="43dp"
-                    android:layout_marginTop="15dp"
                     android:layout_weight="4"
                     android:background="@drawable/custom_edittext"
                     android:fontFamily="@font/montserrat_regular"
                     android:gravity="left|center_vertical"
-                    android:hint="Job's Category"
-                    android:paddingLeft="50dp"
+                    android:hint="Select Job Category"
+                    android:paddingLeft="20dp"
                     android:textColor="@color/darkgreen"
                     android:textColorHint="@color/darkgreen_50"
                     android:textSize="15dp" />
@@ -169,11 +169,11 @@
                 <com.toptoche.searchablespinnerlibrary.SearchableSpinner
                     android:id="@+id/category_spinner"
                     android:layout_width="0dp"
-                    android:layout_height="43dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/custom_button"
-                    android:paddingLeft="30dp">
+                    android:paddingLeft="100dp"
+                    android:background="@drawable/spinner_button">
+
 
                 </com.toptoche.searchablespinnerlibrary.SearchableSpinner>
             </LinearLayout>
@@ -183,6 +183,7 @@
                 android:id="@+id/type_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginEnd="20dp"
@@ -196,13 +197,12 @@
                     android:id="@+id/type_textview"
                     android:layout_width="0dp"
                     android:layout_height="43dp"
-                    android:layout_marginTop="15dp"
                     android:layout_weight="4"
                     android:background="@drawable/custom_edittext"
                     android:fontFamily="@font/montserrat_regular"
                     android:gravity="left|center_vertical"
-                    android:hint="Job's Type"
-                    android:paddingLeft="50dp"
+                    android:hint="Select Job Type"
+                    android:paddingLeft="20dp"
                     android:textColor="@color/darkgreen"
                     android:textColorHint="@color/darkgreen_50"
                     android:textSize="15dp" />
@@ -210,11 +210,10 @@
                 <com.toptoche.searchablespinnerlibrary.SearchableSpinner
                     android:id="@+id/type_spinner"
                     android:layout_width="0dp"
-                    android:layout_height="43dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/custom_button"
-                    android:paddingLeft="30dp">
+                    android:paddingLeft="100dp"
+                    android:background="@drawable/spinner_button">
                 </com.toptoche.searchablespinnerlibrary.SearchableSpinner>
             </LinearLayout>
 
@@ -231,7 +230,8 @@
                 android:layout_marginRight="20dp"
                 android:hint="Job brief description..."
                 android:inputType="textMultiLine"
-                android:paddingLeft="50dp"
+                android:paddingLeft="20dp"
+                android:gravity="top|left"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"

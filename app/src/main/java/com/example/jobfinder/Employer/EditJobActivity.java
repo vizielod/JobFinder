@@ -130,8 +130,8 @@ public class EditJobActivity extends AppCompatActivity {
         }
 
         mPreviewDescription.setEnabled(false);
-        //initializeJobCategorySpinner();
-        //initializeJobTypeSpinner();
+        initializeJobCategorySpinner();
+        initializeJobTypeSpinner();
         hideEditTextKeypadOnFocusChange();
 
 
@@ -222,10 +222,12 @@ public class EditJobActivity extends AppCompatActivity {
         mTypeSpinner.setAdapter(new ArrayAdapter<>(EditJobActivity.this,
                 android.R.layout.simple_spinner_dropdown_item, jobTypeSpinnerList));
 
+
         mTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedTypeSpinner = parent.getItemAtPosition(position).toString();
+                mTypeField.setText(selectedTypeSpinner);
                 Toast.makeText(EditJobActivity.this, selectedTypeSpinner, Toast.LENGTH_LONG).show();
             }
 
@@ -249,13 +251,14 @@ public class EditJobActivity extends AppCompatActivity {
                     if(map.get("category")!=null){
                         category = map.get("category").toString();
                         mCategoryField.setText(category);
-                        initializeJobCategorySpinner();
+
+                        //initializeJobCategorySpinner();
 
                     }
                     if(map.get("type")!=null){
                         type = map.get("type").toString();
                         mTypeField.setText(type);
-                        initializeJobTypeSpinner();
+                        //initializeJobTypeSpinner();
                     }
                     if(map.get("description")!=null){
                         description = map.get("description").toString();

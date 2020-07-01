@@ -241,7 +241,7 @@
                 android:layout_marginRight="8dp"
                 app:layout_constraintEnd_toEndOf="@+id/jobImage"
                 app:layout_constraintTop_toTopOf="@+id/jobImage"
-                app:srcCompat="@drawable/edit_icon" />
+                app:srcCompat="@drawable/edit_icon_lightgreen" />
 
             <ImageView
                 android:id="@+id/facebook_icon_imageview"
