@@ -124,7 +124,7 @@ public class PreviewEmployerProfileFragment extends Fragment {
         }
 
 
-        getUserInfo();
+        //getUserInfo();
         hideEditTextKeypadOnFocusChange();
 
         mFacebookIcon.setOnClickListener(new View.OnClickListener() {
@@ -252,6 +252,12 @@ public class PreviewEmployerProfileFragment extends Fragment {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getUserInfo();
+    }
+
     private void getUserInfo() {
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -297,7 +303,7 @@ public class PreviewEmployerProfileFragment extends Fragment {
                         Glide.with(mFragmentActivity.getApplication()).load(profileImageUrl).into(mEmployerImage);
                         switch(profileImageUrl){
                             case "default":
-                                Glide.with(mFragmentActivity.getApplication()).load(R.mipmap.ic_launcher).into(mEmployerImage);
+                                Glide.with(mFragmentActivity.getApplication()).load(R.drawable.placeholder_img).into(mEmployerImage);
                                 break;
                             default:
                                 Glide.with(mFragmentActivity.getApplication()).load(profileImageUrl).into(mEmployerImage);

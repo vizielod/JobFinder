@@ -45,6 +45,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.mukesh.countrypicker.Country;
+import com.mukesh.countrypicker.CountryPicker;
+import com.mukesh.countrypicker.OnCountryPickerListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,12 +56,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateJobActivity extends AppCompatActivity {
+public class CreateJobActivity extends AppCompatActivity implements OnCountryPickerListener {
     private static final String LOGTAG = "UserRole";
     final static int PICK_PDF_CODE = 2342;
 
-    private EditText mTitleField, mDescriptionField, mCountryField, mCityField, mContactField, mPhoneField, mJobWebsiteUrlField;
-    private TextView mTextViewStatus, mTextViewPreviewCV, mCategoryField, mTypeField;
+    private EditText mTitleField, mDescriptionField, mCityField, mContactField, mPhoneField, mJobWebsiteUrlField;
+    private TextView mTextViewStatus, mTextViewPreviewCV, mCategoryField, mTypeField, mCountryField;
 
     private Spinner mCategorySpinner, mTypeSpinner;
 
@@ -70,13 +73,15 @@ public class CreateJobActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mUserDatabase;
+    private DatabaseReference mUserDatabase, mLocationDatabase;
 
     private String userId, title, category, type, description, country, city, contact, phone, jobWebsiteUrl, jobDescriptionUrl, jobImageUrl, userSex;
     private String selectedTypeSpinner, selectedCategorySpinner;
     private Uri resultImageUri, resultFileUri;
 
     private Boolean imageUploadSuccess = false, fileUploadSuccess = false;
+
+    private CountryPicker countryPicker;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -85,7 +90,7 @@ public class CreateJobActivity extends AppCompatActivity {
 
         mTitleField = (EditText) findViewById(R.id.jobTitle);
         mDescriptionField = (EditText) findViewById(R.id.jobDescription);
-        mCountryField = (EditText) findViewById(R.id.country);
+        //mCountryField = (EditText) findViewById(R.id.country);
         mCityField = (EditText) findViewById(R.id.city);
         mContactField = (EditText) findViewById(R.id.contact);
         mPhoneField = (EditText) findViewById(R.id.phone);
@@ -96,6 +101,7 @@ public class CreateJobActivity extends AppCompatActivity {
 
         mCategoryField = (TextView) findViewById(R.id.category_textview);
         mTypeField = (TextView) findViewById(R.id.type_textview);
+        mCountryField = (TextView) findViewById(R.id.country);
         
         mTextViewStatus = (TextView) findViewById(R.id.textViewStatus);
         mTextViewPreviewCV = (TextView) findViewById(R.id.textViewPreviewCV);
@@ -117,6 +123,10 @@ public class CreateJobActivity extends AppCompatActivity {
         initializeJobTypeSpinner();
         hideEditTextKeypadOnFocusChange();
 
+        countryPicker = new CountryPicker.Builder().with(this)
+                .listener(this)
+                .build();
+
         mSelectCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,6 +141,14 @@ public class CreateJobActivity extends AppCompatActivity {
                 intent.setType("image/*");
                 startActivityForResult(intent, 1);
                 //uploadImage(key);
+            }
+        });
+
+        mCountryField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                countryPicker.showDialog(getSupportFragmentManager());
+                return;
             }
         });
 
@@ -160,6 +178,11 @@ public class CreateJobActivity extends AppCompatActivity {
         });*/
     }
 
+    @Override
+    public void onSelectCountry(Country country) {
+        mCountryField.setText(country.getName());
+    }
+
     private void initializeJobCategorySpinner(){
         jobCategorySpinnerList = new ArrayList<>();
         JobObject.populateJobCategorySpinnerList(jobCategorySpinnerList);
@@ -172,7 +195,7 @@ public class CreateJobActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedCategorySpinner = parent.getItemAtPosition(position).toString();
                 mCategoryField.setText(selectedCategorySpinner);
-                Toast.makeText(CreateJobActivity.this, selectedCategorySpinner, Toast.LENGTH_LONG).show();
+                //Toast.makeText(CreateJobActivity.this, selectedCategorySpinner, Toast.LENGTH_LONG).show();
 
             }
 
@@ -194,7 +217,7 @@ public class CreateJobActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedTypeSpinner = parent.getItemAtPosition(position).toString();
                 mTypeField.setText(selectedTypeSpinner);
-                Toast.makeText(CreateJobActivity.this, selectedTypeSpinner, Toast.LENGTH_LONG).show();
+                //Toast.makeText(CreateJobActivity.this, selectedTypeSpinner, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -232,6 +255,7 @@ public class CreateJobActivity extends AppCompatActivity {
             uploadFile(resultFileUri, key);
         }
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -47,6 +47,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.mukesh.countrypicker.Country;
+import com.mukesh.countrypicker.CountryPicker;
+import com.mukesh.countrypicker.OnCountryPickerListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -55,12 +58,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EditJobActivity extends AppCompatActivity {
+public class EditJobActivity extends AppCompatActivity implements OnCountryPickerListener {
     private static final String LOGTAG = "UserRole";
     final static int PICK_PDF_CODE = 2342;
 
-    private EditText mTitleField, mDescriptionField, mCountryField, mCityField, mContactField, mPhoneField, mJobWebsiteUrlField;
-    private TextView mTextViewStatus, mTextViewPreviewDescription, mTextViewFileUploaded, mCategoryField, mTypeField;
+    private EditText mTitleField, mDescriptionField, mCityField, mContactField, mPhoneField, mJobWebsiteUrlField;
+    private TextView mTextViewStatus, mTextViewPreviewDescription, mTextViewFileUploaded, mCategoryField, mTypeField, mCountryField;
 
     private Spinner mCategorySpinner, mTypeSpinner;
 
@@ -82,6 +85,8 @@ public class EditJobActivity extends AppCompatActivity {
     private Boolean initializedCategorySpinner = false;
     private Uri resultImageUri, resultFileUri;
 
+    private CountryPicker countryPicker;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +97,7 @@ public class EditJobActivity extends AppCompatActivity {
 
         mTitleField = (EditText) findViewById(R.id.jobTitle);
         mDescriptionField = (EditText) findViewById(R.id.jobDescription);
-        mCountryField = (EditText) findViewById(R.id.country);
+        //mCountryField = (EditText) findViewById(R.id.country);
         mCityField = (EditText) findViewById(R.id.city);
         mContactField = (EditText) findViewById(R.id.contact);
         mPhoneField = (EditText) findViewById(R.id.phone);
@@ -107,6 +112,7 @@ public class EditJobActivity extends AppCompatActivity {
 
         mCategoryField = (TextView) findViewById(R.id.category_textview);
         mTypeField = (TextView) findViewById(R.id.type_textview);
+        mCountryField = (TextView) findViewById(R.id.country);
 
         mJobImage = (ImageView) findViewById(R.id.jobImage);
         mUploadFile = (Button) findViewById(R.id.btn_upload_file);
@@ -134,7 +140,9 @@ public class EditJobActivity extends AppCompatActivity {
         initializeJobTypeSpinner();
         hideEditTextKeypadOnFocusChange();
 
-
+        countryPicker = new CountryPicker.Builder().with(this)
+                .listener(this)
+                .build();
 
         mSelectFile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,6 +180,14 @@ public class EditJobActivity extends AppCompatActivity {
             }
         });
 
+        mCountryField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                countryPicker.showDialog(getSupportFragmentManager());
+                return;
+            }
+        });
+
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,6 +203,11 @@ public class EditJobActivity extends AppCompatActivity {
                 return;
             }
         });*/
+    }
+
+    @Override
+    public void onSelectCountry(Country country) {
+        mCountryField.setText(country.getName());
     }
 
     private void initializeJobCategorySpinner(){
@@ -297,7 +318,7 @@ public class EditJobActivity extends AppCompatActivity {
                         Glide.with(getApplication()).load(jobImageUrl).into(mJobImage);
                         switch(jobImageUrl){
                             case "default":
-                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mJobImage);
+                                Glide.with(getApplication()).load(R.drawable.placeholder_img).into(mJobImage);
                                 break;
                             default:
                                 Glide.with(getApplication()).load(jobImageUrl).into(mJobImage);
@@ -587,4 +608,6 @@ public class EditJobActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

@@ -25,8 +25,9 @@
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
-            <ImageView
+            <com.github.siyamed.shapeimageview.mask.PorterShapeImageView
                 android:id="@+id/employerImage"
+                android:translationZ="10dp"
                 android:layout_width="120dp"
                 android:layout_height="140dp"
                 android:layout_marginStart="40dp"
@@ -36,13 +37,53 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="8dp"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/ic_launcher"
+                android:src="@drawable/placeholder_img"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/constraintLayout"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="0.0"
+                app:siShape="@drawable/custom_imageview"
+                app:siSquare="false"/>
+
+            <ImageView
+                android:translationZ="9dp"
+                android:background="@drawable/imageview_border"
+                android:layout_width="124dp"
+                android:layout_height="144dp"
+                android:layout_marginStart="38dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/constraintLayout"
+                app:layout_constraintVertical_bias="0.0"/>
+
+            <ImageView
+                android:translationZ="8dp"
+                android:background="@drawable/imageview_shadow"
+                android:layout_width="122dp"
+                android:layout_height="144dp"
+                android:layout_marginStart="45dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/constraintLayout"
+                app:layout_constraintVertical_bias="0.0"/>
 
             <LinearLayout
                 android:id="@+id/linearLayout"
@@ -111,7 +152,7 @@
                 android:gravity="left|center_vertical"
                 android:hint="Company's description"
                 android:inputType="textMultiLine"
-                android:paddingLeft="50dp"
+                android:paddingHorizontal="20dp"
                 android:textColor="@color/darkgreen"
                 android:textColorHint="@color/darkgreen_50"
                 android:textSize="15dp"
@@ -134,6 +175,7 @@
                 android:gravity="left|center_vertical"
                 android:hint="Contact E-mail"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 android:textColor="@color/darkgreen"
                 android:textColorHint="@color/darkgreen_50"
                 android:textSize="15dp"

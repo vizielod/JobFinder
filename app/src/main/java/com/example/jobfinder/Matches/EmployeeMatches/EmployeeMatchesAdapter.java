@@ -81,6 +81,9 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
         if (!matchesList.get(position).getJobImageUrl().equals("default")) {
             Glide.with(context).load(matchesList.get(position).getJobImageUrl()).into(holder.mMatchJobImage);
         }
+        else{
+            Glide.with(context).load(R.drawable.placeholder_img).into(holder.mMatchJobImage);
+        }
         //mGetFileButton.setText("Info");
         holder.mMatchJobImage.setOnClickListener(new View.OnClickListener() {
             @Override

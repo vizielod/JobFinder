@@ -104,7 +104,9 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
-            <ImageView
+            <com.github.siyamed.shapeimageview.mask.PorterShapeImageView
+                android:src="@drawable/placeholder_img"
+                android:translationZ="10dp"
                 android:id="@+id/employerImage"
                 android:layout_width="120dp"
                 android:layout_height="140dp"
@@ -115,7 +117,46 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="8dp"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/ic_launcher"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:layout_constraintVertical_bias="0.0"
+                app:siShape="@drawable/custom_imageview"
+                app:siSquare="false"/>
+
+            <ImageView
+                android:translationZ="9dp"
+                android:background="@drawable/imageview_border"
+                android:layout_width="124dp"
+                android:layout_height="144dp"
+                android:layout_marginStart="38dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <ImageView
+                android:translationZ="8dp"
+                android:background="@drawable/imageview_shadow"
+                android:layout_width="122dp"
+                android:layout_height="144dp"
+                android:layout_marginStart="45dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -134,7 +175,7 @@
                 android:layout_marginRight="40dp"
                 android:hint="Company's Name"
                 android:inputType="text"
-                android:paddingLeft="50dp"
+                android:paddingHorizontal="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/employerImage">
@@ -153,6 +194,7 @@
                 android:layout_marginRight="40dp"
                 android:hint="Company's description"
                 android:inputType="textMultiLine"
+                android:paddingHorizontal="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/employerName" />
@@ -168,7 +210,7 @@
                 android:layout_marginRight="40dp"
                 android:hint="Industry"
                 android:inputType="text"
-                android:paddingLeft="50dp"
+                android:paddingHorizontal="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/employerDescription" />
@@ -185,6 +227,7 @@
                 android:hint="Website URL"
                 android:inputType="textUri"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -219,6 +262,7 @@
                 android:hint="LinkedIn"
                 android:inputType="textUri"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -236,6 +280,7 @@
                 android:hint="Headquarter address"
                 android:inputType="textUri"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -253,6 +298,7 @@
                 android:hint="Contact E-mail"
                 android:inputType="textEmailAddress"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"

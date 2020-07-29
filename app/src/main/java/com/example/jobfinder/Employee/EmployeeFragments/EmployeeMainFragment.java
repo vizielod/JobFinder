@@ -47,7 +47,7 @@ public class EmployeeMainFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     private String currentUId, jobId, employerId;
-    private DatabaseReference usersDb, chatDb;
+    private DatabaseReference mUserDatabase, usersDb, chatDb;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mJobsAdapter;
@@ -68,6 +68,8 @@ public class EmployeeMainFragment extends Fragment {
     List<Cards> rowItems;
     List<JobCard> jobCardItems;
 
+    private ArrayList<String> jobCategorySpinnerList, jobTypeSpinnerList, preferenceCategoryList, preferenceTypeList, preferenceCountryList;
+
     public EmployeeMainFragment(){
         // Required empty public constructor
     }
@@ -87,9 +89,12 @@ public class EmployeeMainFragment extends Fragment {
         //return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_employee_tabbed_main, container, false);
 
-        checkUserRole();
+
 
         jobCardItems = new ArrayList<JobCard>();
+        preferenceCategoryList = new ArrayList<>();
+        /*preferenceCategoryList = getCategoryPreferencesFromDB();
+        fetchJobCards();*/
 
         jobArrayAdapter = new MyJobCardArrayAdapter(mFragmentActivity, R.layout.item, jobCardItems);
 
@@ -175,6 +180,18 @@ public class EmployeeMainFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        /*jobCardItems.clear();
+        jobArrayAdapter.notifyDataSetChanged();*/
+        preferenceCategoryList = getCategoryPreferencesFromDB();
+        //preferenceTypeList = getTypePreferencesFromDB();
+        preferenceCountryList = getCountryPreferencesFromDB();
+        fetchJobCards();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /*if (getArguments() != null) {
@@ -186,6 +203,10 @@ public class EmployeeMainFragment extends Fragment {
         userRole = (String) EmployeeTabbedMainActivity.getUserRole();
         currentUId = (String) EmployeeTabbedMainActivity.getCurrentUId();
         usersDb = (DatabaseReference) EmployeeTabbedMainActivity.getUsersDb();
+        mUserDatabase = (DatabaseReference) EmployeeTabbedMainActivity.getUserDatabase();
+
+        /*preferenceCategoryList = new ArrayList<>();
+        preferenceCategoryList = getCategoryPreferencesFromDB();*/
 
     }
 
@@ -215,7 +236,7 @@ public class EmployeeMainFragment extends Fragment {
     }
 
 
-    public void checkUserRole(){
+    public void fetchJobCards(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference employeeDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employee");
         employeeDb.addChildEventListener(new ChildEventListener() {
@@ -278,6 +299,14 @@ public class EmployeeMainFragment extends Fragment {
                 //final String tempEmployerID = employerId;
                 if (dataSnapshot.exists()){
                     for(DataSnapshot job : dataSnapshot.getChildren()){
+
+                        //Here we might have some issues
+                        //Seems like sometimes isn't every card loaded correctly.
+                        //however it is good after a refresh
+                        //I will need this clear and notifyDataSetChanged to somewhere. But I am not sure where.
+                        jobCardItems.clear();
+                        jobArrayAdapter.notifyDataSetChanged();
+
                         FetchJobInformation(employerId, job.getKey());
                     }
                 }
@@ -296,23 +325,29 @@ public class EmployeeMainFragment extends Fragment {
         jobDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists() && !dataSnapshot.child("connections").child("disliked").hasChild(currentUId) && !dataSnapshot.child("connections").child("liked").hasChild(currentUId)) {
-                    String jobId = dataSnapshot.getKey();
-                    String title = "";
-                    String category = "";
-                    String jobImageUrl = "default";
-                    if(dataSnapshot.child("title").getValue()!=null){
-                        title = dataSnapshot.child("title").getValue().toString();
+                if (dataSnapshot.exists() &&
+                        !dataSnapshot.child("connections").child("disliked").hasChild(currentUId) &&
+                        !dataSnapshot.child("connections").child("liked").hasChild(currentUId)) {
+                    if(isJobCategoryInEmployeePreferencesCategories(preferenceCategoryList, dataSnapshot.child("category").getValue().toString())
+                            && isJobCountryInEmployeePreferencesCountries(preferenceCountryList, dataSnapshot.child("country").getValue().toString())){
+                        String jobId = dataSnapshot.getKey();
+                        String title = "";
+                        String category = "";
+                        String jobImageUrl = "default";
+                        if(dataSnapshot.child("title").getValue()!=null){
+                            title = dataSnapshot.child("title").getValue().toString();
+                        }
+                        if(dataSnapshot.child("category").getValue()!=null){
+                            category = dataSnapshot.child("category").getValue().toString();
+                        }
+                        if (!dataSnapshot.child("jobImageUrl").getValue().equals("default")) {
+                            jobImageUrl = dataSnapshot.child("jobImageUrl").getValue().toString();
+                        }
+                        JobCard item = new JobCard(employerId, jobId, title, category, jobImageUrl);
+                        jobCardItems.add(item);
+                        jobArrayAdapter.notifyDataSetChanged();
                     }
-                    if(dataSnapshot.child("category").getValue()!=null){
-                        category = dataSnapshot.child("category").getValue().toString();
-                    }
-                    if (!dataSnapshot.child("jobImageUrl").getValue().equals("default")) {
-                        jobImageUrl = dataSnapshot.child("jobImageUrl").getValue().toString();
-                    }
-                    JobCard item = new JobCard(employerId, jobId, title, category, jobImageUrl);
-                    jobCardItems.add(item);
-                    jobArrayAdapter.notifyDataSetChanged();
+
                 }
             }
 
@@ -322,6 +357,72 @@ public class EmployeeMainFragment extends Fragment {
             }
         });
 
+    }
+
+    private ArrayList<String> getCountryPreferencesFromDB(){
+        //preferenceCategoryList.clear();
+        //preferenceCategoryList = new ArrayList<>();
+        final ArrayList<String> _preferenceCountryList = new ArrayList<>();
+        DatabaseReference currentUserCountryPreferencesDb = mUserDatabase.child("preferences").child("countries");
+        currentUserCountryPreferencesDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot countryPreference : dataSnapshot.getChildren()){
+                        _preferenceCountryList.add(countryPreference.getKey().toString());
+                        //preferenceCategoryList.add(categoryPreference.getKey().toString());
+                        Log.i(LOGTAG, countryPreference.getKey().toString());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return _preferenceCountryList;
+    }
+
+    private Boolean isJobCountryInEmployeePreferencesCountries(ArrayList<String> _preferenceCountryList, String jobCountry){
+        for(String preferencecountry: _preferenceCountryList){
+            if(preferencecountry.equals(jobCountry))
+                return true;
+        }
+        return false;
+    }
+
+    private ArrayList<String> getCategoryPreferencesFromDB(){
+        //preferenceCategoryList.clear();
+        //preferenceCategoryList = new ArrayList<>();
+        final ArrayList<String> _preferenceCategoryList = new ArrayList<>();
+        DatabaseReference currentUserCategoryPreferencesDb = mUserDatabase.child("preferences").child("categories");
+        currentUserCategoryPreferencesDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot categoryPreference : dataSnapshot.getChildren()){
+                        _preferenceCategoryList.add(categoryPreference.getKey().toString());
+                        //preferenceCategoryList.add(categoryPreference.getKey().toString());
+                        Log.i(LOGTAG, categoryPreference.getKey().toString());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return _preferenceCategoryList;
+    }
+
+    private Boolean isJobCategoryInEmployeePreferencesCategories(ArrayList<String> _preferenceCategoryList, String jobCategory){
+        for(String preferenceCategory: _preferenceCategoryList){
+            if(preferenceCategory.equals(jobCategory))
+                return true;
+        }
+        return false;
     }
 
 }

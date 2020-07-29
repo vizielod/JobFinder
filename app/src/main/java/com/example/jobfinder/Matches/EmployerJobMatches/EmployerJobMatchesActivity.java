@@ -69,6 +69,8 @@ public class EmployerJobMatchesActivity extends AppCompatActivity {
         getEmployerUserJobMatchId();
 
         registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
+        //TODO: Implement DELETE on X click
     }
 
     private void RefreshRecyclerViewList(){

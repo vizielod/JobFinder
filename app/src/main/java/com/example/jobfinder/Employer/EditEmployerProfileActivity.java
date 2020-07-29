@@ -26,6 +26,7 @@ import com.example.jobfinder.ChooseLoginRegistrationActivity;
 import com.example.jobfinder.Employee.EditEmployeeProfileActivity;
 import com.example.jobfinder.R;
 import com.example.jobfinder.SettingsActivity;
+import com.github.siyamed.shapeimageview.mask.PorterShapeImageView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -161,7 +162,7 @@ public class EditEmployerProfileActivity extends AppCompatActivity {
                         Glide.with(getApplication()).load(profileImageUrl).into(mEmployerImage);
                         switch(profileImageUrl){
                             case "default":
-                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mEmployerImage);
+                                Glide.with(getApplication()).load(R.drawable.placeholder_img).into(mEmployerImage);
                                 break;
                             default:
                                 Glide.with(getApplication()).load(profileImageUrl).into(mEmployerImage);

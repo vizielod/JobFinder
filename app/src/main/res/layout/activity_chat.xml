@@ -22,20 +22,47 @@
         app:layout_constraintTop_toTopOf="@+id/tabs"
         app:srcCompat="@drawable/arrow_back" />
 
-    <ImageView
+    <com.github.siyamed.shapeimageview.mask.PorterShapeImageView
+        android:translationZ="10dp"
         android:id="@+id/matchImage_ImageView"
+        android:src="@drawable/placeholder_img"
         android:layout_width="45dp"
         android:layout_height="48dp"
         android:layout_marginStart="25dp"
-        android:layout_marginLeft="25dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
-        android:backgroundTint="@color/white"
         android:scaleType="centerCrop"
-        android:translationZ="1dp"
         app:layout_constraintBottom_toBottomOf="@+id/tabs"
         app:layout_constraintStart_toEndOf="@+id/backArrow_imageview"
-        app:layout_constraintTop_toTopOf="@+id/tabs" />
+        app:layout_constraintTop_toTopOf="@+id/tabs"
+        app:siShape="@drawable/custom_chat_imageview"
+        app:siSquare="false"/>
+
+    <ImageView
+        android:translationZ="9dp"
+        android:background="@drawable/chat_imageview_border"
+        android:layout_width="47dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/tabs"
+        app:layout_constraintStart_toEndOf="@+id/backArrow_imageview"
+        app:layout_constraintTop_toTopOf="@+id/tabs"/>
+
+    <ImageView
+        android:translationZ="8dp"
+        android:background="@drawable/chat_imageview_shadow"
+        android:layout_width="47dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/tabs"
+        app:layout_constraintStart_toEndOf="@+id/backArrow_imageview"
+        app:layout_constraintTop_toTopOf="@+id/tabs"/>
 
     <TextView
         android:id="@+id/matchName_textview"

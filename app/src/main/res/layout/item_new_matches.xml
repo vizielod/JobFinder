@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
@@ -8,7 +8,7 @@
     android:paddingHorizontal="5dp"
     android:orientation="vertical">
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/MatchImage"
         android:layout_width="70dp"
         android:layout_height="74dp"
@@ -19,7 +19,6 @@
         android:layout_marginEnd="2dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="2dp"
-
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,8 +26,68 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@mipmap/ic_launcher" />
+        app:srcCompat="@mipmap/ic_launcher"/>-->
+
+    <com.github.siyamed.shapeimageview.mask.PorterShapeImageView
+        android:translationZ="10dp"
+        android:id="@+id/MatchImage"
+        android:layout_width="70dp"
+        android:layout_height="74dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="2dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        android:src="@mipmap/ic_launcher"
+        app:siShape="@drawable/custom_small_imageview"
+        app:siSquare="false"/>
     <!--android:cropToPadding="true"-->
+
+    <ImageView
+        android:translationZ="9dp"
+        android:background="@drawable/imageview_border_small"
+        android:layout_width="72dp"
+        android:layout_height="76dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginBottom="1dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"/>
+
+    <ImageView
+        android:translationZ="8dp"
+        android:background="@drawable/imageview_shadow_small"
+        android:layout_width="72dp"
+        android:layout_height="76dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="6dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"/>
+
     <TextView
         android:id="@+id/MatchName"
         android:layout_width="70dp"
@@ -52,29 +111,32 @@
 
     <TextView
         android:id="@+id/MatchId"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="7dp" />
+        tools:layout_editor_absoluteX="7dp"
+        tools:ignore="MissingConstraints"/>
 
     <TextView
         android:id="@+id/EmployerId"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0sp"
         android:layout_gravity="center"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="7dp" />
+        tools:layout_editor_absoluteX="7dp"
+        tools:ignore="MissingConstraints"/>
 
     <TextView
         android:id="@+id/JobId"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0sp"
         android:layout_gravity="center"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="7dp" />
+        tools:layout_editor_absoluteX="7dp"
+        tools:ignore="MissingConstraints"/>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

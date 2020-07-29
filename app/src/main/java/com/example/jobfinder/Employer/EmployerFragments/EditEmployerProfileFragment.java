@@ -193,7 +193,7 @@ public class EditEmployerProfileFragment extends Fragment {
                         Glide.with(fragmentActivity.getApplication()).load(profileImageUrl).into(mEmployerImage);
                         switch(profileImageUrl){
                             case "default":
-                                Glide.with(fragmentActivity.getApplication()).load(R.mipmap.ic_launcher).into(mEmployerImage);
+                                Glide.with(fragmentActivity.getApplication()).load(R.drawable.placeholder_img).into(mEmployerImage);
                                 break;
                             default:
                                 Glide.with(fragmentActivity.getApplication()).load(profileImageUrl).into(mEmployerImage);

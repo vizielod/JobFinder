@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
 import com.example.jobfinder.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -161,7 +162,7 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 saveUserInformation();
-                Intent intent = new Intent(CreateEmployeeProfileActivity.this, EmployeeMainActivity.class);
+                Intent intent = new Intent(CreateEmployeeProfileActivity.this, EmployeeTabbedMainActivity.class);
                 //intent.putExtra("userRole", userRole);
                 startActivity(intent);
                 finish();
@@ -171,7 +172,7 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
         mSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(CreateEmployeeProfileActivity.this, EmployeeMainActivity.class);
+                Intent intent = new Intent(CreateEmployeeProfileActivity.this, EmployeeTabbedMainActivity.class);
                 //intent.putExtra("userRole", userRole);
                 startActivity(intent);
                 finish();
@@ -213,7 +214,7 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
                         Glide.with(getApplication()).load(profileImageUrl).into(mProfileImage);
                         switch(profileImageUrl){
                             case "default":
-                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mProfileImage);
+                                Glide.with(getApplication()).load(R.drawable.placeholder_img).into(mProfileImage);
                                 break;
                             default:
                                 Glide.with(getApplication()).load(profileImageUrl).into(mProfileImage);

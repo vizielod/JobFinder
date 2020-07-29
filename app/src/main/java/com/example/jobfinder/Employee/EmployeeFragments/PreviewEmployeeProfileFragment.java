@@ -1,12 +1,20 @@
 package com.example.jobfinder.Employee.EmployeeFragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +29,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
@@ -43,6 +52,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.Map;
 
 
@@ -72,6 +82,9 @@ public class PreviewEmployeeProfileFragment extends Fragment {
     private FragmentActivity mFragmentActivity;
 
     private boolean isEmployeeTabbedMainActivity, isPreviewEmployeeProfileActivity;
+
+    private static File userCVFile;
+    private static long downloadID;
 
 
     public PreviewEmployeeProfileFragment(){
@@ -117,6 +130,7 @@ public class PreviewEmployeeProfileFragment extends Fragment {
         getUserInfo();
 
         if(!isEmployeeTabbedMainActivity){
+            mSettingsIVBtn.setVisibility(View.GONE);
             mDeleteBtn.setVisibility(View.GONE);
             mEditIVBtn.setVisibility(View.GONE);
             mEditBtn.setVisibility(View.GONE);
@@ -125,6 +139,8 @@ public class PreviewEmployeeProfileFragment extends Fragment {
         if(isEmployeeTabbedMainActivity){
             mBackArrowBtnIV.setVisibility(View.GONE);
         }
+
+        mContext.registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
         mFacebookIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,10 +216,14 @@ public class PreviewEmployeeProfileFragment extends Fragment {
         mPreviewCVBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (userCVUrl != null){
+                if (userCVUrl != null && isEmployeeTabbedMainActivity){
                     Intent intent = new Intent(Intent.ACTION_QUICK_VIEW);
                     intent.setData(Uri.parse(userCVUrl));
                     startActivity(intent);
+                }
+                else if (!isEmployeeTabbedMainActivity){
+                    getStoragePermission();
+                    getUserCVFile();
                 }
             }
         });
@@ -332,7 +352,7 @@ public class PreviewEmployeeProfileFragment extends Fragment {
                         Glide.with(mFragmentActivity.getApplication()).load(profileImageUrl).into(mProfileImage);
                         switch(profileImageUrl){
                             case "default":
-                                Glide.with(mFragmentActivity.getApplication()).load(R.mipmap.ic_launcher).into(mProfileImage);
+                                Glide.with(mFragmentActivity.getApplication()).load(R.drawable.placeholder_img).into(mProfileImage);
                                 break;
                             default:
                                 Glide.with(mFragmentActivity.getApplication()).load(profileImageUrl).into(mProfileImage);
@@ -552,6 +572,79 @@ public class PreviewEmployeeProfileFragment extends Fragment {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void getUserCVFile(){
+        //DatabaseReference userDb = usersDb.child("Employee").child(userId);
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    if(dataSnapshot.child("userCVUrl").getValue() != null){
+                        final String userCVUrl = dataSnapshot.child("userCVUrl").getValue().toString();
+                        if (userCVUrl != null){
+                            //downloadFile(context, matchesList.get(temp_position).getName(), ".pdf", DIRECTORY_DOWNLOADS, userCVUrl);
+
+                            downloadFile(mContext, name, ".pdf", Environment.getExternalStorageDirectory().getPath(), userCVUrl);
+                        }
+                    }
+                }
+
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void getStoragePermission(){
+        //for greater than lolipop versions we need the permissions asked on runtime
+        //so if the permission is not available user will go to the screen to allow storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + mContext.getPackageName()));
+            mContext.startActivity(intent);
+            return;
+        }
+    }
+
+    // /data/user/0/com.example.jobfinder/cache/Vizi1433498305pdf
+    public void downloadFile(Context context, String fileName, String fileExtension, String destinationDirectory, String url){
+
+        userCVFile = new File(destinationDirectory, fileName + "CV" + fileExtension);
+        final DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        //request.setDestinationInExternalFilesDir(context, destinationDirectory, fileName + "CV" +fileExtension);
+        request.setDestinationUri(Uri.fromFile(userCVFile));
+
+        downloadID = downloadManager.enqueue(request);
+        Toast.makeText(context, "Download in progress...", Toast.LENGTH_LONG).show();
+        Log.i(LOGTAG, Long.toString(downloadID));
+    }
+
+    public BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            if (getDownloadID() == id) {
+                Toast.makeText(context, "Download Completed", Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+
+    public void setFile(File file){
+        userCVFile = file;
+    }
+
+    public static long getDownloadID(){
+        return downloadID;
     }
 
 }

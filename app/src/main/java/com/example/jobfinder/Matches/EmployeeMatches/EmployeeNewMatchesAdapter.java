@@ -56,6 +56,9 @@ public class EmployeeNewMatchesAdapter extends RecyclerView.Adapter<EmployeeMatc
         if (!matchesList.get(position).getJobImageUrl().equals("default")) {
             Glide.with(context).load(matchesList.get(position).getJobImageUrl()).into(holder.mMatchJobImage);
         }
+        else{
+            Glide.with(context).load(R.drawable.placeholder_img).into(holder.mMatchJobImage);
+        }
 
     }
     // /data/user/0/com.example.jobfinder/cache/Vizi1433498305pdf

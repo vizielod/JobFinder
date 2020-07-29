@@ -44,24 +44,52 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
-            <ImageView
+
+
+            <com.github.siyamed.shapeimageview.mask.PorterShapeImageView
                 android:id="@+id/profileImage"
+                android:translationZ="10dp"
                 android:layout_width="120dp"
                 android:layout_height="140dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
+                android:src="@drawable/placeholder_img"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/ic_launcher"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView2"
-                app:layout_constraintVertical_bias="0.0" />
+                app:siShape="@drawable/custom_imageview"
+                app:siSquare="false"/>
+
+            <ImageView
+                android:translationZ="9dp"
+                android:layout_width="124dp"
+                android:layout_height="144dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="8dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                android:background="@drawable/imageview_border" />
+
+            <ImageView
+                android:translationZ="8dp"
+                android:layout_width="122dp"
+                android:layout_height="144dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                android:background="@drawable/imageview_shadow" />
 
             <EditText
                 android:id="@+id/name"
@@ -74,7 +102,7 @@
                 android:layout_marginRight="20dp"
                 android:hint="Your Full Name"
                 android:inputType="text"
-                android:paddingLeft="50dp"
+                android:paddingHorizontal="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileImage">
@@ -161,7 +189,7 @@
                 android:layout_marginRight="20dp"
                 android:hint="Age"
                 android:inputType="text"
-                android:paddingLeft="50dp"
+                android:paddingHorizontal="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
@@ -177,7 +205,7 @@
                 android:layout_marginRight="20dp"
                 android:hint="Profession"
                 android:inputType="text"
-                android:paddingLeft="50dp"
+                android:paddingHorizontal="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/age" />
@@ -194,7 +222,7 @@
                 android:layout_marginRight="20dp"
                 android:hint="About you"
                 android:inputType="textMultiLine"
-                android:paddingLeft="50dp"
+                android:paddingHorizontal="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -286,6 +314,7 @@
                 android:hint="Phone"
                 android:inputType="text"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/uploadCV_linearLeayout" />
@@ -302,6 +331,7 @@
                 android:hint="Country"
                 android:inputType="text"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -319,6 +349,7 @@
                 android:hint="City"
                 android:inputType="text"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -337,6 +368,7 @@
                 android:hint="Facebook"
                 android:inputType="textUri"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -354,6 +386,7 @@
                 android:hint="LinkedIn"
                 android:inputType="textUri"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -388,6 +421,7 @@
                 android:hint="Skype"
                 android:inputType="text"
                 android:paddingLeft="50dp"
+                android:paddingRight="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -497,11 +531,8 @@
                 android:id="@+id/textViewPreviewCV"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
                 android:layout_marginTop="28dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
                 android:fontFamily="@font/montserrat_regular"
                 android:gravity="right"
                 android:text="Scroll down to upload your CV"
@@ -509,44 +540,32 @@
                 android:textColor="@color/white"
                 android:textSize="17dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
             <Button
                 android:id="@+id/btn_preview_cv"
-                android:enabled="false"
                 android:layout_width="180dp"
                 android:layout_height="58dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
+                android:enabled="false"
                 android:gravity="right"
                 android:text="Preview CV"
                 android:textAlignment="center"
                 android:textSize="23dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toBottomOf="@+id/textViewPreviewCV" />
 
             <TextView
                 android:id="@+id/fileUploadedTextView"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
                 android:fontFamily="@font/montserrat_regular"
                 android:gravity="right"
                 android:text="No File Uploaded"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toBottomOf="@+id/btn_preview_cv" />
 
             <ImageView

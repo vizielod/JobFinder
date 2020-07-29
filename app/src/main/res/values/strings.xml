@@ -11,6 +11,7 @@
     <string name="title_activity_employee_tabbed_main">EmployeeTabbedMainActivity</string>
 
     <string name="category_spinner_str">Select Category</string>
+    <string name="pick_country">Pick Country</string>
 
 
 </resources>

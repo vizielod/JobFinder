@@ -45,7 +45,7 @@ public class MyJobCardArrayAdapter extends ArrayAdapter<JobCard> {
         //image.setImageResource(R.mipmap.ic_launcher);
         switch(jobCard_item.getJobImageUrl()){
             case "default":
-                Glide.with(convertView.getContext()).load(R.mipmap.ic_launcher).into(image);
+                Glide.with(convertView.getContext()).load(R.drawable.placeholder_img).into(image);
                 break;
             default:
                 Glide.clear(image);

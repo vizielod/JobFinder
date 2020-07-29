@@ -93,6 +93,9 @@ public class EmployerJobMatchesAdapter extends RecyclerView.Adapter<EmployerJobM
         if(!matchesList.get(position).getProfileImageUrl().equals("default")){
             Glide.with(context).load(matchesList.get(position).getProfileImageUrl()).into(holder.mMatchImage);
         }
+        else{
+            Glide.with(context).load(R.drawable.placeholder_img).into(holder.mMatchImage);
+        }
         holder.mMatchJobId.setText(matchesList.get(position).getJobId());
 
         holder.mMatchImage.setOnClickListener(new View.OnClickListener() {
@@ -108,14 +111,17 @@ public class EmployerJobMatchesAdapter extends RecyclerView.Adapter<EmployerJobM
         holder.mGetFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(context,
+                getStoragePermission();
+
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(context,
                         Manifest.permission.READ_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                             Uri.parse("package:" + context.getPackageName()));
                     context.startActivity(intent);
                     return;
-                }
+                }*/
+
                 //Log.i(LOGTAG, "DELETE" + mJobId.getText().toString());
                 usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
                 mAuth = FirebaseAuth.getInstance();
@@ -145,6 +151,20 @@ public class EmployerJobMatchesAdapter extends RecyclerView.Adapter<EmployerJobM
             }
         });
     }
+
+    public void getStoragePermission(){
+        //for greater than lolipop versions we need the permissions asked on runtime
+        //so if the permission is not available user will go to the screen to allow storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + context.getPackageName()));
+            context.startActivity(intent);
+            return;
+        }
+    }
+
     // /data/user/0/com.example.jobfinder/cache/Vizi1433498305pdf
     public void downloadFile(Context context, String fileName, String fileExtension, String destinationDirectory, String url){
 
@@ -158,7 +178,7 @@ public class EmployerJobMatchesAdapter extends RecyclerView.Adapter<EmployerJobM
         request.setDestinationUri(Uri.fromFile(userCVFile));
 
         downloadID = downloadManager.enqueue(request);
-
+        Toast.makeText(context, "Download in progress...", Toast.LENGTH_LONG).show();
         Log.i(LOGTAG, Long.toString(downloadID));
     }
 

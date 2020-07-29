@@ -153,6 +153,7 @@ public class ChatActivity extends AppCompatActivity {
         mDeleteMatchBtnIV.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                //TODO: Implement Match delete
                 Toast.makeText(ChatActivity.this, "Delete employee from matches", Toast.LENGTH_LONG).show();
             }
         });
@@ -180,7 +181,7 @@ public class ChatActivity extends AppCompatActivity {
                         Glide.with(getApplication()).load(jobImageUrl).into(mMatchImage);
                         switch(jobImageUrl){
                             case "default":
-                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mMatchImage);
+                                Glide.with(getApplication()).load(R.drawable.placeholder_img).into(mMatchImage);
                                 break;
                             default:
                                 Glide.with(getApplication()).load(jobImageUrl).into(mMatchImage);
@@ -218,7 +219,7 @@ public class ChatActivity extends AppCompatActivity {
                         Glide.with(getApplication()).load(profileImageUrl).into(mMatchImage);
                         switch(profileImageUrl){
                             case "default":
-                                Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mMatchImage);
+                                Glide.with(getApplication()).load(R.drawable.placeholder_img).into(mMatchImage);
                                 break;
                             default:
                                 Glide.with(getApplication()).load(profileImageUrl).into(mMatchImage);
