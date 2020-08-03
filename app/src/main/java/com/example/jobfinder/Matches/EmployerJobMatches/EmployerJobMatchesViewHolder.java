@@ -16,7 +16,7 @@ public class EmployerJobMatchesViewHolder extends RecyclerView.ViewHolder implem
     public TextView mMatchId, mMatchJobId, mMatchName, mMatchProfession, mMatchEmployerId;
     public ImageView mMatchImage;
 
-    public Button mGetFileButton;
+    public Button mGetFileButton, mDeleteButton;
 
     public EmployerJobMatchesViewHolder(View itemView) {
         super(itemView);
@@ -31,6 +31,8 @@ public class EmployerJobMatchesViewHolder extends RecyclerView.ViewHolder implem
 
         mMatchImage = (ImageView) itemView.findViewById(R.id.MatchImage);
         mGetFileButton = (Button) itemView.findViewById(R.id.btn_getFile);
+
+        mDeleteButton = (Button) itemView.findViewById(R.id.btn_deleteMatch);
 
     }
 

@@ -6,12 +6,13 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo_square"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".Employee.EmployeeSettingsActivity"></activity>
+
+        <activity android:name=".Employee.EmployeeSettingsActivity" />
         <activity android:name=".Employer.PreviewEmployerProfileActivity" />
         <activity android:name=".Employee.PreviewEmployeeProfileActivity" />
         <activity
@@ -44,15 +45,26 @@
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".ChooseLoginRegistrationActivity">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity android:name=".MainEmptyActivity"></activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".Employer.JobMainActivity" />
+        <activity android:name=".Employee.EmployeeMainActivity" />
+        <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".Employer.JobMainActivity" />
-        <activity android:name=".Employee.EmployeeMainActivity" />
     </application>
 
 </manifest>

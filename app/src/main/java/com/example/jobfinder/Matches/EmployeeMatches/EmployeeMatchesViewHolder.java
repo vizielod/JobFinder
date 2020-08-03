@@ -17,7 +17,7 @@ import com.example.jobfinder.R;
 public class EmployeeMatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     public TextView mMatchJobId, mMatchEmployerId, mMatchJobTitle, mMatchJobCategory;
     public ImageView mMatchJobImage;
-    public Button mGetFileButton;
+    public Button mGetFileButton, mDeleteButton;
     public EmployeeMatchesViewHolder(View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
@@ -29,6 +29,8 @@ public class EmployeeMatchesViewHolder extends RecyclerView.ViewHolder implement
 
         mMatchJobImage = (ImageView) itemView.findViewById(R.id.MatchImage);
         mGetFileButton = (Button) itemView.findViewById(R.id.btn_getFile);
+
+        mDeleteButton = (Button) itemView.findViewById(R.id.btn_deleteMatch);
         //mGetFileButton.setText("Info");
 
     }

@@ -1,9 +1,11 @@
 package com.example.jobfinder.Matches.EmployeeMatches;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,11 +52,13 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
 
     private FirebaseAuth mAuth;
     private String currentUId;
-    private DatabaseReference usersDb;
+    private DatabaseReference usersDb, chatDb;
 
     private static File file;
     private static long downloadID;
     private static Uri downloadFileUri;
+
+    private String alertDialogTitle, alertDialogMessage;
 
     public EmployeeMatchesAdapter(List<MatchesJobObject> matchesList, Context context) {
         this.matchesList = matchesList;
@@ -72,7 +77,7 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
     }
 
     @Override
-    public void onBindViewHolder(EmployeeMatchesViewHolder holder, int position) {
+    public void onBindViewHolder(final EmployeeMatchesViewHolder holder, final int position) {
         final int temp_position = position;
         holder.mMatchEmployerId.setText(matchesList.get(position).getEmployerId());
         holder.mMatchJobId.setText(matchesList.get(position).getJobId());
@@ -135,7 +140,40 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
                 });
             }
         });
+        holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Log.i(LOGTAG, "DELETE" + mJobId.getText().toString());
+                alertDialogTitle = "Confirm Job Delete";
+                alertDialogMessage = "Are you sure you want to DELETE this Job?";
 
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(alertDialogTitle);
+                builder.setMessage(alertDialogMessage);
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        removeAt(position);
+                        usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+                        mAuth = FirebaseAuth.getInstance();
+                        currentUId = mAuth.getCurrentUser().getUid();
+                        deleteMatch(holder.mMatchEmployerId.getText().toString(), holder.mMatchJobId.getText().toString());
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //RefreshRecyclerViewList();
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
     }
 
     public void downloadFile(Context context, String fileName, String fileExtension, String destinationDirectory, String url) {
@@ -169,6 +207,52 @@ public class EmployeeMatchesAdapter extends RecyclerView.Adapter<EmployeeMatches
     @Override
     public int getItemCount() {
         return this.matchesList.size();
+    }
+
+
+    public void removeAt(int position) {
+        matchesList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+    }
+
+    public void deleteMatch(final String employerId, final String jobId){
+        //Itt implementció kérdése, hogy hogyan oldjuk ezt meg.
+        //Ha azt szeretnénk, hogy egy match törlése után az Employee-nak ne dobja fel megint azt az állást, akkor nem töröljük az Employee-connections-liked adatbázisából a jobID-t
+        //Ha azt szeretnénk, hogy törlés után a Job-hoz már ne dobja fel azt a felhasználót, akkor benne hagyjuk a liked-nál a userID-t
+        //Most én annyit csinálok, hogy a matches listában már nem jelenítem meg, de többet nem dobja fel se az Employee felhasználónak se az adott Job-nak a másikat.
+        final DatabaseReference employeeJobMatchDb = usersDb.child("Employee").child(currentUId).child("connections").child("matches").child(employerId).child(jobId);
+        employeeJobMatchDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    final String chatID = dataSnapshot.child("chatId").getValue().toString();
+                    deleteChatDataOnJobDelete(chatID);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        employeeJobMatchDb.removeValue();
+        usersDb.child("Employer").child(employerId).child("jobs").child(jobId).child("connections").child("matches").child(currentUId).removeValue();
+    }
+
+    public void deleteChatDataOnJobDelete(final String chatID){
+        chatDb = FirebaseDatabase.getInstance().getReference().child("Chat");
+        chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    chatDb.child(chatID).removeValue();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

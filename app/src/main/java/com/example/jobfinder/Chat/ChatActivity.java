@@ -1,13 +1,16 @@
 package com.example.jobfinder.Chat;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +29,7 @@ import com.example.jobfinder.Employee.PreviewEmployeeProfileActivity;
 import com.example.jobfinder.Employer.EditJobActivity;
 import com.example.jobfinder.Employer.JobFragments.PreviewJobProfileFragment;
 import com.example.jobfinder.Employer.PreviewJobProfileActivity;
+import com.example.jobfinder.Matches.EmployeeMatches.EmployeeMatchesActivity;
 import com.example.jobfinder.Matches.EmployerJobMatches.MatchesEmployeeObject;
 import com.example.jobfinder.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
+    private static final String DELETE_JOB = "DELETE JOB";
     private static final String LOGTAG = "UserRole";
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mChatAdapter;
@@ -54,7 +59,9 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView mSendButtonIV, mBackArrowBtnIV, mDeleteMatchBtnIV, mMatchImage;
     private String currentUserID, matchId, chatId, jobId, employerId, userRole, oppositeUserRole;
 
-    DatabaseReference mDatabaseUser, mDatabaseChat, usersDb;
+    DatabaseReference mDatabaseUser, mDatabaseChat, usersDb, chatDb;
+
+    private String alertDialogTitle, alertDialogMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +161,10 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO: Implement Match delete
-                Toast.makeText(ChatActivity.this, "Delete employee from matches", Toast.LENGTH_LONG).show();
+                alertDialogTitle = "Confirm Match Delete";
+                alertDialogMessage = "Are you sure you want to DELETE this user from the Matches list?";
+                PopAlerDialogMessage(alertDialogTitle, alertDialogMessage, DELETE_JOB);
+                //Toast.makeText(ChatActivity.this, "Delete employee from matches", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -328,6 +338,115 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<ChatObject> resultsChat = new ArrayList<ChatObject>();
     private List<ChatObject> getDataSetChat() {
         return resultsChat;
+    }
+
+    /*public void removeAt(int position) {
+        matchesList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+    }*/
+
+    //Delete Match from Employer User Job matches
+    public void deleteMatch(final String userID){
+        //Itt implementció kérdése, hogy hogyan oldjuk ezt meg.
+        //Ha azt szeretnénk, hogy egy match törlése után az Employee-nak ne dobja fel megint azt az állást, akkor nem töröljük az Employee-connections-liked adatbázisából a jobID-t
+        //Ha azt szeretnénk, hogy törlés után a Job-hoz már ne dobja fel azt a felhasználót, akkor benne hagyjuk a liked-nál a userID-t
+        //Most én annyit csinálok, hogy a matches listában már nem jelenítem meg, de többet nem dobja fel se az Employee felhasználónak se az adott Job-nak a másikat.
+        final DatabaseReference jobEmployeeMatchDb = usersDb.child(userRole).child(currentUserID).child("jobs").child(jobId).child("connections").child("matches").child(userID);
+        jobEmployeeMatchDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    final String chatID = dataSnapshot.child("chatId").getValue().toString();
+                    deleteChatDataOnJobDelete(chatID);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        jobEmployeeMatchDb.removeValue();
+        usersDb.child("Employee").child(userID).child("connections").child("matches").child(employerId).child(jobId).removeValue();
+    }
+
+    //Delete Match from Employee user matches
+    public void deleteMatch(final String employerId, final String jobId){
+        //Itt implementció kérdése, hogy hogyan oldjuk ezt meg.
+        //Ha azt szeretnénk, hogy egy match törlése után az Employee-nak ne dobja fel megint azt az állást, akkor nem töröljük az Employee-connections-liked adatbázisából a jobID-t
+        //Ha azt szeretnénk, hogy törlés után a Job-hoz már ne dobja fel azt a felhasználót, akkor benne hagyjuk a liked-nál a userID-t
+        //Most én annyit csinálok, hogy a matches listában már nem jelenítem meg, de többet nem dobja fel se az Employee felhasználónak se az adott Job-nak a másikat.
+        final DatabaseReference employeeJobMatchDb = usersDb.child("Employee").child(currentUserID).child("connections").child("matches").child(employerId).child(jobId);
+        employeeJobMatchDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    final String chatID = dataSnapshot.child("chatId").getValue().toString();
+                    deleteChatDataOnJobDelete(chatID);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        employeeJobMatchDb.removeValue();
+        usersDb.child("Employer").child(employerId).child("jobs").child(jobId).child("connections").child("matches").child(currentUserID).removeValue();
+    }
+
+    public void deleteChatDataOnJobDelete(final String chatID){
+        chatDb = FirebaseDatabase.getInstance().getReference().child("Chat");
+        chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    chatDb.child(chatID).removeValue();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void PopAlerDialogMessage(String title, String message, String callMessage){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        if(callMessage.equals(DELETE_JOB)){
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    //final String employerId = resultsEmployeeMatches.get(viewHolder.getAdapterPosition()).getEmployerId();
+                    //final String jobId = resultsEmployeeMatches.get(viewHolder.getAdapterPosition()).getJobId();
+                    if(userRole.equals("Employee")){
+                        deleteMatch(employerId, matchId);
+                    }
+                    else if(userRole.equals("Employer")){
+                        deleteMatch(matchId);
+                    }
+                    dialog.dismiss();
+                    finish();
+                    Toast.makeText(ChatActivity.this, "Deleted from matches", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            });
+        }
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //RefreshRecyclerViewList();
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     public void hideKeyboard(View view) {

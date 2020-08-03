@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
 
 public class ChooseLoginRegistrationActivity extends AppCompatActivity {
+    private static final int REQUEST_EXIT = 9;
 
     private Button mLogin, mGoogleLoginBtn;
     private TextView mRegister;
@@ -40,7 +41,7 @@ public class ChooseLoginRegistrationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ChooseLoginRegistrationActivity.this, LoginActivity.class);
                 intent.putExtra("LoginMode", "GoogleLogin");
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_EXIT);
                 //finish();
                 return;
             }
@@ -56,5 +57,13 @@ public class ChooseLoginRegistrationActivity extends AppCompatActivity {
                 return;
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == REQUEST_EXIT) {
+            finish();
+        }
     }
 }

@@ -57,6 +57,9 @@ dependencies {
 
     //ImageView
     implementation 'com.github.siyamed:android-shape-imageview:0.9.+@aar'
+
+    //SplashScreen
+    implementation 'gr.pantrif:easy-android-splash-screen:0.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

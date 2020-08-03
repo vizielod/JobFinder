@@ -392,7 +392,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/uploadCV_linearLeayout" />
 
-            <EditText
+            <TextView
+                android:background="@drawable/custom_edittext"
+                android:textColor="@color/darkgreen"
+                android:textColorHint="@color/darkgreen_50"
+                android:textCursorDrawable="@color/darkgreen"
+                android:textSize="15dp"
+                android:gravity="left|center_vertical"
+                android:fontFamily="@font/montserrat_regular"
                 android:id="@+id/country"
                 android:layout_width="match_parent"
                 android:layout_height="43dp"

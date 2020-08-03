@@ -134,6 +134,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.removeAuthStateListener(firebaseAuthStateListener);
     }
 
+
     private String userRole;
     private String oppositeUserRole;
 
@@ -160,6 +161,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             intent.putExtra("userRole", userRole);
                             startActivity(intent);
+                            setResult(9);
                             finish();
                             return;
                         }
@@ -192,6 +194,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             intent.putExtra("userRole", userRole);
                             startActivity(intent);
+                            setResult(9); //Terminate the ChooseLoginRegActivity if Login is successful. Otherwise we can still go back to the previous Activity with the default back option, which is tapping the home button for once
                             finish();
                             return;
                         }

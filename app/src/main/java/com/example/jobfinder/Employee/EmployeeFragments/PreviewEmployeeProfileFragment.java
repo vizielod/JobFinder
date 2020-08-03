@@ -241,6 +241,7 @@ public class PreviewEmployeeProfileFragment extends Fragment {
                 mAuth.signOut();
                 Intent intent = new Intent(mFragmentActivity, ChooseLoginRegistrationActivity.class);
                 startActivity(intent);
+                mFragmentActivity.finish();
                 return;
             }
         });
@@ -270,6 +271,14 @@ public class PreviewEmployeeProfileFragment extends Fragment {
             userId = EmployeeTabbedMainActivity.getCurrentUId();
             userRole = (String) EmployeeTabbedMainActivity.getUserRole();
             mAuth = EmployeeTabbedMainActivity.getFirebaseAuth();
+
+            OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    mFragmentActivity.finish();
+                }
+            };
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
         }
         else if(isPreviewEmployeeProfileActivity){
             userId = PreviewEmployeeProfileActivity.getCurrentUId();
@@ -564,7 +573,6 @@ public class PreviewEmployeeProfileFragment extends Fragment {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 // Do nothing
                 dialog.dismiss();
             }

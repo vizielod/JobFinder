@@ -170,6 +170,7 @@ public class EmployeeMatchesFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mContext.unregisterReceiver(onDownloadComplete);
+        getActivity().finish();
     }
 
     private void getEmployeeUserMatchId() {

@@ -202,6 +202,7 @@ public class PreviewEmployerProfileFragment extends Fragment {
                 mAuth.signOut();
                 Intent intent = new Intent(mFragmentActivity, ChooseLoginRegistrationActivity.class);
                 startActivity(intent);
+                mFragmentActivity.finish();
                 return;
             }
         });

@@ -51,20 +51,23 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.mukesh.countrypicker.Country;
+import com.mukesh.countrypicker.CountryPicker;
+import com.mukesh.countrypicker.OnCountryPickerListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateEmployeeProfileActivity extends AppCompatActivity {
+public class CreateEmployeeProfileActivity extends AppCompatActivity implements OnCountryPickerListener {
     //this is the pic pdf code used in file chooser
     final static int PICK_PDF_CODE = 2342;
     private static final String LOGTAG = "UserRole";
 
-    private EditText mNameField, mDescriptionField, mPhoneField, mAgeField, mProfessionField, mCountryField, mCityField, mFacebookField, mLinkedInField, mWebsiteField, mSkypeField;
+    private EditText mNameField, mDescriptionField, mPhoneField, mAgeField, mProfessionField, mCityField, mFacebookField, mLinkedInField, mWebsiteField, mSkypeField;
 
-    private TextView mTextViewStatus, mTextViewPreviewCV;
+    private TextView mTextViewStatus, mTextViewPreviewCV, mCountryField;
 
     private Button mBack, mCreate, mSkip, mPreviewCV, mSelectCV, mUploadCV;
 
@@ -82,6 +85,8 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
 
     private RadioGroup mGender_RadioGroup;
 
+    private CountryPicker countryPicker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,12 +101,14 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
         mProfessionField = (EditText) findViewById(R.id.profession);
         mDescriptionField = (EditText) findViewById(R.id.employeeDescription);
         mPhoneField = (EditText) findViewById(R.id.phone);
-        mCountryField = (EditText) findViewById(R.id.country);
+        //mCountryField = (EditText) findViewById(R.id.country);
         mCityField = (EditText) findViewById(R.id.city);
         mFacebookField = (EditText) findViewById(R.id.facebook);
         mLinkedInField = (EditText) findViewById(R.id.linkedIn);
         mWebsiteField = (EditText) findViewById(R.id.websiteURL);
         mSkypeField = (EditText) findViewById(R.id.skype);
+
+        mCountryField = (TextView) findViewById(R.id.country);
 
         mProfileImage = (ImageView) findViewById(R.id.profileImage);
         mUploadCV = (Button) findViewById(R.id.btn_upload_cv);
@@ -123,7 +130,17 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
         getUserInfo();
         hideEditTextKeypadOnFocusChange();
 
+        countryPicker = new CountryPicker.Builder().with(this)
+                .listener(this)
+                .build();
 
+        mCountryField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                countryPicker.showDialog(getSupportFragmentManager());
+                return;
+            }
+        });
         mSelectCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -512,5 +529,10 @@ public class CreateEmployeeProfileActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onSelectCountry(Country country) {
+        mCountryField.setText(country.getName());
     }
 }

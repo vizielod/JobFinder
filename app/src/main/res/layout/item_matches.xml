@@ -118,7 +118,7 @@
         tools:layout_editor_absoluteX="7dp" />
 
     <Button
-        android:id="@+id/btn_deleteJob"
+        android:id="@+id/btn_deleteMatch"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:background="@drawable/deleteitem_button"
@@ -127,21 +127,18 @@
 
     <Button
         android:id="@+id/btn_getFile"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
+        android:layout_width="70dp"
+        android:layout_height="40dp"
         android:layout_marginStart="200dp"
-        android:layout_marginLeft="200dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="13dp"
         android:fontFamily="@font/montserrat_regular"
-        android:text="CV"
+        android:paddingVertical="5dp"
+        android:text="Detalis"
         android:textAlignment="center"
-        android:textSize="20dp"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.859"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/MatchImage"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
