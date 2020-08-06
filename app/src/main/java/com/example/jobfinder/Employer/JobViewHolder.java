@@ -31,6 +31,7 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
 
     public TextView mJobId, mJobTitle, mEmployerId, mJobCategory;
     public ImageView mJobImage;
+    private TextView mContactedMatchesFoundTV;
 
     public Button mDeleteButton;
     private List<JobObject> jobsList;
@@ -48,8 +49,6 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
     public JobViewHolder(View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
-
-
         /*usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
 
         mAuth = FirebaseAuth.getInstance();

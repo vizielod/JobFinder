@@ -136,6 +136,8 @@ public class JobMatchesFragment extends Fragment {
         resultsNewMatches.clear();
         mEmployerJobMatchesAdapter.notifyDataSetChanged();
         mEmployerJobNewMatchesAdapter.notifyDataSetChanged();
+        mContactedMatchesFoundTV.setVisibility(View.VISIBLE);
+        mNewMatchesFoundTV.setVisibility(View.VISIBLE);
         getEmployerUserJobMatchId();
     }
 
@@ -252,6 +254,10 @@ public class JobMatchesFragment extends Fragment {
     private int getItemCount(){return resultsContactedMatches.size();}
     private int getNewMatchesItemCount(){return resultsNewMatches.size();}
 
+    public void setContactedMatchesFoundTV(){
+        mContactedMatchesFoundTV.setVisibility(View.VISIBLE);
+    }
+
     public void deleteMatch(final String userID){
         //Itt implementció kérdése, hogy hogyan oldjuk ezt meg.
         //Ha azt szeretnénk, hogy egy match törlése után az Employee-nak ne dobja fel megint azt az állást, akkor nem töröljük az Employee-connections-liked adatbázisából a jobID-t
@@ -309,6 +315,9 @@ public class JobMatchesFragment extends Fragment {
                 public void onClick(DialogInterface dialog, int which) {
                     deleteMatch(resultsContactedMatches.get(viewHolder.getAdapterPosition()).getUserId());
                     removeAt(viewHolder.getAdapterPosition());
+                    if(resultsContactedMatches.isEmpty()){
+                        mContactedMatchesFoundTV.setVisibility(View.VISIBLE);
+                    }
                     dialog.dismiss();
                 }
             });

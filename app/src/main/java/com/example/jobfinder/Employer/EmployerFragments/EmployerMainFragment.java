@@ -25,6 +25,7 @@ import com.example.jobfinder.ChooseLoginRegistrationActivity;
 import com.example.jobfinder.Employer.EditEmployerProfileActivity;
 import com.example.jobfinder.Employer.EmployerActivity;
 import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
+import com.example.jobfinder.Employer.JobManager;
 import com.example.jobfinder.Employer.JobObject;
 import com.example.jobfinder.Employer.JobsAdapter;
 import com.example.jobfinder.R;
@@ -217,7 +218,40 @@ public class EmployerMainFragment extends Fragment {
         mJobsAdapter.notifyItemRangeChanged(position, getItemCount());
     }
 
-    public void deleteJob(final String jobId){
+    public void PopAlerDialogMessage(String title, String message, String callMessage, final RecyclerView.ViewHolder viewHolder){
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        if(callMessage.equals(DELETE_JOB)){
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    //deleteJob(mJobs.get(viewHolder.getAdapterPosition()).getJobId());
+                    JobManager.deleteJob(mJobs.get(viewHolder.getAdapterPosition()).getJobId());
+                    removeAt(viewHolder.getAdapterPosition());
+                    mJobsAdapter.notifyDataSetChanged();
+                    Toast.makeText(mContext, "Job successfully deleted", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                }
+            });
+        }
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                RefreshRecyclerViewList();
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    /*public void deleteJob(final String jobId){
         final DatabaseReference jobDb = usersDb.child("Employer").child(currentUId).child("jobs").child(jobId);
         jobDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -350,35 +384,7 @@ public class EmployerMainFragment extends Fragment {
 
             }
         });
-    }
+    }*/
 
-    public void PopAlerDialogMessage(String title, String message, String callMessage, final RecyclerView.ViewHolder viewHolder){
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-        builder.setTitle(title);
-        builder.setMessage(message);
-
-        if(callMessage.equals(DELETE_JOB)){
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    deleteJob(mJobs.get(viewHolder.getAdapterPosition()).getJobId());
-                    removeAt(viewHolder.getAdapterPosition());
-                    dialog.dismiss();
-                }
-            });
-        }
-
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                RefreshRecyclerViewList();
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
 }

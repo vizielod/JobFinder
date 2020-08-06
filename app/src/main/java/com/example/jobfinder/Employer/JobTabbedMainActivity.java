@@ -1,5 +1,6 @@
 package com.example.jobfinder.Employer;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.example.jobfinder.Cards.Cards;
@@ -7,6 +8,7 @@ import com.example.jobfinder.Cards.MyArrayAdapter;
 import com.example.jobfinder.Cards.MyJobCardArrayAdapter;
 import com.example.jobfinder.Employer.JobFragments.PreviewJobProfileFragment;
 import com.example.jobfinder.Employer.ui.main.JobSectionsPagerAdapter;
+import com.example.jobfinder.JobFinder;
 import com.example.jobfinder.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -83,6 +85,7 @@ public class JobTabbedMainActivity extends AppCompatActivity {
     public static DatabaseReference getUserDatabase() {return mUserDatabase; }
     public static ViewPager getViewPager() {return viewPager; }
     public static String getUserRole(){ return userRole; }
+    public static Context getContext(){ return JobFinder.getAppContext(); }
 
     public static String getFacebook() { return mUserDatabase.child("facebook").toString();}
 

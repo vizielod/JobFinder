@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,6 +44,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +60,8 @@ public class JobMainFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mJobsAdapter;
     private RecyclerView.LayoutManager mJobsLayoutManager;
+
+    private TextView mEmployeeListEmptyTV;
 
     private String userRole, oppositeUserRole;
     private String alertDialogTitle, alertDialogMessage;
@@ -91,7 +96,7 @@ public class JobMainFragment extends Fragment {
         //return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_job_tabbed_main, container, false);
 
-        checkUserRole();
+        getEmployeeUserCards();
 
         rowItems = new ArrayList<Cards>();
 
@@ -99,15 +104,20 @@ public class JobMainFragment extends Fragment {
         //arrayAdapter = new MyArrayAdapter(mContext, R.layout.item, rowItems);
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) view.findViewById(R.id.frame);
+        mEmployeeListEmptyTV = (TextView) view.findViewById(R.id.listEmpty_textview);
 
         flingContainer.setAdapter(arrayAdapter);
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
+
             @Override
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
                 rowItems.remove(0);
                 arrayAdapter.notifyDataSetChanged();
+                /*if(rowItems.isEmpty()){
+                    Log.i(LOGTAG, "No Employees Found! Refresh or look back later!");
+                }*/
             }
 
             @Override
@@ -134,6 +144,8 @@ public class JobMainFragment extends Fragment {
                 arrayAdapter.notifyDataSetChanged();
                 Log.d("LIST", "notified");
                 i++;*/
+                //Log.i(LOGTAG, "No Employees Found! Refresh or look back later!");
+                //mEmployeeListEmptyTV.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -200,7 +212,7 @@ public class JobMainFragment extends Fragment {
         });
     }
 
-    public void checkUserRole(){
+    public void getEmployeeUserCards(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference employerDb = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer");
 
@@ -270,6 +282,8 @@ public class JobMainFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
+
+
         });
     }
 }

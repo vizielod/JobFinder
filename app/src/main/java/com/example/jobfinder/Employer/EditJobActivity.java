@@ -63,7 +63,7 @@ public class EditJobActivity extends AppCompatActivity implements OnCountryPicke
     final static int PICK_PDF_CODE = 2342;
 
     private EditText mTitleField, mDescriptionField, mCityField, mContactField, mPhoneField, mJobWebsiteUrlField;
-    private TextView mTextViewStatus, mTextViewPreviewDescription, mTextViewFileUploaded, mCategoryField, mTypeField, mCountryField;
+    private TextView mTextViewStatus, mTextViewPreviewDescription, mTextViewFileUploaded, mCategoryField, mTypeField, mCountryField, mCategoryTestField;
 
     private Spinner mCategorySpinner, mTypeSpinner;
 
@@ -111,6 +111,7 @@ public class EditJobActivity extends AppCompatActivity implements OnCountryPicke
         mTextViewPreviewDescription = (TextView) findViewById(R.id.textViewPreviewDescription);
 
         mCategoryField = (TextView) findViewById(R.id.category_textview);
+        //mCategoryTestField = (TextView) findViewById(R.id.categoryTest_textview);
         mTypeField = (TextView) findViewById(R.id.type_textview);
         mCountryField = (TextView) findViewById(R.id.country);
 
@@ -224,15 +225,17 @@ public class EditJobActivity extends AppCompatActivity implements OnCountryPicke
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedCategorySpinner = parent.getItemAtPosition(position).toString();
-                mCategoryField.setText(selectedCategorySpinner);
-                Toast.makeText(EditJobActivity.this, selectedCategorySpinner, Toast.LENGTH_LONG).show();
-
+                if(!selectedCategorySpinner.isEmpty()){
+                    mCategoryField.setText(selectedCategorySpinner);
+                    Toast.makeText(EditJobActivity.this, selectedCategorySpinner, Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
+
         });
     }
 
@@ -248,8 +251,10 @@ public class EditJobActivity extends AppCompatActivity implements OnCountryPicke
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedTypeSpinner = parent.getItemAtPosition(position).toString();
-                mTypeField.setText(selectedTypeSpinner);
-                Toast.makeText(EditJobActivity.this, selectedTypeSpinner, Toast.LENGTH_LONG).show();
+                if(!selectedTypeSpinner.isEmpty()){
+                    mTypeField.setText(selectedTypeSpinner);
+                    Toast.makeText(EditJobActivity.this, selectedTypeSpinner, Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
@@ -272,7 +277,6 @@ public class EditJobActivity extends AppCompatActivity implements OnCountryPicke
                     if(map.get("category")!=null){
                         category = map.get("category").toString();
                         mCategoryField.setText(category);
-
                         //initializeJobCategorySpinner();
 
                     }
@@ -337,8 +341,10 @@ public class EditJobActivity extends AppCompatActivity implements OnCountryPicke
 
     private void saveJobInformation(String key) {
         title = mTitleField.getText().toString();
-        category = (selectedCategorySpinner!=null) ? selectedCategorySpinner : "";
-        type = (selectedTypeSpinner!=null) ? selectedTypeSpinner : "";
+        //category = (selectedCategorySpinner!=null) ? selectedCategorySpinner : "";
+        category = mCategoryField.getText().toString();
+        //type = (selectedTypeSpinner!=null) ? selectedTypeSpinner : mTypeField.getText().toString();
+        type = mTypeField.getText().toString();
         description = mDescriptionField.getText().toString();
         country = mCountryField.getText().toString();
         city = mCityField.getText().toString();

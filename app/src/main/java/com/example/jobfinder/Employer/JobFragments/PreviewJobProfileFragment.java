@@ -2,10 +2,12 @@ package com.example.jobfinder.Employer.JobFragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -50,6 +52,7 @@ import com.example.jobfinder.Employer.EditEmployerProfileActivity;
 import com.example.jobfinder.Employer.EditJobActivity;
 import com.example.jobfinder.Employer.EmployerFragments.PreviewEmployerProfileFragment;
 import com.example.jobfinder.Employer.EmployerTabbedMainActivity;
+import com.example.jobfinder.Employer.JobManager;
 import com.example.jobfinder.Employer.JobTabbedMainActivity;
 import com.example.jobfinder.Employer.JobsAdapter;
 import com.example.jobfinder.Employer.PreviewEmployerProfileActivity;
@@ -265,6 +268,16 @@ public class PreviewJobProfileFragment extends Fragment {
                     fm.beginTransaction().replace(R.id.container, profileFragment).addToBackStack(null).commit();
                 }
 
+                return;
+            }
+        });
+        mDeleteBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                alertDialogTitle = "Confirm Profile Delete";
+                alertDialogMessage = "Are you sure you want to DELETE your profile?";
+                PopAlertDialogMessage(alertDialogTitle, alertDialogMessage, DELETE_PROFILE);
+                //mFragmentActivity.finish();
                 return;
             }
         });
@@ -513,7 +526,39 @@ public class PreviewJobProfileFragment extends Fragment {
     public static long getDownloadID(){
         return downloadID;
     }
-    
+
+    public void PopAlertDialogMessage(String title, String message, String callMessage){
+        AlertDialog.Builder builder = new AlertDialog.Builder(mFragmentActivity);
+
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        if(callMessage.equals(DELETE_PROFILE)){
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    JobManager.deleteJob(jobId);
+                    Toast.makeText(mContext, "Job successfully deleted", Toast.LENGTH_LONG).show();
+                    mFragmentActivity.finish();
+                    dialog.dismiss();
+                    return;
+                }
+            });
+        }
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)mFragmentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);

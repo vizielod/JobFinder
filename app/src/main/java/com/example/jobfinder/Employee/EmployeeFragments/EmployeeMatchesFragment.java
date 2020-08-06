@@ -148,6 +148,8 @@ public class EmployeeMatchesFragment extends Fragment {
         resultsNewMatches.clear();
         mEmployeeMatchesAdapter.notifyDataSetChanged();
         mEmployeeNewMatchesAdapter.notifyDataSetChanged();
+        mContactedMatchesFoundTV.setVisibility(View.VISIBLE);
+        mNewMatchesFoundTV.setVisibility(View.VISIBLE);
         getEmployeeUserMatchId();
     }
 
@@ -346,6 +348,9 @@ public class EmployeeMatchesFragment extends Fragment {
                     final String jobId = resultsContactedMatches.get(viewHolder.getAdapterPosition()).getJobId();
                     deleteMatch(employerId, jobId);
                     removeAt(viewHolder.getAdapterPosition());
+                    if(resultsContactedMatches.isEmpty()){
+                        mContactedMatchesFoundTV.setVisibility(View.VISIBLE);
+                    }
                     dialog.dismiss();
                 }
             });

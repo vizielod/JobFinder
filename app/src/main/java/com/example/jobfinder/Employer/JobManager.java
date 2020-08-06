@@ -1,23 +1,11 @@
 package com.example.jobfinder.Employer;
 
-import android.app.AlertDialog;
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.example.jobfinder.Matches.EmployeeMatches.EmployeeMatchesAdapter;
-import com.example.jobfinder.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,101 +17,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.List;
-
-//dapters provide a binding from an app-specific data set to views that are displayed within a RecyclerView.
-public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
+public class JobManager {
     private static final String LOGTAG = "UserRole";
-    private static final String DELETE_JOB = "DELETE JOB";
 
-    private List<JobObject> jobsList;
-    private Context context;
 
-    private FirebaseAuth mAuth;
-    private String currentUId;
-    private DatabaseReference usersDb, chatDb;
+    private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static String currentUId = mAuth.getCurrentUser().getUid();
+    private static DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+    private static DatabaseReference chatDb = FirebaseDatabase.getInstance().getReference().child("Chat");
+    private static Context context = JobTabbedMainActivity.getContext();
 
-    private String alertDialogTitle, alertDialogMessage;
+    private static DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Employer").child(currentUId);
 
-    private boolean deleteJobAccepted = false;
 
-    public JobsAdapter(List<JobObject> jobsList, Context context){
-        this.jobsList = jobsList;
-        this.context = context;
-    }
-
-    @Override
-    public JobViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_job, null, false);
-        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutView.setLayoutParams(lp);
-        JobViewHolder rcv = new JobViewHolder(layoutView);
-
-        return rcv;
-    }
-
-    @Override
-    public void onBindViewHolder(final JobViewHolder holder, final int position) {
-        Log.i(LOGTAG, Integer.toString(position));
-        holder.mJobId.setText(jobsList.get(position).getJobId());
-        holder.mJobTitle.setText(jobsList.get(position).getJobTitle());
-        holder.mJobCategory.setText(jobsList.get(position).getJobCategory());
-        if(!jobsList.get(position).getJobImageUrl().equals("default")){
-            Glide.with(context).load(jobsList.get(position).getJobImageUrl()).into(holder.mJobImage);
-        }
-        else{
-            Glide.with(context).load(R.drawable.placeholder_img).into(holder.mJobImage);
-        }
-        holder.mEmployerId.setText(jobsList.get(position).getEmployerId());
-
-        holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Log.i(LOGTAG, "DELETE" + mJobId.getText().toString());
-                alertDialogTitle = "Confirm Job Delete";
-                alertDialogMessage = "Are you sure you want to DELETE this Job?";
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle(alertDialogTitle);
-                builder.setMessage(alertDialogMessage);
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            removeAt(position);
-                            JobManager.deleteJob(holder.mJobId.getText().toString());
-                            Toast.makeText(context, "Job successfully deleted", Toast.LENGTH_LONG).show();
-                            //deleteJob(holder.mJobId.getText().toString());
-                            dialog.dismiss();
-                        }
-                    });
-
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //RefreshRecyclerViewList();
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return this.jobsList.size();
-    }
-
-    public void removeAt(int position) {
-        jobsList.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, getItemCount());
-    }
-
-    /*public void deleteJob(final String jobId){
+    public static void deleteJob(final String jobId){
         final DatabaseReference jobDb = usersDb.child("Employer").child(currentUId).child("jobs").child(jobId);
         jobDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -175,7 +82,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
                     }
                     //delete connections
                     jobDb.removeValue();
-                    notifyDataSetChanged();
+                    //notifyDataSetChanged();
                 }
             }
 
@@ -186,7 +93,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
         });
     }
 
-    private void deleteChatAndJobDataFromChatAndEmployeeDb(final String jobId) {
+    private static void deleteChatAndJobDataFromChatAndEmployeeDb(final String jobId) {
         final DatabaseReference jobMatchesConnectionsDb = usersDb.child("Employer").child(currentUId).child("jobs").child(jobId).child("connections").child("matches");
         jobMatchesConnectionsDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -196,6 +103,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
                         final String employeeID = matchedUser.getKey();
                         //Megkeresni az Employee adatbázisba a getKey által visszaadott ID-val rendelkező felhasználót és annak a connections/matches ágából kitörölni a jobID-t
                         usersDb.child("Employee").child(employeeID).child("connections").child("matches").child(currentUId).child(jobId).removeValue();
+                        //Toast.makeText(context, "Job successfully deleted", Toast.LENGTH_LONG).show();
                         Log.i(LOGTAG, matchedUser.toString());
                         Log.i(LOGTAG, matchedUser.getKey());
                         if(matchedUser.child("chatId").exists()){
@@ -216,7 +124,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
         });
     }
 
-    public void deleteChatDataOnJobDelete(final String chatID){
+    public static void deleteChatDataOnJobDelete(final String chatID){
         chatDb = FirebaseDatabase.getInstance().getReference().child("Chat");
         chatDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -232,7 +140,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
         });
     }
 
-    public void deleteJobIdFromEmployeeConnections(final String jobId){
+    public static void deleteJobIdFromEmployeeConnections(final String jobId){
         final DatabaseReference employeeDb =  usersDb.child("Employee");
         employeeDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -256,7 +164,5 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
 
             }
         });
-    }*/
-
-
+    }
 }
