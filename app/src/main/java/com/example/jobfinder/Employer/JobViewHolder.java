@@ -31,7 +31,7 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
 
     public TextView mJobId, mJobTitle, mEmployerId, mJobCategory;
     public ImageView mJobImage;
-    private TextView mContactedMatchesFoundTV;
+    public TextView mEmptyListTV;
 
     public Button mDeleteButton;
     private List<JobObject> jobsList;
@@ -62,6 +62,8 @@ public class JobViewHolder extends RecyclerView.ViewHolder implements View.OnCli
         mJobTitle = (TextView) itemView.findViewById(R.id.JobTitle);
         mJobCategory = (TextView) itemView.findViewById(R.id.JobCategory);
         mEmployerId = (TextView) itemView.findViewById(R.id.EmployerId);
+
+        //mEmptyListTV = (TextView) itemView.findViewById(R.id.listEmpty_textview);
 
         mJobImage = (ImageView) itemView.findViewById(R.id.JobImage);
         mDeleteButton = (Button) itemView.findViewById(R.id.btn_deleteJob);

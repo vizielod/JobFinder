@@ -10,12 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.jobfinder.Employer.EmployerFragments.EmployerMainFragment;
 import com.example.jobfinder.Matches.EmployeeMatches.EmployeeMatchesAdapter;
 import com.example.jobfinder.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -92,6 +94,10 @@ public class JobsAdapter extends RecyclerView.Adapter<JobViewHolder>{
                         public void onClick(DialogInterface dialog, int which) {
                             removeAt(position);
                             JobManager.deleteJob(holder.mJobId.getText().toString());
+                            //EmployerMainFragment.setEmptyListTVtoVisible();
+                            /*if(getItemCount() == 0){
+                                holder.mEmptyListTV.setVisibility(View.VISIBLE);
+                            }*/
                             Toast.makeText(context, "Job successfully deleted", Toast.LENGTH_LONG).show();
                             //deleteJob(holder.mJobId.getText().toString());
                             dialog.dismiss();

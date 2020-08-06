@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,6 +64,8 @@ public class EmployerMainFragment extends Fragment {
     private FragmentActivity mFragmentActivity;
     //private OnFragmentInteractionListener mListener;
 
+    private TextView mEmptyListTV;
+
     private boolean deleteJobAccepted = false;
 
     public EmployerMainFragment(){
@@ -84,6 +87,7 @@ public class EmployerMainFragment extends Fragment {
         //return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_content_employer, container, false);
 
+        mEmptyListTV = (TextView) view.findViewById(R.id.listEmpty_textview);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_Jobs);
         //mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setHasFixedSize(true);
@@ -126,10 +130,17 @@ public class EmployerMainFragment extends Fragment {
         /*ViewPager viewPager = (ViewPager) EmployerTabbedMainActivity.getViewPager();
         viewPager.setCurrentItem(1);*/
         //RefreshRecyclerViewList();
+        if(getItemCount() == 0){
+            mEmptyListTV.setVisibility(View.VISIBLE);
+        }
         mJobs.clear();
         mJobsAdapter.notifyDataSetChanged();
         getJobsId();
     }
+
+    /*public static void setEmptyListTVtoVisible(){
+        mEmptyListTV.setVisibility(View.VISIBLE);
+    }*/
 
     private void getJobsId() {
         DatabaseReference jobsDb = FirebaseDatabase.getInstance().getReference().child("Users").child(userRole).child(currentUId).child("jobs");
@@ -172,6 +183,7 @@ public class EmployerMainFragment extends Fragment {
                     JobObject obj = new JobObject(currentUId, jobId, title, category, jobImageUrl);
                     mJobs.add(obj);
                     mJobsAdapter.notifyDataSetChanged();
+                    mEmptyListTV.setVisibility(View.GONE);
                 }
             }
 
@@ -214,6 +226,10 @@ public class EmployerMainFragment extends Fragment {
 
     public void removeAt(int position) {
         mJobs.remove(position);
+        Log.i(LOGTAG, String.valueOf(getItemCount()) + "removeat");
+        if(getItemCount() == 0){
+            mEmptyListTV.setVisibility(View.VISIBLE);
+        }
         mJobsAdapter.notifyItemRemoved(position);
         mJobsAdapter.notifyItemRangeChanged(position, getItemCount());
     }

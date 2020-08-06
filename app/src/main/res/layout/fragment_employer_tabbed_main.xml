@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".Employer.ui.main.PlaceholderFragment">
 
-    <TextView
+    <!--<TextView
         android:id="@+id/section_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,6 +18,24 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout"
         tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintTop_creator="1" />
+        tools:layout_constraintTop_creator="1" />-->
+
+    <TextView
+        android:id="@+id/listEmpty_textview"
+        android:translationZ="-1dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="35dp"
+        android:gravity="center|top"
+        android:textColor="#80ffffff"
+        android:text="Your Companies open job list is empty. Click the button in the bottom right corner to add new job offers and share your open positions towards Employees seeking for new opportunities!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/frame"
+        app:layout_constraintStart_toStartOf="@+id/frame"
+        app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

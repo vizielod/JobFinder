@@ -38,7 +38,7 @@
         android:textSize="35dp"
         android:gravity="center|top"
         android:textColor="#80ffffff"
-        android:text="You have run out of potential Employees! There are nobody looking for this type of job position at the moment! Look back later or try to refresh!"
+        android:text="You have run out of potential Employees! There are nobody looking for this type of job position at the moment! Look back later or try to refresh by restarting the app!"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/frame"
         app:layout_constraintStart_toStartOf="@+id/frame"
