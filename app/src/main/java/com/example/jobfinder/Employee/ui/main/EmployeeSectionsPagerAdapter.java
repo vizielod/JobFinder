@@ -24,7 +24,7 @@ public class EmployeeSectionsPagerAdapter extends FragmentPagerAdapter {
     private final Context mContext;
 
     public EmployeeSectionsPagerAdapter(Context context, FragmentManager fm) {
-        super(fm);
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         mContext = context;
     }
 
@@ -55,7 +55,7 @@ public class EmployeeSectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
+        // Show 3 total pages.
         return 3;
     }
 }

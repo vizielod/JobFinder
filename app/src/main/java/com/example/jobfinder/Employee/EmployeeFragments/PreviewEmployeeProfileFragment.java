@@ -272,13 +272,13 @@ public class PreviewEmployeeProfileFragment extends Fragment {
             userRole = (String) EmployeeTabbedMainActivity.getUserRole();
             mAuth = EmployeeTabbedMainActivity.getFirebaseAuth();
 
-            OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            /*OnBackPressedCallback callback = new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     mFragmentActivity.finish();
                 }
             };
-            requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);*/
         }
         else if(isPreviewEmployeeProfileActivity){
             userId = PreviewEmployeeProfileActivity.getCurrentUId();
@@ -286,15 +286,21 @@ public class PreviewEmployeeProfileFragment extends Fragment {
             mUserDatabase = (DatabaseReference) PreviewEmployeeProfileActivity.getUserDatabase();
             mAuth = PreviewEmployeeProfileActivity.getFirebaseAuth();
 
-            OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            /*OnBackPressedCallback callback = new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     mFragmentActivity.finish();
                 }
             };
-            requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+            requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);*/
         }
-
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                mFragmentActivity.finish();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     @Override

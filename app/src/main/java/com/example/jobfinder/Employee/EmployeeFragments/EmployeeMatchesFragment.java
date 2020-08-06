@@ -138,6 +138,15 @@ public class EmployeeMatchesFragment extends Fragment {
     };
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+        }
+        else {
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         RefreshRecyclerViewList();
